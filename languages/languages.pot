@@ -77,10 +77,6 @@ msgstr ""
 msgid "Login"
 msgstr ""
 
-#: src/Admin/Notices.php:40
-msgid "Login"
-msgstr ""
-
 #: src/Admin/Options.php:66
 msgid "ShoppingFeed"
 msgstr ""
@@ -381,4 +377,40 @@ msgid "Unselected categories"
 msgstr ""
 
 msgid "Search"
+msgstr ""
+
+msgid "Thank your for downloading Shoppingfeed"
+msgstr ""
+
+msgid "Connect your Ecommerce to 1,000+ Channels"
+msgstr ""
+
+msgid "Welcome on Shoppingfeed"
+msgstr ""
+
+msgid "Fix your syndication struggle"
+msgstr ""
+
+msgid "To go further and discover how to eliminate order fulfilment friction and enrich your products listings"
+msgstr ""
+
+msgid "please download our white papers"
+msgstr ""
+
+msgid "Migration to Shoppingfeed"
+msgstr ""
+
+msgid "Google Shopping Ads"
+msgstr ""
+
+msgid "Google Shopping Action"
+msgstr ""
+
+msgid "Product Graph"
+msgstr ""
+
+msgid "Join more than 2000+ sellers worldwide"
+msgstr ""
+
+msgid "Discover our offers"
 msgstr ""

@@ -55,8 +55,8 @@ class Notices {
 		<div class="notice sf__notice sf__notice--start">
 			<div class="inside">
 				<div class="main">
-					<h2 class="sf__notice__title"><?php esc_html_e( 'Thank you for installing Shoppingfeed!', 'shopping-feed' ); ?></h2>
-					<div class="sf__notice__subtitle"><?php esc_html_e( 'Only one step left to activate the plugin on your site !', 'shopping-feed' ); ?></div>
+					<h2 class="sf__notice__title"><?php esc_html_e( 'Thank your for downloading Shoppingfeed', 'shopping-feed' ); ?></h2>
+					<div class="sf__notice__subtitle"><?php esc_html_e( 'Connect your Ecommerce to 1,000+ Channels', 'shopping-feed' ); ?></div>
 					<a href="<?php echo esc_url( ShoppingFeedHelper::get_setting_link() ); ?>" class="button action"><?php esc_html_e( 'Login', 'shopping-feed' ); ?></a>
 				</div>
 			</div>

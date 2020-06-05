@@ -7,7 +7,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2020-04-20T12:04:03+00:00\n"
-"PO-Revision-Date: 2020-05-22 11:38+0200\n"
+"PO-Revision-Date: 2020-06-05 10:55+0200\n"
 "X-Generator: Poedit 2.3.1\n"
 "X-Domain: languages\n"
 "Last-Translator: \n"
@@ -24,8 +24,8 @@ msgstr ""
 
 #. Description of the plugin
 msgid ""
-"Connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, "
-"Google, and 1000's of international marketplaces"
+"Connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, Google, and 1000's of international "
+"marketplaces"
 msgstr ""
 
 #. Author of the plugin
@@ -126,11 +126,10 @@ msgstr "Expédition"
 
 #: src/Admin/Options.php:569
 msgid ""
-"Default shipping price added in the feed if no shipping methods were founded "
-"or no shipping zone is selected"
+"Default shipping price added in the feed if no shipping methods were founded or no shipping zone is selected"
 msgstr ""
-"Vous pouvez définir des frais de port par défaut envoyés vers Shoppingfeed, "
-"si vous ne souhaitez pas choisir de zone d’expédition"
+"Vous pouvez définir des frais de port par défaut envoyés vers Shoppingfeed, si vous ne souhaitez pas choisir "
+"de zone d’expédition"
 
 #: src/Admin/Options.php:559
 msgid "Default Shipping Fees"
@@ -138,9 +137,7 @@ msgstr "Frais de port par défaut"
 
 #: src/Admin/Options.php:545
 msgid "Selected shipping zone defines shipping method data used in the feed"
-msgstr ""
-"La zone d’expédition sélectionnée  définira les infos d’expédition reçues "
-"dans le flux catalogue"
+msgstr "La zone d’expédition sélectionnée  définira les infos d’expédition reçues dans le flux catalogue"
 
 #: src/Admin/Options.php:532
 msgid "None"
@@ -152,9 +149,7 @@ msgstr "Zone d’expédition par défaut"
 
 #: src/Admin/Options.php:430
 msgid "Product categories to export to Shoppingfeed. Default : all"
-msgstr ""
-"Sélectionner les catégories qui seront envoyées vers Shoppingfeed. (Par "
-"défaut : toutes)"
+msgstr "Sélectionner les catégories qui seront envoyées vers Shoppingfeed. (Par défaut : toutes)"
 
 #: src/Admin/Options.php:413 src/Admin/Options.php:391
 msgid "Categories to export"
@@ -374,3 +369,39 @@ msgstr "Catégories non sélectionnées"
 
 msgid "Search"
 msgstr "Recherche"
+
+msgid "Thank your for downloading Shoppingfeed"
+msgstr "Merci d’avoir téléchargé ShoppingFeed"
+
+msgid "Connect your Ecommerce to 1,000+ Channels"
+msgstr ""
+
+msgid "Welcome on Shoppingfeed"
+msgstr "Bienvenue sur Shoppingfeed"
+
+msgid "Fix your syndication struggle"
+msgstr "La nouvelle façon de penser les flux"
+
+msgid "To go further and discover how to eliminate order fulfilment friction and enrich your products listings"
+msgstr "Pour aller plus loin dans la performance d’optimisation nous vous proposons de "
+
+msgid "please download our white papers"
+msgstr "télécharger gratuitement nos livres blancs."
+
+msgid "Migration to Shoppingfeed"
+msgstr "Migration vers Shopping Feed"
+
+msgid "Google Shopping Ads"
+msgstr "Google Shopping Ads"
+
+msgid "Google Shopping Action"
+msgstr "Google Shopping Action"
+
+msgid "Product Graph"
+msgstr "Product Graph"
+
+msgid "Join more than 2000+ sellers worldwide"
+msgstr "Envie de passer à la vitesse supérieure ?"
+
+msgid "Discover our offers"
+msgstr "Découvrez nos offres"

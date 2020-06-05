@@ -12,6 +12,7 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
 class Options {
 
+
 	const SF_SLUG = 'shopping-feed';
 
 	/**
@@ -113,9 +114,6 @@ class Options {
 			}
 		);
 
-		add_action( 'wp_ajax_sf_get_default_shipping_method', array( $this, 'sf_get_default_shipping_method' ) );
-		add_action( 'wp_ajax_nopriv_sf_get_default_shipping_method', array( $this, 'sf_get_default_shipping_method' ) );
-
 		//get feed options
 		$this->sf_feed_options = ShoppingFeedHelper::get_sf_feed_options();
 		//get account options
@@ -124,42 +122,6 @@ class Options {
 		$this->sf_shipping_options = ShoppingFeedHelper::get_sf_shipping_options();
 		//get orders options
 		$this->sf_orders_options = ShoppingFeedHelper::get_sf_orders_options();
-	}
-
-	public function sf_get_default_shipping_method() {
-		if ( ! isset( $_POST['ajax_nounce'] ) || wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['ajax_nounce'] ) ), 'ajax_nounce' ) ) {
-			exit();
-		}
-
-		$zone_id = isset( $_POST['zone_id'] ) ? sanitize_key( $_POST['zone_id'] ) : 0;
-		$selected_zone_id = isset( $_POST['selected_zone_id'] ) ? sanitize_key( $_POST['selected_zone_id'] ) : 0;
-		if ( empty( $zone_id ) ) {
-			//init
-			return $zone_id;
-		}
-
-		//already selected values
-		$shipping_methods                             = ShoppingFeedHelper::get_shipping_methods_by_zone( $zone_id );
-
-		if ( $selected_zone_id === $zone_id ) {
-			$default_shipping_method                      = ShoppingFeedHelper::get_default_shipping_method();
-			$shipping_options = ShoppingFeedHelper::get_sf_shipping_options();
-			$matching_shipping_method = ! empty( $shipping_options ) && ! empty( $shipping_options['matching_shipping_method'] ) ? $shipping_options['matching_shipping_method'] : array();
-
-			$data = array(
-				'shipping_methods' => $shipping_methods,
-				'default_shipping_method' => $default_shipping_method,
-				'matching_shipping_methods' => $matching_shipping_method,
-			);
-						return wp_send_json_success( $data );
-		}
-
-		return wp_send_json_success(
-			array(
-				'shipping_methods' => $shipping_methods,
-			)
-		);
-
 	}
 
 	/**
@@ -175,23 +137,23 @@ class Options {
 
 		$tabs = array(
 			array(
-				'tab'   => 'account',
-				'url'   => '?page=' . self::SF_SLUG,
+				'tab' => 'account',
+				'url' => '?page=' . self::SF_SLUG,
 				'title' => __( 'Account', 'shopping-feed' ),
 			),
 			array(
-				'tab'   => 'feed-settings',
-				'url'   => '?page=' . self::SF_SLUG . '&tab=feed-settings',
+				'tab' => 'feed-settings',
+				'url' => '?page=' . self::SF_SLUG . '&tab=feed-settings',
 				'title' => __( 'Feed', 'shopping-feed' ),
 			),
 			array(
-				'tab'   => 'shipping-settings',
-				'url'   => '?page=' . self::SF_SLUG . '&tab=shipping-settings',
+				'tab' => 'shipping-settings',
+				'url' => '?page=' . self::SF_SLUG . '&tab=shipping-settings',
 				'title' => __( 'Shipping', 'shopping-feed' ),
 			),
 			array(
-				'tab'   => 'orders-settings',
-				'url'   => '?page=' . self::SF_SLUG . '&tab=orders-settings',
+				'tab' => 'orders-settings',
+				'url' => '?page=' . self::SF_SLUG . '&tab=orders-settings',
 				'title' => __( 'Orders', 'shopping-feed' ),
 			),
 		);
@@ -207,8 +169,7 @@ class Options {
 				<nav class="nav-tab-wrapper">
 					<?php
 					foreach (
-						$tabs
-						as $_tab
+					$tabs as $_tab
 					) {
 						?>
 						<a href="<?php echo esc_url( $_tab['url'] ); ?>" class="nav-tab
@@ -241,7 +202,7 @@ class Options {
 						break;
 					default:
 						break;
-				endswitch;
+		endswitch;
 				?>
 		</div>
 		<?php
@@ -251,77 +212,77 @@ class Options {
 	 * Define Account Page
 	 */
 	public function init_account_setting_page() {
-		$this->connected = ShoppingFeedHelper::is_authenticated();
+			$this->connected = ShoppingFeedHelper::is_authenticated();
 
-		//load assets
-		$this->load_assets();
+			//load assets
+			$this->load_assets();
 
-		add_settings_section(
-			'sf_account_settings',
-			__( 'Account settings', 'shopping-feed' ),
-			function () {
-			},
-			self::SF_ACCOUNT_SETTINGS_PAGE
-		);
+			add_settings_section(
+				'sf_account_settings',
+				__( 'Account settings', 'shopping-feed' ),
+				function () {
+				},
+				self::SF_ACCOUNT_SETTINGS_PAGE
+			);
 
-		add_settings_field(
-			'username',
-			__( 'Username', 'shopping-feed' ),
-			function () {
-				printf(
-					'<input class="regular-text" type="text" name="sf_account_options[username]" id="username" value="%s">',
-					isset( $this->sf_account_options['username'] ) ? esc_attr( $this->sf_account_options['username'] ) : ''
-				);
-			},
-			self::SF_ACCOUNT_SETTINGS_PAGE,
-			'sf_account_settings'
-		);
+			add_settings_field(
+				'username',
+				__( 'Username', 'shopping-feed' ),
+				function () {
+					printf(
+						'<input class="regular-text" type="text" name="sf_account_options[username]" id="username" value="%s">',
+						isset( $this->sf_account_options['username'] ) ? esc_attr( $this->sf_account_options['username'] ) : ''
+					);
+				},
+				self::SF_ACCOUNT_SETTINGS_PAGE,
+				'sf_account_settings'
+			);
 
-		add_settings_field(
-			'password',
-			__( 'Password', 'shopping-feed' ),
-			function () {
-				printf(
-					'<input class="regular-text" type="password" name="sf_account_options[password]" id="password" value="%s">',
-					isset( $this->sf_account_options['password'] ) ? esc_attr( $this->sf_account_options['password'] ) : ''
-				);
-			},
-			self::SF_ACCOUNT_SETTINGS_PAGE,
-			'sf_account_settings'
-		);
+			add_settings_field(
+				'password',
+				__( 'Password', 'shopping-feed' ),
+				function () {
+					printf(
+						'<input class="regular-text" type="password" name="sf_account_options[password]" id="password" value="%s">',
+						isset( $this->sf_account_options['password'] ) ? esc_attr( $this->sf_account_options['password'] ) : ''
+					);
+				},
+				self::SF_ACCOUNT_SETTINGS_PAGE,
+				'sf_account_settings'
+			);
 
 		if ( $this->connected ) {
 			add_settings_field(
 				'url',
 				__( 'Your source feed', 'shopping-feed' ),
 				function () {
-						printf(
-							'<a target="_blank" href="%1$s">%1$s</a><br><p>' . __( 'Last update', 'shopping-feed' ) . ': %3$s - <a target="_blank" href="%2$s">' . __( 'Refresh', 'shopping-feed' ) . '</a></p>',
-							esc_html( ShoppingFeedHelper::get_public_feed_url() ),
-							esc_html( ShoppingFeedHelper::get_public_feed_url_with_generation() ),
-							! empty( get_option( Generator::SF_FEED_LAST_GENERATION_DATE ) ) ? esc_html( get_option( Generator::SF_FEED_LAST_GENERATION_DATE ) ) : esc_html( 'Never' )
-						);
+					printf(
+						'<a target="_blank" href="%1$s">%1$s</a><br><p>' . __( 'Last update', 'shopping-feed' ) . ': %3$s - <a target="_blank" href="%2$s">' . __( 'Refresh', 'shopping-feed' ) . '</a></p>',
+						esc_html( ShoppingFeedHelper::get_public_feed_url() ),
+						esc_html( ShoppingFeedHelper::get_public_feed_url_with_generation() ),
+						! empty( get_option( Generator::SF_FEED_LAST_GENERATION_DATE ) ) ? esc_html( get_option( Generator::SF_FEED_LAST_GENERATION_DATE ) ) : esc_html( 'Never' )
+					);
 				},
 				self::SF_ACCOUNT_SETTINGS_PAGE,
 				'sf_account_settings'
 			);
 		}
 
-		add_settings_field(
-			'status',
-			__( 'Status', 'shopping-feed' ),
-			function () {
-				?>
+			add_settings_field(
+				'status',
+				__( 'Status', 'shopping-feed' ),
+				function () {
+					?>
 				<div class="notice-<?php echo esc_html( $this->connected ? 'success' : 'error' ); ?> regular-text notice-alt">
 					<?php
 					echo esc_html( $this->connected ? _e( 'Connected', 'shopping-feed' ) : _e( 'Not connected', 'shopping-feed' ) );
 					?>
 				</div>
-				<?php
-			},
-			self::SF_ACCOUNT_SETTINGS_PAGE,
-			'sf_account_settings'
-		);
+					<?php
+				},
+				self::SF_ACCOUNT_SETTINGS_PAGE,
+				'sf_account_settings'
+			);
 		?>
 		<div class="wrap">
 			<?php settings_errors(); ?>
@@ -338,10 +299,10 @@ class Options {
 		<div class="sf__requirements">
 		<?php
 		$requirements = Requirements::get_instance();
-		echo wp_kses_post( $requirements->curl_requirement() );
-		echo wp_kses_post( $requirements->php_requirement() );
-		echo wp_kses_post( $requirements->openssl_requirement() );
-		echo wp_kses_post( $requirements->account_requirement() );
+			echo wp_kses_post( $requirements->curl_requirement() );
+			echo wp_kses_post( $requirements->php_requirement() );
+			echo wp_kses_post( $requirements->openssl_requirement() );
+			echo wp_kses_post( $requirements->account_requirement() );
 		?>
 				<!--        REQUIREMENTS     -->
 		</div>
@@ -378,8 +339,8 @@ class Options {
 		$product_categories = get_terms(
 			ShoppingFeedHelper::wc_category_taxonomy(),
 			array(
-				'orderby'    => 'name',
-				'order'      => 'asc',
+				'orderby' => 'name',
+				'order' => 'asc',
 				'hide_empty' => false,
 			)
 		);
@@ -450,9 +411,9 @@ class Options {
 		);
 
 		$frequencies_options = array();
-		for ( $i = 1; $i <= 24; $i ++ ) {
+		for ( $i = 1; $i <= 24; $i++ ) {
 			$frequencies_options[ $i * HOUR_IN_SECONDS ] = sprintf(
-			/* translators: %s: Frequency. */
+				/* translators: %s: Frequency. */
 				_n(
 					'%s hour',
 					'%s hours',
@@ -487,6 +448,64 @@ class Options {
 			self::SF_FEED_SETTINGS_PAGE,
 			'sf_feed_settings_frequency'
 		);
+
+		add_settings_section(
+			'sf_feed_settings',
+			__( 'Shipping', 'shopping-feed' ),
+			function () {
+			},
+			self::SF_FEED_SETTINGS_PAGE
+		);
+
+		$shipping_zones = \WC_Shipping_Zones::get_zones();
+		$selected_shipping_zone = ! empty( $this->sf_shipping_options['zone'] ) ? $this->sf_shipping_options['zone'] : false;
+		add_settings_field(
+			'default_zone',
+			__( 'Default Shipping Zone', 'shopping-feed' ),
+			function () use ( $shipping_zones, $selected_shipping_zone ) {
+				?>
+					<input class="hidden" id="selected_shipping_zone" value="<?php echo esc_html( $selected_shipping_zone ); ?>">
+					<select id="default_shipping_zone" name="<?php echo esc_html( sprintf( '%s[zone]', self::SF_SHIPPING_OPTIONS ) ); ?>">
+						<option value=""><?php echo esc_attr_e( 'None', 'shopping-feed' ); ?></option>
+						<?php
+						if ( ! empty( $shipping_zones ) ) {
+							foreach ( $shipping_zones as $zone ) {
+								?>
+							<option
+									value="<?php echo esc_html( $zone['id'] ); ?>"
+								<?php selected( $zone['id'], $selected_shipping_zone ); ?>
+							><?php echo esc_html( $zone['zone_name'] ); ?></option>
+								<?php
+							}
+							?>
+					</select>
+					<p class="description"
+					   id="tagline-description"><?php echo esc_attr_e( 'Selected shipping zone defines shipping method data used in the feed', 'shopping-feed' ); ?></p>
+							<?php
+						}},
+			self::SF_FEED_SETTINGS_PAGE,
+			'sf_feed_settings'
+		);
+
+		add_settings_field(
+			'shipping_fees',
+			__( 'Default Shipping Fees', 'shopping-feed' ),
+			function () {
+				?>
+				<input type="number"
+					   id="shipping_fees"
+					   step="any"
+					   name='<?php echo esc_html( sprintf( '%s[fees]', self::SF_SHIPPING_OPTIONS ) ); ?>'
+					   value='<?php echo esc_html( isset( $this->sf_shipping_options['fees'] ) ? esc_attr( $this->sf_shipping_options['fees'] ) : 0 ); ?>'>
+
+				<p class="description"
+				   id="tagline-description"><?php echo esc_attr_e( 'Default shipping price added in the feed if no shipping methods were founded or no shipping zone is selected', 'shopping-feed' ); ?></p>
+
+				<?php
+			},
+			self::SF_FEED_SETTINGS_PAGE,
+			'sf_feed_settings'
+		);
 		?>
 		<div class="wrap">
 			<?php settings_errors(); ?>
@@ -511,95 +530,44 @@ class Options {
 		//load assets
 		$this->load_assets();
 
+		$zone_with_methods = ShoppingFeedHelper::get_zones_with_shipping_methods();
+		$default_shipping_method = ShoppingFeedHelper::get_default_shipping_method();
+		$sf_orders_options_default_shipping_method_id = ! empty( $default_shipping_method['method_id'] ) ? $default_shipping_method['method_id'] : false;
+
 		add_settings_section(
-			'sf_shipping_settings',
-			__( 'Shipping', 'shopping-feed' ),
+			'sf_orders_settings_shippings_methods',
+			__( 'Methods', 'shopping-feed' ),
 			function () {
 			},
 			self::SF_SHIPPING_SETTINGS_PAGE
 		);
-
-		$shipping_zones = \WC_Shipping_Zones::get_zones();
-		$selected_shipping_zone = ! empty( $this->sf_shipping_options['zone'] ) ? $this->sf_shipping_options['zone'] : false;
-		if ( 0 !== count( $shipping_zones ) ) {
-			add_settings_field(
-				'default_zone',
-				__( 'Default Shipping Zone', 'shopping-feed' ),
-				function () use ( $shipping_zones, $selected_shipping_zone ) {
-					?>
-					<input class="hidden" id="selected_shipping_zone" value="<?php echo esc_html( $selected_shipping_zone ); ?>">
-					<select id="default_shipping_zone" name="<?php echo esc_html( sprintf( '%s[zone]', self::SF_SHIPPING_OPTIONS ) ); ?>">
-						<option value=""><?php echo esc_attr_e( 'None', 'shopping-feed' ); ?></option>
-						<?php
-						foreach ( $shipping_zones as $zone ) {
-							?>
-							<option
-									value="<?php echo esc_html( $zone['id'] ); ?>"
-								<?php selected( $zone['id'], $selected_shipping_zone ); ?>
-							><?php echo esc_html( $zone['zone_name'] ); ?></option>
-							<?php
-						}
-						?>
-					</select>
-					<p class="description"
-					   id="tagline-description"><?php echo esc_attr_e( 'Selected shipping zone defines shipping method data used in the feed', 'shopping-feed' ); ?>
-					   <strong>
-						<?php echo esc_attr_e( 'Once changed, all matching will be initialized', 'shopping-feed' ); ?>
-					   </strong>
-					   </p>
-					<?php
-				},
-				self::SF_SHIPPING_SETTINGS_PAGE,
-				'sf_shipping_settings'
-			);
-		}
-
 		add_settings_field(
-			'shipping_fees',
-			__( 'Default Shipping Fees', 'shopping-feed' ),
-			function () {
+			'default_shipping_method',
+			__( 'Default Shipping Method', 'shopping-feed' ),
+			function () use ( $zone_with_methods, $sf_orders_options_default_shipping_method_id ) {
 				?>
-				<input type="number"
-					   id="shipping_fees"
-					   step="any"
-					   name='<?php echo esc_html( sprintf( '%s[fees]', self::SF_SHIPPING_OPTIONS ) ); ?>'
-					   value='<?php echo esc_html( isset( $this->sf_shipping_options['fees'] ) ? esc_attr( $this->sf_shipping_options['fees'] ) : 0 ); ?>'>
-
-				<p class="description"
-				   id="tagline-description"><?php echo esc_attr_e( 'Default shipping price added in the feed if no shipping methods were founded or no shipping zone is selected', 'shopping-feed' ); ?></p>
-
-				<?php
-			},
-			self::SF_SHIPPING_SETTINGS_PAGE,
-			'sf_shipping_settings'
-		);
-
-		$shipping_methods                             = ShoppingFeedHelper::get_shipping_methods();
-		$default_shipping_method                      = ShoppingFeedHelper::get_default_shipping_method();
-		$sf_orders_options_default_shipping_method_id = ! empty( $default_shipping_method['method_id'] ) ? $default_shipping_method['method_id'] : false;
-
-			add_settings_section(
-				'sf_orders_settings_shippings_methods',
-				__( 'Methods', 'shopping-feed' ),
-				function () {
-				},
-				self::SF_SHIPPING_SETTINGS_PAGE
-			);
-			add_settings_field(
-				'default_shipping_method',
-				__( 'Default Shipping Method', 'shopping-feed' ),
-				function () use ( $shipping_methods, $sf_orders_options_default_shipping_method_id ) {
-					?>
 					<select id="default_shipping_method" name="<?php echo esc_html( sprintf( '%s[default_shipping_method]', self::SF_SHIPPING_OPTIONS ) ); ?>">
 						<option value=""><?php echo esc_attr_e( '-', 'shopping-feed' ); ?></option>
 						<?php
-						foreach ( $shipping_methods as $shipping_method ) {
-							?>
-							<option
-									value="<?php echo wc_esc_json( wp_json_encode( $shipping_method ) ); ?>"
-								<?php selected( $shipping_method['method_id'], $sf_orders_options_default_shipping_method_id ); ?>
-							><?php echo sprintf( '%s', esc_html( $shipping_method['method_title'] ) ); ?></option>
-							<?php
+						if ( ! empty( $zone_with_methods ) ) {
+							foreach ( $zone_with_methods as $zone_with_method ) {
+								?>
+								<optgroup label="<?php echo esc_html( $zone_with_method['zone_name'] ); ?>">
+								<?php
+								if ( ! empty( $zone_with_method['methods'] ) ) {
+									foreach ( $zone_with_method['methods'] as $shipping_method ) {
+										?>
+										<option value="<?php echo wc_esc_json( wp_json_encode( $shipping_method ) ); ?>"
+										<?php selected( $shipping_method['method_id'], $sf_orders_options_default_shipping_method_id ); ?>>
+										<?php echo sprintf( '%s', esc_html( $shipping_method['method_title'] ) ); ?>
+										</option>
+										<?php
+									}
+								}
+								?>
+								</optgroup>
+								<?php
+							}
 						}
 						?>
 					</select>
@@ -608,12 +576,13 @@ class Options {
 					   <?php echo esc_attr_e( 'Default shipping method for imported orders from SF', 'shopping-feed' ); ?>
 					   </p>
 					<?php
-				},
-				self::SF_SHIPPING_SETTINGS_PAGE,
-				'sf_orders_settings_shippings_methods'
-			);
+			},
+			self::SF_SHIPPING_SETTINGS_PAGE,
+			'sf_orders_settings_shippings_methods'
+		);
 
 		$sf_carriers = ShoppingFeedHelper::get_sf_carriers();
+		$zone_with_methods = ShoppingFeedHelper::get_zones_with_shipping_methods();
 
 		if ( ! empty( $sf_carriers ) ) {
 			$matching_shipping_method = ! empty( $this->sf_shipping_options['matching_shipping_method'] ) ? $this->sf_shipping_options['matching_shipping_method'] : array();
@@ -638,19 +607,32 @@ class Options {
 				add_settings_field(
 					'matching_shipping_' . $sf_carrier_id,
 					$sf_carrier,
-					function () use ( $shipping_methods, $sf_carrier_id, $matching_shipping_method_carrier ) {
+					function () use ( $zone_with_methods, $sf_carrier_id, $matching_shipping_method_carrier ) {
 						?>
 						<select id="<?php echo esc_html( 'matching_shipping_' . $sf_carrier_id ); ?>" name="<?php echo esc_html( sprintf( '%s[matching_shipping_method][%s]', self::SF_SHIPPING_OPTIONS, $sf_carrier_id ) ); ?>">
 							<option value=""><?php echo esc_attr_e( '-', 'shopping-feed' ); ?></option>
 							<?php
-							foreach ( $shipping_methods as $shipping_method ) {
-								$shipping_method['sf_shipping'] = $sf_carrier_id;
-								?>
-								<option
-										value="<?php echo wc_esc_json( wp_json_encode( $shipping_method ) ); ?>"
-									<?php selected( wp_json_encode( $shipping_method ), $matching_shipping_method_carrier ); ?>
-								><?php echo sprintf( '%s', esc_html( $shipping_method['method_title'] ) ); ?></option>
-								<?php
+							if ( ! empty( $zone_with_methods ) ) {
+								foreach ( $zone_with_methods as $zone_with_method ) {
+									?>
+									<optgroup label="<?php echo esc_html( $zone_with_method['zone_name'] ); ?>">
+									<?php
+									if ( ! empty( $zone_with_method['methods'] ) ) {
+										foreach ( $zone_with_method['methods'] as $shipping_method ) {
+											$shipping_method['sf_shipping'] = $sf_carrier_id;
+											?>
+											<option value="<?php echo wc_esc_json( wp_json_encode( $shipping_method ) ); ?>"
+											<?php selected( wp_json_encode( $shipping_method ), $matching_shipping_method_carrier ); ?>>
+											<?php echo sprintf( '%s', esc_html( $shipping_method['method_title'] ) ); ?></option>>
+											<?php echo sprintf( '%s', esc_html( $shipping_method['method_title'] ) ); ?></option>
+											<?php
+										}
+									}
+									?>
+</optgroup>
+
+															<?php
+								}
 							}
 							?>
 						</select>
@@ -695,7 +677,7 @@ class Options {
 		);
 
 		//cron settings
-		$frequencies         = array( 5, 10, 15, 30, 45, 60 );
+		$frequencies = array( 5, 10, 15, 30, 45, 60 );
 		$frequencies_options = array();
 		foreach ( $frequencies as $frequency ) {
 			$frequencies_options[ $frequency * MINUTE_IN_SECONDS ] = sprintf( '%s %s', $frequency, __( 'min', 'shopping-feed' ) );
@@ -814,21 +796,13 @@ class Options {
 			true
 		);
 
-		wp_register_script( 'sf_js', SF_PLUGIN_URL . 'assets/js/init.js', array( 'multi_js', 'wp-i18n' ), time() );
-		wp_localize_script(
-			'sf_js',
-			'sf_options',
-			array(
-				'ajax_url' => admin_url( 'admin-ajax.php' ),
-				'ajax_nounce' => wp_create_nonce( 'ajax_nounce' ),
-				'unselected_orders' => __( 'Unselected order status', 'shopping-feed' ),
-				'selected_orders' => __( 'Selected order status', 'shopping-feed' ),
-				'unselected_categories' => __( 'Unselected categories', 'shopping-feed' ),
-				'selected_categories' => __( 'Selected categories', 'shopping-feed' ),
-				'search' => __( 'Search', 'shopping-feed' ),
-			)
+		wp_enqueue_script(
+			'multi_js_init',
+			SF_PLUGIN_URL . 'assets/js/init.js',
+			array( 'multi_js' ),
+			time(),
+			true
 		);
-		wp_enqueue_script( 'sf_js' );
 	}
 
 }

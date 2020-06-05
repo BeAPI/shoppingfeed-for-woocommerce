@@ -93,10 +93,18 @@ class Product {
 	}
 
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function get_ean() {
-		return ShoppingFeedHelper::wc_product_ean();
+		$ean_meta = ShoppingFeedHelper::wc_product_ean();
+
+		if ( empty( $ean_meta ) ) {
+			return '';
+		}
+
+		$ean = $this->product->get_meta( $ean_meta ) ? $this->product->get_meta( $ean_meta ) : '';
+
+		return $ean;
 	}
 
 	/**

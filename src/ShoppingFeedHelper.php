@@ -316,45 +316,40 @@ class ShoppingFeedHelper {
 	}
 
 	/**
-	 * Get all shipping methods for default zone
+	 * Return zones with related shipping methods
 	 * @return array
 	 */
-	public static function get_shipping_methods() {
-		$default_shipping_zone_id = self::get_sf_default_shipping_zone();
-		if ( ! is_int( $default_shipping_zone_id ) ) {
-			return array();
+	public static function get_zones_with_shipping_methods() {
+		$shipping_methods = array();
+		$shipping_zones   = \WC_Shipping_Zones::get_zones();
+		if ( empty( $shipping_zones ) ) {
+			return $shipping_methods;
 		}
+		$all_shipping_methods = array();
+		foreach ( $shipping_zones as $shipping_zone ) {
+			$shipping_zone    = new \WC_Shipping_Zone( $shipping_zone['id'] );
+			$shipping_methods = $shipping_zone->get_shipping_methods();
 
-		return self::get_shipping_methods_by_zone( $default_shipping_zone_id );
-	}
+			if ( empty( $shipping_methods ) ) {
+				continue;
+			}
 
-	/**
-	 * Return shipping method by zone id
-	 * @param $zone_id
-	 *
-	 * @return array
-	 */
-	public static function get_shipping_methods_by_zone( $zone_id ) {
-		if ( empty( $zone_id ) ) {
-			return array();
-		}
-		$shipping_zone    = new \WC_Shipping_Zone( $zone_id );
-		$shipping_methods = $shipping_zone->get_shipping_methods();
+			$_shipping_methods = array();
+			foreach ( $shipping_methods as $shipping_method ) {
+				$_shipping_methods[] = array(
+					'method_rate_id' => $shipping_method->id,
+					'method_id'      => $shipping_method->instance_id,
+					'method_title'   => $shipping_method->title,
+				);
+			}
 
-		if ( empty( $shipping_methods ) ) {
-			return array();
-		}
-
-		$_shipping_methods = array();
-		foreach ( $shipping_methods as $shipping_method ) {
-			$_shipping_methods[] = array(
-				'method_rate_id' => $shipping_method->id,
-				'method_id'      => $shipping_method->instance_id,
-				'method_title'   => $shipping_method->title,
+			$all_shipping_methods[] = array(
+				'zone_id'   => $shipping_zone->get_id(),
+				'zone_name' => $shipping_zone->get_zone_name(),
+				'methods'   => $_shipping_methods,
 			);
 		}
-
-		return $_shipping_methods;
+		return $all_shipping_methods;
 	}
 
 	/**
@@ -367,7 +362,7 @@ class ShoppingFeedHelper {
 			return array();
 		}
 
-		return json_decode( $shipping_options['default_shipping_method'], true );
+		return (array) json_decode( $shipping_options['default_shipping_method'], true );
 	}
 
 	/**
@@ -375,6 +370,7 @@ class ShoppingFeedHelper {
 	 *
 	 * @param $carrier_id
 	 * @param $method
+	 * @return void
 	 */
 	public static function add_matching_shipping_method( $carrier_id, $method ) {
 		if ( empty( $method ) || ! is_int( $carrier_id ) ) {
@@ -532,7 +528,7 @@ class ShoppingFeedHelper {
 	}
 
 	/**
-	 * Add filter for product ean field
+	 * Add filter for product ean field meta key
 	 * @return string
 	 */
 	public static function wc_product_ean() {
@@ -553,6 +549,22 @@ class ShoppingFeedHelper {
 	 */
 	public static function sf_order_statuses_to_import() {
 		return apply_filters( 'shopping_feed_orders_to_import', array( 'waiting_shipment' ) );
+	}
+
+	/**
+	 * Add filter for order tracking number meta key
+	 * @return string
+	 */
+	public static function wc_tracking_number() {
+		return apply_filters( 'shopping_feed_tracking_number', '' );
+	}
+
+	/**
+	 * Add filter for order tracking link meta key
+	 * @return string
+	 */
+	public static function wc_tracking_link() {
+		return apply_filters( 'shopping_feed_tracking_link', '' );
 	}
 
 	/**
