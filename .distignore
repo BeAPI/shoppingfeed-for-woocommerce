@@ -1,4 +1,6 @@
 .git
+.github
+.gitignore
 bin
 node_modules
 tests
@@ -8,6 +10,8 @@ tests
 .env.testing
 .gitignore
 .DS_Store
+.editorconfig
+.env
 composer.json
 composer.lock
 grumphp.yml
@@ -18,3 +22,5 @@ package-lock.json
 phpcs.xml
 psalm.xml
 README.md
+gulpfile.js
+grumphp.yml
