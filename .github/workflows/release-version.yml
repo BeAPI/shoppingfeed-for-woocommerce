@@ -1,0 +1,63 @@
+name: Upload Release Asset
+
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - '*' # Push events to matching *
+
+jobs:
+  build:
+    name: Upload Release Asset
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build project PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 5.6
+      - run: composer install --prefer-dist --no-dev -o
+
+      - name: Use Node.js 12.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - run: npm install -g gulp && npm install
+      - run: gulp sass
+      - run: |
+          echo "ℹ︎ Create release folder"
+          if [ ! -e "./bin/release/" ]; then
+            mkdir bin/release
+          fi
+
+          echo "ℹ︎ Remove any existing zip file"
+          rm -f bin/release/*.zip
+
+          echo "ℹ︎ Copy files based on .distignore"
+          rsync -rcv --exclude-from=".distignore" ./ bin/release --delete
+
+          echo "Creating archive..."
+          cd bin/release
+          zip -r ../shopping-feed-for-woocommerce.zip ./*
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          asset_path: ./bin/shopping-feed-for-woocommerce.zip
+          asset_name: shopping-feed-for-woocommerce.zip
+          asset_content_type: application/zip
