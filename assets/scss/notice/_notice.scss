@@ -1,0 +1,62 @@
+.sf__notice {
+    $parent: &;
+    @include smoothText;
+    margin: 5px 15px 2px;
+    &--start {
+        position:relative;
+        border:0;
+        border-radius: 2px;
+        background: linear-gradient(180deg, #03274D 0%, #523081 100%);
+        background-size: cover;
+        padding: 40px 50px !important;
+        &:before {
+            content:"";
+            display:block;
+            z-index:1;
+            position:absolute;
+            top:0;
+            right:40px;
+            bottom:0;
+            left:0;
+            background:  url("../images/sf_notice.svg") no-repeat center right;
+            pointer-events: none;
+        }
+        #{$parent}__title {
+            margin-top:0;
+            color: #fff;
+            font-size: 30px;
+            font-weight: 600;
+            margin: 0;
+        }
+        #{$parent}__subtitle {
+            color: #fff;
+            text-transform: uppercase;
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: 4px;
+            line-height: 26px;
+            opacity: .5;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        //WordPress class
+        .main {
+            position:relative;
+            z-index:2;
+            @include breakpoints(md) {
+                padding-right: 250px;
+            }
+        }
+        .button.action {
+            color: #fff;
+            text-transform: uppercase;
+            border-color: $secondary;
+            background-color: $secondary;
+            @include hover {
+                color: #fff;
+                border-color: darken($secondary, 5%);
+                background-color: darken($secondary, 5%);
+            }
+        }
+    }
+}

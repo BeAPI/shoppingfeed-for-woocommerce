@@ -1,0 +1,182 @@
+.sf {
+
+  &__logo {
+    overflow: hidden;
+    text-indent: -99999px;
+    background: url("../images/sf_logo.svg") no-repeat center left;
+    background-size: contain;
+    max-width: 297px;
+    height: 53px;
+  }
+
+  &__version {
+    color: $gray;
+    font-size: 12px;
+    line-height: 17px;
+    margin: 5px 0;
+  }
+
+  &__button.button {
+    color: $white;
+    text-transform: uppercase;
+    border-color: $secondary;
+    background-color: $secondary;
+    @include hover {
+      color: $white;
+      border-color: darken($secondary, 5%);
+      background-color: darken($secondary, 5%);
+    }
+  }
+
+  &__requirements {
+    .success,
+    .failed {
+      @include smoothText;
+      position: relative;
+      padding-left: 26px;
+      color: $textcolor;
+
+      &:before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        font-family: dashicons;
+        content: "\f147";
+        display: block;
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+        font-size: 14px;
+        border-radius: 50%;
+        text-align: center;
+        color: $white;
+        background-color: $secondary;
+      }
+    }
+
+    .failed {
+      color: $textcolor;
+
+      &:before {
+        content: "\f335";
+        background-color: $gray;
+      }
+    }
+
+  }
+
+  &__hero {
+    position: relative;
+    border: 0;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #03274D 0%, #523081 100%);
+    background-size: cover;
+    padding: 30px;
+
+    &:before {
+      content: "";
+      display: block;
+      z-index: 1;
+      position: absolute;
+      top: 0;
+      right: 30px;
+      bottom: 0;
+      left: 0;
+      background: url("../images/sf_marketing.svg") no-repeat center right;
+      pointer-events: none;
+    }
+    &--title{
+      font-size: 16px;
+      line-height: 22px;
+      padding-right: 30px;
+      color: $white;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+  }
+
+  &__marketing {
+    border-left: 1px solid $primary;
+    padding-left: 26px;
+
+    &--title{
+      color: $primary;
+      font-size: 1.5em;
+      margin: 0;
+      margin-top: 1em;
+    }
+    &--subtitle{
+      color: $gray;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 3.33px;
+      margin: 0;
+      padding-top: 5px;
+    }
+    &--text{
+      color: $textcolor;
+      font-size: 12px;
+      letter-spacing: 0;
+      line-height: 17px;
+    }
+
+    &--download {
+      padding: 1em 0;
+
+      li {
+        line-height: 1.5em;
+      }
+
+      a {
+        @include smoothText;
+        position: relative;
+        padding-left: 26px;
+        color: $blue;
+        font-weight: bold;
+
+        &:before {
+          position: absolute;
+          top: 0;
+          left: 0;
+          font-family: dashicons;
+          content: "\f346";
+          display: block;
+          width: 16px;
+          height: 16px;
+          line-height: 16px;
+          font-size: 14px;
+          border-radius: 50%;
+          text-align: center;
+          color: $white;
+          background-color: $primary;
+        }
+
+        &:hover {
+          color: $primary;
+        }
+      }
+    }
+  }
+
+  &__plugin{
+    .sf__notice--start a{
+      display: none;
+    }
+  }
+
+
+  @include breakpoints(md) {
+    &__columns {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    &__column {
+      flex-basis: 66%;
+
+      &:last-child {
+        flex-basis: 33%;
+      }
+    }
+
+  }
+}

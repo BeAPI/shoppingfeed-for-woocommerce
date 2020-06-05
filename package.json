@@ -1,0 +1,12 @@
+{
+  "name": "ShoppingFeed",
+  "version": "0.1.0",
+  "description": "Shopping Feed CSS assets management",
+  "license": "GPL-3.0-or-later",
+  "author": "ShoppingFeed",
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-sass": "^4.1.0",
+    "gulp-sourcemaps": "^2.6.5"
+  }
+}
