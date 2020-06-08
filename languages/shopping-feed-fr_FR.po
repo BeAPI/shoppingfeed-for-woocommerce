@@ -7,7 +7,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2020-04-20T12:04:03+00:00\n"
-"PO-Revision-Date: 2020-06-05 10:55+0200\n"
+"PO-Revision-Date: 2020-06-08 16:04+0200\n"
 "X-Generator: Poedit 2.3.1\n"
 "X-Domain: languages\n"
 "Last-Translator: \n"
@@ -19,7 +19,7 @@ msgid "Shopping-Feed pour WooCommerce (Officiel)"
 msgstr ""
 
 #. Plugin URI of the plugin
-msgid "https://wordpress.org/plugins/shopping-feed/"
+msgid "https://wordpress.org/plugins/shoppingfeed-for-woocommerce/"
 msgstr ""
 
 #. Description of the plugin
@@ -383,10 +383,10 @@ msgid "Fix your syndication struggle"
 msgstr "La nouvelle façon de penser les flux"
 
 msgid "To go further and discover how to eliminate order fulfilment friction and enrich your products listings"
-msgstr "Pour aller plus loin dans la performance d’optimisation nous vous proposons de "
+msgstr "Pour aller plus loin dans la performance d’optimisation nous vous proposons de"
 
 msgid "please download our white papers"
-msgstr "télécharger gratuitement nos livres blancs."
+msgstr "télécharger gratuitement nos livres blancs"
 
 msgid "Migration to Shoppingfeed"
 msgstr "Migration vers Shopping Feed"

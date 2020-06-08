@@ -18,7 +18,7 @@ msgid "Shopping-Feed pour WooCommerce (Officiel)"
 msgstr ""
 
 #. Plugin URI of the plugin
-msgid "https://wordpress.org/plugins/shopping-feed/"
+msgid "https://wordpress.org/plugins/shoppingfeed-for-woocommerce/"
 msgstr ""
 
 #. Description of the plugin
