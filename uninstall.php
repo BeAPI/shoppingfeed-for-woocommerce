@@ -1,5 +1,15 @@
 <?php
-// if uninstall.php is not called by WordPress, die
+
+namespace ShoppingFeed\ShoppingFeedWC;
+
+// Exit on direct access
+defined( 'ABSPATH' ) || exit;
+
+// Load composer autoload
+if ( file_exists( plugin_dir_path( __FILE__ ) . '/vendor/autoload.php' ) ) {
+	require_once plugin_dir_path( __FILE__ ) . '/vendor/autoload.php';
+}
+
 use ShoppingFeed\ShoppingFeedWC\Admin\Options;
 use ShoppingFeed\ShoppingFeedWC\Feed\Generator;
 
