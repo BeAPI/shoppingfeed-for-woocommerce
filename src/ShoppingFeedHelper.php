@@ -77,7 +77,8 @@ class ShoppingFeedHelper {
 	 * @return string
 	 */
 	public static function get_public_feed_endpoint() {
-		return Rewrite::FEED_PARAM;
+		global $wp_rewrite;
+		return $wp_rewrite->root . Rewrite::FEED_PARAM;
 	}
 
 	/**

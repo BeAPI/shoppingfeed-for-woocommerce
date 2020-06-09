@@ -207,8 +207,8 @@ class ShoppingFeed {
 		if ( defined( 'WC_VERSION' ) ) {
 			Actions::register_feed_generation();
 			Actions::register_get_orders();
-			flush_rewrite_rules();
 		}
+		flush_rewrite_rules();
 	}
 
 	/**
@@ -221,8 +221,8 @@ class ShoppingFeed {
 		if ( defined( 'WC_VERSION' ) ) {
 			Actions::clean_feed_generation();
 			Actions::clean_get_orders();
-			flush_rewrite_rules();
 		}
+		flush_rewrite_rules();
 	}
 
 	/**

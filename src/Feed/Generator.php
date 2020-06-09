@@ -116,10 +116,6 @@ class Generator {
 	public function generate() {
 		$products_list = Products::get_instance()->get_list();
 
-		if ( empty( $products_list ) ) {
-			return new WP_Error( 'shopping_feed_generation_error_no_product', 'No product to export' );
-		}
-
 		try {
 			$this->generator->write( $products_list );
 			$uri = Uri::get_full_path();

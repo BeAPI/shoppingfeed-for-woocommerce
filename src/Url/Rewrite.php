@@ -35,9 +35,11 @@ class Rewrite {
 	 * Add new pretty url to getting the feed
 	 */
 	public function sf_add_custom_rewrite_rule() {
+		global $wp_rewrite;
 		$endpoint = ShoppingFeedHelper::get_public_feed_endpoint();
+		$regex = '^' . $wp_rewrite->root . $endpoint . '$';
 		add_rewrite_rule(
-			"$endpoint$",
+			$regex,
 			array( self::FEED_PARAM => true ),
 			'top'
 		);
