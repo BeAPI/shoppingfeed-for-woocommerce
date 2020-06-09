@@ -51,30 +51,30 @@ status "Generating build..."
 gulp sass
 
 # Remove any existing zip file
-rm -f shopping-feed.zip
+rm -f shoppingfeed-for-woocommerce.zip
 
 # Generate the plugin zip file
 status "Creating archive..."
 cd ../
-zip -r shopping-feed.zip \
-  shopping-feed* \
-  --exclude=shopping-feed/.git* \
-  --exclude=shopping-feed/.distignore \
-  --exclude=shopping-feed/.editorconfig \
-  --exclude=shopping-feed/.gitattributes \
-  --exclude=shopping-feed/.gitignore \
-  --exclude=shopping-feed/composer.* \
-  --exclude=shopping-feed/grumphp.yml \
-  --exclude=shopping-feed/phpcs.xml \
-  --exclude=shopping-feed/psalm.xml \
-  --exclude=shopping-feed/gulpfile.js \
-  --exclude=shopping-feed/package.json \
-  --exclude=shopping-feed/package-lock.json \
-  --exclude=shopping-feed/phpcs.xml.dist \
-  --exclude=shopping-feed/phpunit.xml.dist \
-  --exclude=shopping-feed/bin* \
-  --exclude=shopping-feed/node_modules* \
-  --exclude=shopping-feed/vendor/composer/installers* \
-  --exclude=shopping-feed/assets/scss*
+zip -r shoppingfeed-for-woocommerce.zip \
+  shoppingfeed-for-woocommerce* \
+  --exclude=shoppingfeed-for-woocommerce/.git* \
+  --exclude=shoppingfeed-for-woocommerce/.distignore \
+  --exclude=shoppingfeed-for-woocommerce/.editorconfig \
+  --exclude=shoppingfeed-for-woocommerce/.gitattributes \
+  --exclude=shoppingfeed-for-woocommerce/.gitignore \
+  --exclude=shoppingfeed-for-woocommerce/composer.* \
+  --exclude=shoppingfeed-for-woocommerce/grumphp.yml \
+  --exclude=shoppingfeed-for-woocommerce/phpcs.xml \
+  --exclude=shoppingfeed-for-woocommerce/psalm.xml \
+  --exclude=shoppingfeed-for-woocommerce/gulpfile.js \
+  --exclude=shoppingfeed-for-woocommerce/package.json \
+  --exclude=shoppingfeed-for-woocommerce/package-lock.json \
+  --exclude=shoppingfeed-for-woocommerce/phpcs.xml.dist \
+  --exclude=shoppingfeed-for-woocommerce/phpunit.xml.dist \
+  --exclude=shoppingfeed-for-woocommerce/bin* \
+  --exclude=shoppingfeed-for-woocommerce/node_modules* \
+  --exclude=shoppingfeed-for-woocommerce/vendor/composer/installers* \
+  --exclude=shoppingfeed-for-woocommerce/assets/scss*
 
 status "Done."
