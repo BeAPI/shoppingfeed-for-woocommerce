@@ -7,7 +7,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2020-04-20T12:04:03+00:00\n"
-"PO-Revision-Date: 2020-06-08 16:04+0200\n"
+"PO-Revision-Date: 2020-06-09 13:57+0200\n"
 "X-Generator: Poedit 2.3.1\n"
 "X-Domain: languages\n"
 "Last-Translator: \n"
@@ -75,6 +75,9 @@ msgstr ""
 #: src/Admin/Notices.php:40
 msgid "Login"
 msgstr "Se Connecter"
+
+msgid "Logout"
+msgstr "Se Déconnecter"
 
 #: src/Admin/Options.php:66
 msgid "ShoppingFeed"

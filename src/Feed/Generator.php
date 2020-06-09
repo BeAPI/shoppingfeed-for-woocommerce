@@ -83,7 +83,7 @@ class Generator {
 	public function render( $no_cache = false ) {
 		$file_path = Uri::get_instance()->get_full_path();
 
-		if ( true === $no_cache ) {
+		if ( true === $no_cache || ! is_file( $file_path ) ) {
 			$generate = $this->generate();
 			if ( is_wp_error( $generate ) ) {
 				ShoppingFeedHelper::get_logger()->error(

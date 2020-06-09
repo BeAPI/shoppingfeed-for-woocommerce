@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit;
 use ShoppingFeed\ShoppingFeedWC\Actions\Actions;
 use ShoppingFeed\ShoppingFeedWC\Feed\Generator;
 use ShoppingFeed\ShoppingFeedWC\Orders\Operations;
+use ShoppingFeed\ShoppingFeedWC\ShoppingFeed;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
 class Options {
@@ -114,10 +115,18 @@ class Options {
 			}
 		);
 
-		//get feed options
-		$this->sf_feed_options = ShoppingFeedHelper::get_sf_feed_options();
+		add_action(
+			'admin_action_sf_logout',
+			function () {
+				delete_option( Options::SF_ACCOUNT_OPTIONS );
+				wp_safe_redirect( ShoppingFeedHelper::get_setting_link(), 302 );
+			}
+		);
+
 		//get account options
 		$this->sf_account_options = ShoppingFeedHelper::get_sf_account_options();
+		//get feed options
+		$this->sf_feed_options = ShoppingFeedHelper::get_sf_feed_options();
 		//get shipping options
 		$this->sf_shipping_options = ShoppingFeedHelper::get_sf_shipping_options();
 		//get orders options
@@ -293,7 +302,12 @@ class Options {
 				<?php
 				settings_fields( 'sf_account_page_fields' );
 				do_settings_sections( self::SF_ACCOUNT_SETTINGS_PAGE );
-				submit_button( __( 'Login', 'shopping-feed' ), 'sf__button' );
+				if ( ! $this->connected ) {
+					submit_button( __( 'Login', 'shopping-feed' ), 'sf__button' );
+				} else {
+					echo '<input class="hidden" name="action" value="sf_logout">';
+					submit_button( __( 'Logout', 'shopping-feed' ), 'sf__button', 'logout' );
+				}
 				?>
 			</form>
 		<div class="sf__requirements">

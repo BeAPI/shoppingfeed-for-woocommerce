@@ -12,6 +12,7 @@ use ShoppingFeed\ShoppingFeedWC\Admin\Notices;
 use ShoppingFeed\ShoppingFeedWC\Admin\Options;
 use ShoppingFeed\ShoppingFeedWC\Admin\WoocommerceActions;
 use ShoppingFeed\ShoppingFeedWC\Admin\WoocommerceFilters;
+use ShoppingFeed\ShoppingFeedWC\Feed\Generator;
 use ShoppingFeed\ShoppingFeedWC\Query\Query;
 use ShoppingFeed\ShoppingFeedWC\Url\Rewrite;
 
@@ -206,6 +207,7 @@ class ShoppingFeed {
 		if ( defined( 'WC_VERSION' ) ) {
 			Actions::register_feed_generation();
 			Actions::register_get_orders();
+			flush_rewrite_rules();
 		}
 	}
 
@@ -219,7 +221,24 @@ class ShoppingFeed {
 		if ( defined( 'WC_VERSION' ) ) {
 			Actions::clean_feed_generation();
 			Actions::clean_get_orders();
+			flush_rewrite_rules();
 		}
-		flush_rewrite_rules( true );
+	}
+
+	/**
+	 * Clean Plugin Options & Dir
+	 * - Remove all plugin options
+	 * - Remove all plugin files
+	 * - Flush rewrite rules
+	 * @return void
+	 */
+	public static function uninstall() {
+		delete_option( Options::SF_ACCOUNT_OPTIONS );
+		delete_option( Options::SF_FEED_OPTIONS );
+		delete_option( Options::SF_SHIPPING_OPTIONS );
+		delete_option( Options::SF_ORDERS_OPTIONS );
+		delete_option( Options::SF_CARRIERS );
+		delete_option( Generator::SF_FEED_LAST_GENERATION_DATE );
+		\WP_Filesystem_Direct::rmdir( ShoppingFeedHelper::get_feed_directory(), true );
 	}
 }
