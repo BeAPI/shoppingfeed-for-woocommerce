@@ -28,6 +28,18 @@
     }
   }
 
+  &__button__logout.button {
+    color: $white;
+    text-transform: uppercase;
+    border-color: $primary;
+    background-color: $primary;
+    @include hover {
+      color: $white;
+      border-color: darken($primary, 5%);
+      background-color: darken($primary, 5%);
+    }
+  }
+
   &__requirements {
     .success,
     .failed {

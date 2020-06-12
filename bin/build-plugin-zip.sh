@@ -51,12 +51,12 @@ status "Generating build..."
 gulp sass
 
 # Remove any existing zip file
-rm -f shoppingfeed-for-woocommerce.zip
+rm -f shoppingfeed.zip
 
 # Generate the plugin zip file
 status "Creating archive..."
 cd ../
-zip -r shoppingfeed-for-woocommerce.zip \
+zip -r shoppingfeed.zip \
   shoppingfeed-for-woocommerce* \
   --exclude=shoppingfeed-for-woocommerce/.git* \
   --exclude=shoppingfeed-for-woocommerce/.distignore \

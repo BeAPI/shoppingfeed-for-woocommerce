@@ -121,7 +121,7 @@ class Requirements {
 	 * @return bool
 	 */
 	public function valid_openssl() {
-		return OPENSSL_VERSION_TEXT >= self::OPENSSL_MIN;
+		return OPENSSL_VERSION_NUMBER >= self::OPENSSL_MIN;
 	}
 
 	/**

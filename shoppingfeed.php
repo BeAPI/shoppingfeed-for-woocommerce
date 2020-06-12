@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name:     ShoppingFeed for WooCommerce
- * Plugin URI:      https://wordpress.org/plugins/shoppingfeed-for-woocommerce/
+ * Plugin Name:     ShoppingFeed
+ * Plugin URI:      https://wordpress.org/plugins/shoppingfeed/
  * Description:     WordPress connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, Google, and 1000's of international marketplaces
  * Author:          Shopping-Feed
  * Author URI:      https://www.shopping-feed.com/

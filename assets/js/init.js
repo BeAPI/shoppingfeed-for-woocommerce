@@ -1,3 +1,4 @@
+var sf_options
 
 (function ($, undefined) {
 

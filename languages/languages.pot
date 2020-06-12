@@ -14,11 +14,11 @@ msgstr ""
 
 
 #. Plugin Name of the plugin
-msgid "Shopping-Feed pour WooCommerce (Officiel)"
+msgid "ShoppingFeed"
 msgstr ""
 
 #. Plugin URI of the plugin
-msgid "https://wordpress.org/plugins/shoppingfeed-for-woocommerce/"
+msgid "https://wordpress.org/plugins/shoppingfeed/"
 msgstr ""
 
 #. Description of the plugin
@@ -78,10 +78,6 @@ msgid "Login"
 msgstr ""
 
 msgid "Logout"
-msgstr ""
-
-#: src/Admin/Options.php:66
-msgid "ShoppingFeed"
 msgstr ""
 
 #: src/Admin/Options.php:116

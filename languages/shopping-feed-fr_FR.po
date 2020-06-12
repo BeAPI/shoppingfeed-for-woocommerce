@@ -7,7 +7,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2020-04-20T12:04:03+00:00\n"
-"PO-Revision-Date: 2020-06-09 13:57+0200\n"
+"PO-Revision-Date: 2020-06-12 15:18+0200\n"
 "X-Generator: Poedit 2.3.1\n"
 "X-Domain: languages\n"
 "Last-Translator: \n"
@@ -15,11 +15,11 @@ msgstr ""
 "Language: fr_FR\n"
 
 #. Plugin Name of the plugin
-msgid "Shopping-Feed pour WooCommerce (Officiel)"
+msgid "ShoppingFeed"
 msgstr ""
 
 #. Plugin URI of the plugin
-msgid "https://wordpress.org/plugins/shoppingfeed-for-woocommerce/"
+msgid "https://wordpress.org/plugins/shoppingfeed/"
 msgstr ""
 
 #. Description of the plugin
@@ -78,10 +78,6 @@ msgstr "Se Connecter"
 
 msgid "Logout"
 msgstr "Se Déconnecter"
-
-#: src/Admin/Options.php:66
-msgid "ShoppingFeed"
-msgstr ""
 
 #: src/Admin/Options.php:116
 msgid "Account"
@@ -359,7 +355,7 @@ msgid "Shipping Matching"
 msgstr ""
 
 msgid "Selected order status"
-msgstr "Statut(s) de commande sélectionné(s)"
+msgstr "Statuts de commandes sélectionnés"
 
 msgid "Unselected order status"
 msgstr "Statuts de commandes non-sélectionnés"

@@ -306,7 +306,7 @@ class Options {
 					submit_button( __( 'Login', 'shopping-feed' ), 'sf__button' );
 				} else {
 					echo '<input class="hidden" name="action" value="sf_logout">';
-					submit_button( __( 'Logout', 'shopping-feed' ), 'sf__button', 'logout' );
+					submit_button( __( 'Logout', 'shopping-feed' ), 'sf__button__logout', 'logout' );
 				}
 				?>
 			</form>
@@ -810,12 +810,15 @@ class Options {
 			true
 		);
 
-		wp_enqueue_script(
+		wp_enqueue_script( 'multi_js_init', SF_PLUGIN_URL . 'assets/js/init.js', array( 'multi_js' ), true );
+		wp_localize_script(
 			'multi_js_init',
-			SF_PLUGIN_URL . 'assets/js/init.js',
-			array( 'multi_js' ),
-			time(),
-			true
+			'sf_options',
+			array(
+				'selected_orders'            => __( 'Selected order status', 'shopping-feed' ),
+				'unselected_orders' => __( 'Unselected order status', 'shopping-feed' ),
+				'search' => __( 'Search', 'shopping-feed' ),
+			)
 		);
 	}
 
