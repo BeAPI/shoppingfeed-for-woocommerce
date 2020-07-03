@@ -187,7 +187,7 @@ class WoocommerceActions {
 					continue;
 				}
 
-				$this->may_update_pricing( $variation['sku'], $variation['price'] );
+				$this->may_update_pricing( $variation['sku'], ! empty( $variation['discount'] ) ? $variation['discount'] : $variation['price'] );
 				$this->may_update_inventory( $variation['sku'], $variation['quantity'] );
 			}
 		} else {
@@ -206,7 +206,7 @@ class WoocommerceActions {
 				return false;
 			}
 
-			$this->may_update_pricing( $product->get_sku(), $product->get_price() );
+			$this->may_update_pricing( $product->get_sku(), ! empty( $product->get_discount() ) ? $product->get_discount() : $product->get_price() );
 			$this->may_update_inventory( $product->get_sku(), $product->get_quantity() );
 		}
 		/**
