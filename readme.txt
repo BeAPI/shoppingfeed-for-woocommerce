@@ -1,5 +1,24 @@
-# ShoppingFeed
+## ShoppingFeed
+Contributors: ShoppingFeed, BeAPI
+Tags: shoppingfeed, marketplace, woocommerce, woocommerce shoppingfeed, create woocommerce products shoppingfeed, products feed, generate shoppingfeed, amazon, Jet, Walmart, many marketplace, import orders
+Stable tag: 6.0.4
+Version: 6.0.4
+Requires PHP: 5.6
+Requires at least: 5.2
+Tested up to: 5.4.2
+WC requires at least: 3.8
+WC tested up to: 4.2.2
 
+== Upgrade Notice ==
+Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
+
+== Changelog ==
+6.0.0: this is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
+6.0.1: edit readme.txt
+6.0.3: edit version number
+6.0.4: fix permalink issue
+
+== Description ==
 WordPress connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, Google, and 1000's of international marketplaces
 
 ## Requirements
@@ -27,20 +46,6 @@ Sign up for free on ShoppingFeed : https://shopping-feed.com/
 
 To start using the plugin correctly, you need to configure it with your preferences (Feed, Shipping, Orders)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ## Available hooks
 
 With this snippets below can be added to your theme's functions.php file or your custom plugin file
@@ -48,45 +53,40 @@ With this snippets below can be added to your theme's functions.php file or your
 ### Categories
 By default, we support `product_cat` as taxonomy slug to identify product's categories, you can override it using this snippet :
 
-
-```php
+`
 add_filter( 'shopping_feed_custom_category_taxonomy', 'your_custom_category_function' );
 /** @return string */
 function your_custom_category_function() {
 return 'your_custom_category_slug';
 }
-```
+`
 
 ### Brands
 By default, we don’t support any custom plugin for product's brand, you can set custom taxonomy slug to identify it by using this snippet :
 
-```php
+`
 add_filter( 'shopping_feed_custom_brand_taxonomy', 'your_custom_brand_function' );
 /** @return string */
 function your_custom_brand_function() {
 return 'your_custom_brand_slug';
 }
-```
+`
 
 ### EAN
 By default, we don’t support any custom plugin for product EAN, you can set custom taxonomy slug to identify it by using this snippet :
 
-```php
+`
 add_filter( 'shopping_feed_custom_ean', 'your_custom_ean_function' );
 /** @return string */
 function your_custom_ean_function() {
 return 'your_custom_ean_slug';
 }
-```
-
-
-
-
+`
 
 ### Feed’s products list args
 To export the feed, we use the plugin’s setting, if you want to add/use specific args, you can use the following snippet
 
-```php
+`
 add_filter( 'shopping_feed_products_custom_args', 'your_custom_args_function' );
 /**
 * @return array
@@ -95,51 +95,44 @@ function your_custom_args_function() {
 //array of args
 return array();
 }
-```
-`you can find all available args here` - __[WooCommerce documentation](https://github.com/woocommerce/woocommerce/wiki/wc_get_products-and-WC_Product_Query#parameters)__
+`
+
+You can find all available args here
+__[WooCommerce documentation](https://github.com/woocommerce/woocommerce/wiki/wc_get_products-and-WC_Product_Query#parameters)__
 
 ### Orders to import (statuses)
 By default, we import orders with ‘waiting_shipment’ status, if you want to import more statuses or a specific one, you can use the following snippet
 
-```php
+`
 add_filter( 'shopping_feed_orders_to_import', 'your_custom_statuses_function' );
 /** @return array */
 function your_custom_statuses_function() {
 //array of statuses (strings)
 return array();
 }
-```
+`
+
 `Status available` : created, waiting_store_acceptance, refused, waiting_shipment, shipped, cancelled, refunded, partially_refunded, partially_shipped
 
 __[more details here](https://github.com/shoppingflux/php-sdk/blob/master/docs/manual/resources/order.md)__
 
-
-
-
-
-
-
-
-
-
 ### Tracking number
 By default, we don’t support any custom plugin for wc order tracking number, you can set custom meta key to identify it, you can use the following snippet
 
-```php
+`
 add_filter( 'wc_tracking_number', 'your_custom_tracking_number_function' );
 /** @return string */
 function your_custom_tracking_number_function() {
 return ‘your_custom_order_meta_key’
 }
-```
+`
 
 ### Tracking url
 By default, we don’t support any custom plugin for wc order tracking url, you can set custom meta key to identify it, you can use the following snippet
-
-```php
+`
 add_filter( 'wc_tracking_url', 'your_custom_tracking_url_function' );
 /** @return string */
 function your_custom_tracking_url_function() {
 return ‘your_custom_order_meta_key’
 }
-```
+`
