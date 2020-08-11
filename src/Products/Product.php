@@ -267,7 +267,7 @@ class Product {
 
 			$attribute_names = array();
 			foreach ( $attribute['options'] as $option ) {
-				$attribute_names[] = get_term( $option )->name;
+				$attribute_names[] = term_exists( $option ) ? get_term( $option )->name : $option;
 			}
 
 			$attributes [ wc_attribute_label( $taxonomy ) ] = implode( ',', $attribute_names );
