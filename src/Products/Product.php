@@ -52,19 +52,6 @@ class Product {
 	/**
 	 * @return bool|mixed|\WP_Term
 	 */
-	private function set_category() {
-		$terms = get_the_terms( $this->id, ShoppingFeedHelper::wc_category_taxonomy() );
-
-		if ( empty( $terms ) ) {
-			return false;
-		}
-
-		return reset( $terms );
-	}
-
-	/**
-	 * @return bool|mixed|\WP_Term
-	 */
 	private function set_brand() {
 		$brand_taxonomy = ShoppingFeedHelper::wc_brand_taxonomy();
 
@@ -82,6 +69,19 @@ class Product {
 	}
 
 	/**
+	 * @return bool|mixed|\WP_Term
+	 */
+	private function set_category() {
+		$terms = get_the_terms( $this->id, ShoppingFeedHelper::wc_category_taxonomy() );
+
+		if ( empty( $terms ) ) {
+			return false;
+		}
+
+		return reset( $terms );
+	}
+
+	/**
 	 * @return string|int
 	 */
 	public function get_sku() {
@@ -90,21 +90,6 @@ class Product {
 		}
 
 		return $this->product->get_sku();
-	}
-
-	/**
-	 * @return string
-	 */
-	public function get_ean() {
-		$ean_meta = ShoppingFeedHelper::wc_product_ean();
-
-		if ( empty( $ean_meta ) ) {
-			return '';
-		}
-
-		$ean = $this->product->get_meta( $ean_meta ) ? $this->product->get_meta( $ean_meta ) : '';
-
-		return $ean;
 	}
 
 	/**
@@ -295,6 +280,10 @@ class Product {
 		);
 	}
 
+	public function has_variations() {
+		return ! empty( $this->get_variations() );
+	}
+
 	/**
 	 * @return array
 	 */
@@ -308,9 +297,10 @@ class Product {
 
 			$variations = array();
 			foreach ( $wc_product_variations as $wc_product_variation ) {
-				$wc_product_variation = new \WC_Product_Variation( $wc_product_variation['variation_id'] );
+				$wc_product_variation  = new \WC_Product_Variation( $wc_product_variation['variation_id'] );
 				$variation             = array();
 				$variation['sku']      = ( 'id' === $this->product_identifier ) ? $wc_product_variation->get_id() : $wc_product_variation->get_sku();
+				$variation['ean']      = $this->get_ean( $wc_product_variation );
 				$variation['quantity'] = ! is_null( $wc_product_variation->get_stock_quantity() ) ? $wc_product_variation->get_stock_quantity() : ShoppingFeedHelper::get_default_product_quantity();
 				$variation['price']    = ! is_null( $wc_product_variation->get_regular_price() ) ? $wc_product_variation->get_regular_price() : $wc_product_variation->get_price();
 				$variation['discount'] = $wc_product_variation->get_sale_price();
@@ -329,7 +319,25 @@ class Product {
 	}
 
 	/**
+	 * @return string
+	 */
+	public function get_ean( $wc_product = false ) {
+		$ean_meta_key = ShoppingFeedHelper::wc_product_ean();
+
+		if ( empty( $ean_meta_key ) ) {
+			return '';
+		}
+
+		if ( ! empty( $wc_product ) ) {
+			return $wc_product->get_meta( $ean_meta_key ) ? $wc_product->get_meta( $ean_meta_key ) : '';
+		}
+
+		return $this->product->get_meta( $ean_meta_key ) ? $this->product->get_meta( $ean_meta_key ) : '';
+	}
+
+	/**
 	 * Get Variation Attributes
+	 *
 	 * @param $variation
 	 *
 	 * @return array
@@ -341,9 +349,5 @@ class Product {
 		}
 
 		return $attribute_names;
-	}
-
-	public function has_variations() {
-		return ! empty( $this->get_variations() );
 	}
 }

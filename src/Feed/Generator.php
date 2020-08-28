@@ -18,50 +18,21 @@ use WP_Error;
  */
 class Generator {
 
-	/** @var Platform */
-	private $platform;
-
-	private $uri;
-
-	/**
-	 * @var ProductGenerator
-	 */
-	private $generator;
-
 	/**
 	 * Option name to save last generation date
 	 */
 	const SF_FEED_LAST_GENERATION_DATE = 'SF_FEED_LAST_GENERATION';
-
 	/**
 	 * @var Generator
 	 */
 	private static $instance;
-
+	/** @var Platform */
+	private $platform;
+	private $uri;
 	/**
-	 * Get the singleton instance.
-	 *
-	 * @return Generator
+	 * @var ProductGenerator
 	 */
-	public static function get_instance() {
-		if ( is_null( self::$instance ) ) {
-			self::$instance = new static();
-		}
-
-		return self::$instance;
-	}
-
-	/**
-	 * Singleton instance can't be cloned.
-	 */
-	private function __clone() {
-	}
-
-	/**
-	 * Singleton instance can't be serialized.
-	 */
-	private function __wakeup() {
-	}
+	private $generator;
 
 	/**
 	 * Generator constructor.
@@ -76,53 +47,31 @@ class Generator {
 	}
 
 	/**
-	 * Return generated feed content
-	 *
-	 * @param bool $no_cache
+	 * Set the platform
 	 */
-	public function render( $no_cache = false ) {
-		$file_path = Uri::get_instance()->get_full_path();
-
-		if ( true === $no_cache || ! is_file( $file_path ) ) {
-			$generate = $this->generate();
-			if ( is_wp_error( $generate ) ) {
-				ShoppingFeedHelper::get_logger()->error(
-					sprintf(
-						__( 'Cant display feed', 'shopping-feed' )
-					),
-					array(
-						'source' => 'shopping-feed',
-					)
-				);
-			}
+	private function set_platform() {
+		if ( ! isset( $this->platform ) ) {
+			$this->platform = Platform::get_instance();
 		}
-
-		if ( is_file( $file_path ) ) {
-			header( 'Content-Type: application/xml; charset=utf-8' );
-			header( 'Content-Length: ' . filesize( $file_path ) );
-			nocache_headers();
-			readfile( $file_path );
-			exit;
-		}
-
-		wp_die( 'Feed not ready' );
 	}
 
 	/**
-	 * Generate Feed
-	 *
-	 * @return WP_Error|void
+	 * Set the uri
 	 */
-	public function generate() {
-		$products_list = Products::get_instance()->get_list();
+	private function set_uri() {
+		if ( ! isset( $this->uri ) ) {
+			$this->uri = ShoppingFeedHelper::get_tmp_uri( Uri::get_instance()->get_uri() );
+		}
+	}
 
-		try {
-			$this->generator->write( $products_list );
-			$uri = Uri::get_full_path();
-			rename( ShoppingFeedHelper::get_tmp_uri( $uri ), $uri );
-			update_option( self::SF_FEED_LAST_GENERATION_DATE, date_i18n( 'd/m/Y H:m:s' ) );
-		} catch ( Exception $e ) {
-			return new WP_Error( 'shopping_feed_generation_error', $e->getMessage() );
+	/**
+	 * Instanciate an instance from ProductGenerator
+	 */
+	private function set_generator() {
+		if ( ! isset( $this->generator ) ) {
+			$this->generator = new ProductGenerator();
+			$this->generator->setPlatform( $this->platform->get_name(), $this->platform->get_version() );
+			$this->generator->setUri( $this->uri );
 		}
 	}
 
@@ -228,7 +177,8 @@ class Generator {
 					$variation
 						->setReference( $sf_product_variation['sku'] )
 						->setPrice( $sf_product_variation['price'] )
-						->setQuantity( $sf_product_variation['quantity'] );
+						->setQuantity( $sf_product_variation['quantity'] )
+						->setGtin( $sf_product_variation['ean'] );
 
 					if ( ! empty( $sf_product_variation['attributes'] ) ) {
 						$variation
@@ -248,31 +198,78 @@ class Generator {
 	}
 
 	/**
-	 * Set the platform
+	 * Get the singleton instance.
+	 *
+	 * @return Generator
 	 */
-	private function set_platform() {
-		if ( ! isset( $this->platform ) ) {
-			$this->platform = Platform::get_instance();
+	public static function get_instance() {
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new static();
+		}
+
+		return self::$instance;
+	}
+
+	/**
+	 * Return generated feed content
+	 *
+	 * @param bool $no_cache
+	 */
+	public function render( $no_cache = false ) {
+		$file_path = Uri::get_instance()->get_full_path();
+
+		if ( true === $no_cache || ! is_file( $file_path ) ) {
+			$generate = $this->generate();
+			if ( is_wp_error( $generate ) ) {
+				ShoppingFeedHelper::get_logger()->error(
+					sprintf(
+						__( 'Cant display feed', 'shopping-feed' )
+					),
+					array(
+						'source' => 'shopping-feed',
+					)
+				);
+			}
+		}
+
+		if ( is_file( $file_path ) ) {
+			header( 'Content-Type: application/xml; charset=utf-8' );
+			header( 'Content-Length: ' . filesize( $file_path ) );
+			nocache_headers();
+			readfile( $file_path );
+			exit;
+		}
+
+		wp_die( 'Feed not ready' );
+	}
+
+	/**
+	 * Generate Feed
+	 *
+	 * @return WP_Error|void
+	 */
+	public function generate() {
+		$products_list = Products::get_instance()->get_list();
+
+		try {
+			$this->generator->write( $products_list );
+			$uri = Uri::get_full_path();
+			rename( ShoppingFeedHelper::get_tmp_uri( $uri ), $uri );
+			update_option( self::SF_FEED_LAST_GENERATION_DATE, date_i18n( 'd/m/Y H:m:s' ) );
+		} catch ( Exception $e ) {
+			return new WP_Error( 'shopping_feed_generation_error', $e->getMessage() );
 		}
 	}
 
 	/**
-	 * Set the uri
+	 * Singleton instance can't be cloned.
 	 */
-	private function set_uri() {
-		if ( ! isset( $this->uri ) ) {
-			$this->uri = ShoppingFeedHelper::get_tmp_uri( Uri::get_instance()->get_uri() );
-		}
+	private function __clone() {
 	}
 
 	/**
-	 * Instanciate an instance from ProductGenerator
+	 * Singleton instance can't be serialized.
 	 */
-	private function set_generator() {
-		if ( ! isset( $this->generator ) ) {
-			$this->generator = new ProductGenerator();
-			$this->generator->setPlatform( $this->platform->get_name(), $this->platform->get_version() );
-			$this->generator->setUri( $this->uri );
-		}
+	private function __wakeup() {
 	}
 }
