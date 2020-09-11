@@ -19,6 +19,39 @@ class WoocommerceFilters {
 	public function __construct() {
 		$this->sf_disable_wc_emails_filters();
 		$this->sf_disable_wc_stock_change();
+		$this->sf_extra_attributes();
+	}
+
+	public function sf_extra_attributes() {
+		add_filter(
+			'shopping_feed_extra_attributes',
+			array( $this, 'shopping_feed_extra_attributes_values' ),
+			10,
+			2
+		);
+		add_filter(
+			'shopping_feed_extra_variation_attributes',
+			array( $this, 'shopping_feed_extra_attributes_values' ),
+			10,
+			2
+		);
+	}
+
+	/**
+	 * @param array $attributes
+	 * @param \WC_Product|\WC_Product_Variation $wc_product
+	 *
+	 * @return mixed
+	 */
+	public function shopping_feed_extra_attributes_values( $attributes, $wc_product ) {
+		$weight = $wc_product->get_weight();
+		if ( empty( $weight ) ) {
+			return $attributes;
+		}
+
+		$attributes['weight'] = $weight;
+
+		return $attributes;
 	}
 
 

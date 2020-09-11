@@ -238,27 +238,25 @@ class Product {
 
 		$wc_attributes = $this->product->get_attributes();
 
-		if ( empty( $wc_attributes ) ) {
-			return array();
-		}
-
 		$attributes = array();
-		foreach ( $wc_attributes as $taxonomy => $attribute_obj ) {
-			$attribute = reset( $attribute_obj );
+		if ( ! empty( $wc_attributes ) ) {
+			foreach ( $wc_attributes as $taxonomy => $attribute_obj ) {
+				$attribute = reset( $attribute_obj );
 
-			if ( empty( $attribute ) || empty( $attribute['options'] ) ) {
-				continue;
+				if ( empty( $attribute ) || empty( $attribute['options'] ) ) {
+					continue;
+				}
+
+				$attribute_names = array();
+				foreach ( $attribute['options'] as $option ) {
+					$attribute_names[] = term_exists( $option ) ? get_term( $option )->name : $option;
+				}
+
+				$attributes [ wc_attribute_label( $taxonomy ) ] = implode( ',', $attribute_names );
 			}
-
-			$attribute_names = array();
-			foreach ( $attribute['options'] as $option ) {
-				$attribute_names[] = term_exists( $option ) ? get_term( $option )->name : $option;
-			}
-
-			$attributes [ wc_attribute_label( $taxonomy ) ] = implode( ',', $attribute_names );
 		}
 
-		return $attributes;
+		return apply_filters( 'shopping_feed_extra_attributes', $attributes, $this->product );
 	}
 
 	/**
@@ -338,16 +336,20 @@ class Product {
 	/**
 	 * Get Variation Attributes
 	 *
-	 * @param $variation
+	 * @param \WC_Product_Variation $variation
 	 *
 	 * @return array
 	 */
 	public function get_variation_attributes( $variation ) {
 		$attribute_names = array();
-		foreach ( $variation->get_attributes() as $attribute => $value ) {
-			$attribute_names[ wc_attribute_label( $attribute ) ] = $variation->get_attribute( $attribute );
+
+		$attributes = $variation->get_attributes();
+		if ( ! empty( $attributes ) ) {
+			foreach ( $attributes as $attribute => $value ) {
+				$attribute_names[ wc_attribute_label( $attribute ) ] = $variation->get_attribute( $attribute );
+			}
 		}
 
-		return $attribute_names;
+		return apply_filters( 'shopping_feed_extra_variation_attributes', $attribute_names, $variation );
 	}
 }

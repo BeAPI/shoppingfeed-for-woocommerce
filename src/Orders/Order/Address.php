@@ -58,14 +58,7 @@ class Address {
 	}
 
 	private function get_phone() {
-		$phone = '';
-		if ( empty( $this->sf_address['mobilePhone'] ) ) {
-			if ( ! empty( $this->sf_address['mobilePhone'] ) ) {
-				$phone = $this->sf_address['mobilePhone'];
-			}
-		}
-
-		return $phone;
+		return ! empty( $this->sf_address['mobilePhone'] ) ? $this->sf_address['mobilePhone'] : $this->sf_address['phone'];
 	}
 
 	private function get_address1() {
