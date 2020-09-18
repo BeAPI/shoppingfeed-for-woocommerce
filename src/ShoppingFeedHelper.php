@@ -491,12 +491,23 @@ class ShoppingFeedHelper {
 
 		$sf_carrier_id = $sf_shipping['sf_shipping'];
 
-		$sf_carriers = self::get_sf_carriers();
-		if ( empty( $sf_carriers[ $sf_carrier_id ] ) ) {
-			return $wc_order->get_shipping_method();
+		$default_shipping_method = self::get_default_shipping_method();
+		if ( ! is_array( $default_shipping_method ) || empty( $default_shipping_method ) ) {
+			$default_shipping_method = '';
+		}
+		$default_shipping_method = ! is_array( $default_shipping_method ) || empty( $default_shipping_method ) ? '' : $default_shipping_method['method_title'];
+
+		$matching_shipping_method_list = self::get_matching_shipping_method_list();
+		if ( empty( $matching_shipping_method_list[ $sf_carrier_id ] ) ) {
+			return $default_shipping_method;
 		}
 
-		return $sf_carriers[ $sf_carrier_id ];
+		$matching_shipping_method = json_decode( $matching_shipping_method_list[ $sf_carrier_id ], true );
+		if ( ! is_array( $matching_shipping_method ) && empty( $matching_shipping_method ) ) {
+			return $default_shipping_method;
+		}
+
+		return (string) $matching_shipping_method['method_title'];
 	}
 
 	/**
