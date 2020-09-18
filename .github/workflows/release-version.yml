@@ -61,3 +61,14 @@ jobs:
           asset_path: ./bin/shoppingfeed.zip
           asset_name: shoppingfeed.zip
           asset_content_type: application/zip
+      - uses: actions/checkout@master
+      - name: Build
+        run: |
+          npm install
+          npm run build
+      - name: Publish to WP.org
+        uses: 10up/action-wordpress-plugin-deploy@master
+        env:
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SLUG: shopping-feed
