@@ -156,9 +156,9 @@ class WoocommerceActions {
 	public function update_product( $product_id, $only_stock = false ) {
 		$sdk = Sdk::get_instance();
 		if ( ! $sdk->get_default_shop() instanceof StoreResource ) {
-			throw new Exception(
-				__( 'No store found', 'shopping-feed' )
-			);
+			ShoppingFeedHelper::get_logger()->error( __( 'Can\'t find default shop', 'shopping-feed' ) );
+
+			return false;
 		}
 
 		/** @var StoreResource $shop */
