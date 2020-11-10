@@ -239,6 +239,6 @@ class ShoppingFeed {
 		delete_option( Options::SF_ORDERS_OPTIONS );
 		delete_option( Options::SF_CARRIERS );
 		delete_option( Generator::SF_FEED_LAST_GENERATION_DATE );
-		\WP_Filesystem_Direct::rmdir( ShoppingFeedHelper::get_feed_directory(), true );
+		( new \WP_Filesystem_Direct( false ) )->rmdir( ShoppingFeedHelper::get_feed_directory(), true );
 	}
 }

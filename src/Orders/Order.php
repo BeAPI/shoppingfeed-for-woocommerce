@@ -301,7 +301,7 @@ class Order {
 	 */
 	public static function get_order_sf_metas( $order_id ) {
 		$order = wc_get_order( $order_id );
-		if ( ! $order ) {
+		if ( ! $order instanceof \WC_Order ) {
 			return array();
 		}
 
