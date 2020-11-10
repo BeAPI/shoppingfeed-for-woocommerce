@@ -10,8 +10,7 @@ use ShoppingFeed\ShoppingFeedWC\Sdk\Sdk;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
 /**
- * Class Orders
- * @package ShoppingFeed\Orders
+ * @psalm-consistent-constructor
  */
 class Orders {
 

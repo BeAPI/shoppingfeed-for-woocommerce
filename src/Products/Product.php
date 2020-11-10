@@ -82,11 +82,11 @@ class Product {
 	}
 
 	/**
-	 * @return string|int
+	 * @return string
 	 */
 	public function get_sku() {
 		if ( 'id' === $this->product_identifier ) {
-			return $this->product->get_id();
+			return (string) $this->product->get_id();
 		}
 
 		return $this->product->get_sku();
@@ -107,17 +107,17 @@ class Product {
 	}
 
 	/**
-	 * @return string
+	 * @return float
 	 */
 	public function get_price() {
-		return $this->product->get_regular_price() ? $this->product->get_regular_price() : $this->product->get_price();
+		return (float) $this->product->get_regular_price() ? $this->product->get_regular_price() : $this->product->get_price();
 	}
 
 	/**
-	 * @return string
+	 * @return float
 	 */
 	public function get_discount() {
-		return $this->product->get_sale_price();
+		return (float) $this->product->get_sale_price();
 	}
 
 	/**

@@ -13,7 +13,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-
+/**
+ * @psalm-consistent-constructor
+ */
 class Requirements {
 
 	const PHP_MIN = '5.6';

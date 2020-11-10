@@ -7,8 +7,7 @@ defined( 'ABSPATH' ) || exit;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
 /**
- * Class Products
- * @package ShoppingFeed\Products
+ * @psalm-consistent-constructor
  */
 class Products {
 

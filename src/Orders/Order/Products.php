@@ -11,8 +11,7 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 use WC_Product;
 
 /**
- * Class Products
- * @package ShoppingFeed\Orders\Order
+ * @psalm-consistent-constructor
  */
 class Products {
 

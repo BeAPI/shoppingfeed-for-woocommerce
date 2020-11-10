@@ -8,8 +8,7 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Class Platform
- * @package ShoppingFeed\Feed
+ * @psalm-consistent-constructor
  */
 class Platform {
 

@@ -11,9 +11,7 @@ use ShoppingFeed\Sdk\Credential;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
 /**
- * ShoppingFeed SDK
- * Class Sdk
- * @package ShoppingFeed\Sdk
+ * @psalm-consistent-constructor
  */
 class Sdk {
 

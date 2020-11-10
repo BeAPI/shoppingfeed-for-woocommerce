@@ -2,6 +2,9 @@
 
 namespace ShoppingFeed\ShoppingFeedWC\Admin;
 
+/**
+ * @psalm-consistent-constructor
+ */
 class MarketingBord {
 
 	/**

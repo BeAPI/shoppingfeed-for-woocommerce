@@ -13,8 +13,7 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 use WP_Error;
 
 /**
- * Class Generator
- * @package ShoppingFeed\Feed
+ * @psalm-consistent-constructor
  */
 class Generator {
 

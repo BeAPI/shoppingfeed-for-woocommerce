@@ -18,6 +18,7 @@ use ShoppingFeed\ShoppingFeedWC\Url\Rewrite;
 
 /**
  * Class ShoppingFeed to init plugin
+ * @psalm-consistent-constructor
  */
 class ShoppingFeed {
 

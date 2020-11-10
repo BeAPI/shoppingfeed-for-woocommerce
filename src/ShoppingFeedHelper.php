@@ -492,9 +492,6 @@ class ShoppingFeedHelper {
 		$sf_carrier_id = $sf_shipping['sf_shipping'];
 
 		$default_shipping_method = self::get_default_shipping_method();
-		if ( ! is_array( $default_shipping_method ) || empty( $default_shipping_method ) ) {
-			$default_shipping_method = '';
-		}
 		$default_shipping_method = ! is_array( $default_shipping_method ) || empty( $default_shipping_method ) ? '' : $default_shipping_method['method_title'];
 
 		$matching_shipping_method_list = self::get_matching_shipping_method_list();
