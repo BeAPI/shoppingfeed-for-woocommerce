@@ -323,9 +323,11 @@ class Order {
 	 * @return boolean
 	 */
 	public static function is_sf_order( $wc_order ) {
+		$wc_order = wc_get_order( $wc_order );
 		if ( ! $wc_order instanceof \WC_Order ) {
-			$wc_order = wc_get_order( $wc_order );
+			return false;
 		}
+
 		return ! empty( $wc_order->get_meta( Query::$wc_meta_sf_reference ) );
 	}
 
