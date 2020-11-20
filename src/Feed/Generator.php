@@ -152,7 +152,8 @@ class Generator {
 					}
 				}
 
-				if ( ! empty( $sf_product->get_images() ) ) {
+				$images = $sf_product->get_images();
+				if ( ! empty( $images ) ) {
 					$product->setAdditionalImages( $sf_product->get_images() );
 				}
 
@@ -200,6 +201,10 @@ class Generator {
 					if ( ! empty( $sf_product_variation['image_main'] ) ) {
 						$variation
 							->setMainImage( $sf_product_variation['image_main'] );
+					}
+					$variation_images = $sf_product->get_variation_images();
+					if ( ! empty( $variation_images ) ) {
+						$variation->setAdditionalImages( $variation_images );
 					}
 				}
 			}

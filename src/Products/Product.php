@@ -278,6 +278,13 @@ class Product {
 		);
 	}
 
+	/**
+	 * @return array
+	 */
+	public function get_variation_images() {
+		return apply_filters( 'shopping_feed_variation_images', [], $this->product );
+	}
+
 	public function has_variations() {
 		return ! empty( $this->get_variations() );
 	}
@@ -358,6 +365,6 @@ class Product {
 	 * Field : ['name'=>'', 'value'=>'']
 	 */
 	public function get_extra_fields() {
-		return apply_filters( 'shopping_feed_extra_variation_attributes', [], $this->product );
+		return apply_filters( 'shopping_feed_extra_fields', [], $this->product );
 	}
 }
