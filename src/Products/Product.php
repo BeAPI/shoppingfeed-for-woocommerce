@@ -352,4 +352,12 @@ class Product {
 
 		return apply_filters( 'shopping_feed_extra_variation_attributes', $attribute_names, $variation );
 	}
+
+	/**
+	 * Get Extra fields
+	 * Field : ['name'=>'', 'value'=>'']
+	 */
+	public function get_extra_fields() {
+		return apply_filters( 'shopping_feed_extra_variation_attributes', [], $this->product );
+	}
 }

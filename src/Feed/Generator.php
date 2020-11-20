@@ -156,6 +156,16 @@ class Generator {
 					$product->setAdditionalImages( $sf_product->get_images() );
 				}
 
+				$extra_fields = $sf_product->get_extra_fields();
+				if ( ! empty( $extra_fields ) ) {
+					foreach ( $extra_fields as $field ) {
+						if ( empty( $field['name'] ) ) {
+							continue;
+						}
+						$product->setAttribute( $field['name'], $field['value'] );
+					}
+				}
+
 			}
 		);
 
