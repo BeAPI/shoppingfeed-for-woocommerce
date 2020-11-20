@@ -145,3 +145,26 @@ function your_custom_tracking_url_function() {
 return ‘your_custom_order_meta_key’
 }
 `
+
+### Extra Fields
+If you want to add add extra fields to your XML Feed, you can use the following snippet
+`
+add_filter( 'shopping_feed_extra_fields', 'your_custom_fields_function', 10, 2 );
+/** @return array */
+function your_custom_tracking_url_function($fields, $wc_product) {
+$fields[] = array('name'=>'my_field', 'value'=>'my_value');
+return $fields;
+}
+`
+
+### Variation Images
+By default, we don’t support any custom plugin for adding images to WC Product Variation, with this filter you can set the desired images to each variation, you can use the following snippet
+`
+add_filter( 'shopping_feed_variation_images', 'your_custom_variation_images_function', 10, 2 );
+/** @return array */
+function your_custom_tracking_url_function($images, $wc_product) {
+$images[] = 'https://domain.com/image1.jpg';
+$images[] = 'https://domain.com/image2.jpg';
+return $images;
+}
+`
