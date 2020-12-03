@@ -171,7 +171,34 @@ class Product {
 			return '';
 		}
 
-		return $this->category->name;
+		$category_display_mode = ShoppingFeedHelper::get_sf_feed_category_display_mode();
+		if ( 'normal' === $category_display_mode ) {
+			return $this->category->name;
+		}
+
+		return $this->get_category_hierarchy();
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_category_hierarchy() {
+
+		$taxonomy   = ShoppingFeedHelper::wc_category_taxonomy();
+		$parents    = get_ancestors( $this->category->term_id, $taxonomy, 'taxonomy' );
+		$count      = count( $parents );
+		$breadcrumb = '';
+		array_unshift( $parents, $this->category->term_id );
+		foreach ( array_reverse( $parents ) as $key => $term_id ) {
+			$parent     = get_term( $term_id, $taxonomy );
+			$name       = $parent->name;
+			$breadcrumb .= $name;
+			if ( $key < $count ) {
+				$breadcrumb .= ' > ';
+			}
+		}
+
+		return $breadcrumb;
 	}
 
 	/**

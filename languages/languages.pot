@@ -413,3 +413,12 @@ msgstr ""
 
 msgid "Discover our offers"
 msgstr ""
+
+msgid "Category Display Mode"
+msgstr ""
+
+msgid "Normal"
+msgstr ""
+
+msgid "Breadcrumb"
+msgstr ""

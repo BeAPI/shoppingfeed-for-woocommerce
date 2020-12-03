@@ -193,6 +193,19 @@ class ShoppingFeedHelper {
 	}
 
 	/**
+	 * Return display mode for category
+	 * @return string
+	 */
+	public static function get_sf_feed_category_display_mode() {
+		$display_mode = self::get_sf_feed_options( 'category_display_mode' );
+		if ( empty( $display_mode ) ) {
+			return 'normal';
+		}
+
+		return $display_mode;
+	}
+
+	/**
 	 * Return SF default shipping zone id if exist
 	 * @return bool|int
 	 */

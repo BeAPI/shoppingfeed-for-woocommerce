@@ -382,6 +382,27 @@ class Options {
 			'sf_feed_settings_categories'
 		);
 
+		//Identifier Field
+		add_settings_field(
+			'category_display_mode',
+			__( 'Category Display Mode', 'shopping-feed' ),
+			function () {
+				?>
+				<select name="<?php echo esc_html( sprintf( '%s[category_display_mode]', self::SF_FEED_OPTIONS ) ); ?>">
+					<option value="normal" <?php selected( 'id', $this->sf_feed_options['category_display_mode'] ? $this->sf_feed_options['category_display_mode'] : false ); ?>>
+						<?php esc_html_e( 'Normal', 'shopping-feed' ); ?>
+					</option>
+					<option value="breadcrumb" <?php selected( 'breadcrumb', $this->sf_feed_options['category_display_mode'] ? $this->sf_feed_options['category_display_mode'] : false ); ?>>
+						<?php esc_html_e( 'Breadcrumb', 'shopping-feed' ); ?>
+					</option>
+				</select>
+				<p class="description" id="tagline-description"><?php echo esc_attr_e( 'Category Display Mode', 'shopping-feed' ); ?></p>
+				<?php
+			},
+			self::SF_FEED_SETTINGS_PAGE,
+			'sf_feed_settings_categories'
+		);
+
 		//Categories
 		add_settings_field(
 			'categories',

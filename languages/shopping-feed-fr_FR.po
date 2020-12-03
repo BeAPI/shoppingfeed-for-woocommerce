@@ -404,3 +404,12 @@ msgstr "Envie de passer à la vitesse supérieure ?"
 
 msgid "Discover our offers"
 msgstr "Découvrez nos offres"
+
+msgid "Category Display Mode"
+msgstr "Mode d'affichage de categorie"
+
+msgid "Normal"
+msgstr ""
+
+msgid "Breadcrumb"
+msgstr "File d'ariane"
