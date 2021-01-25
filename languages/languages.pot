@@ -422,3 +422,9 @@ msgstr ""
 
 msgid "Breadcrumb"
 msgstr ""
+
+msgid "Default Order Status"
+msgstr ""
+
+msgid "Default Status for orders imported from from SF"
+msgstr ""

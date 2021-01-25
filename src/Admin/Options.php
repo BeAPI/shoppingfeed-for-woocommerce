@@ -754,6 +754,32 @@ class Options {
 			},
 			self::SF_ORDERS_SETTINGS_PAGE
 		);
+
+		add_settings_field(
+			'Default Order Status',
+			__( 'Default Order Status', 'shopping-feed' ),
+			function () use ( $wc_order_statuses ) {
+				?>
+				<select name="<?php echo esc_html( sprintf( '%s[default_status]', self::SF_ORDERS_OPTIONS ) ); ?>">
+					<?php
+					foreach ( $wc_order_statuses as $wc_order_statuse => $name ) {
+						?>
+						<option
+								value="<?php echo esc_html( $wc_order_statuse ); ?>"
+							<?php selected( $wc_order_statuse, $this->sf_orders_options['default_status'] ? $this->sf_orders_options['default_status'] : false ); ?>
+						><?php echo esc_html( $name ); ?></option>
+						<?php
+					}
+					?>
+				</select>
+				<p class="description"
+				   id="tagline-description"><?php echo esc_attr_e( 'Default Status for orders imported from from SF', 'shopping-feed' ); ?></p>
+				<?php
+			},
+			self::SF_ORDERS_SETTINGS_PAGE,
+			'sf_orders_settings_default_status'
+		);
+
 		//mapping
 		$sf_actions = Operations::get_available_operations();
 

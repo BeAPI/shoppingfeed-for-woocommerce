@@ -413,3 +413,9 @@ msgstr ""
 
 msgid "Breadcrumb"
 msgstr "File d'ariane"
+
+msgid "Default Order Status"
+msgstr "Statut par défaut"
+
+msgid "Default Status for orders imported from from SF"
+msgstr "Statut par défaut avec lequel la commande sera créé"
