@@ -131,7 +131,7 @@ __[more details here](https://github.com/shoppingflux/php-sdk/blob/master/docs/m
 By default, we don’t support any custom plugin for wc order tracking number, you can set custom meta key to identify it, you can use the following snippet
 
 `
-add_filter( 'wc_tracking_number', 'your_custom_tracking_number_function' );
+add_filter( 'shopping_feed_tracking_number', 'your_custom_tracking_number_function' );
 /** @return string */
 function your_custom_tracking_number_function() {
 return ‘your_custom_order_meta_key’
@@ -141,7 +141,7 @@ return ‘your_custom_order_meta_key’
 ### Tracking url
 By default, we don’t support any custom plugin for wc order tracking url, you can set custom meta key to identify it, you can use the following snippet
 `
-add_filter( 'wc_tracking_url', 'your_custom_tracking_url_function' );
+add_filter( 'shopping_feed_tracking_link', 'your_custom_tracking_url_function' );
 /** @return string */
 function your_custom_tracking_url_function() {
 return ‘your_custom_order_meta_key’
