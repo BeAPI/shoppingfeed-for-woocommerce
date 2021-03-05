@@ -103,7 +103,22 @@ class Product {
 	 * @return int
 	 */
 	public function get_quantity() {
-		return ! is_null( $this->product->get_stock_quantity() ) ? $this->product->get_stock_quantity() : ShoppingFeedHelper::get_default_product_quantity();
+		if ( $this->product instanceof \WC_Product_Variable ) {
+			$childrens = $this->product->get_children();
+			if ( empty( $childrens ) ) {
+				return 0;
+			}
+
+			$total_stock = 0;
+			foreach ( $childrens as $children ) {
+				$wc_product_variation = wc_get_product( $children );
+				$total_stock          += intval( ! is_null( $wc_product_variation->get_stock_quantity() ) ? $wc_product_variation->get_stock_quantity() : ShoppingFeedHelper::get_default_product_quantity() );
+			}
+
+			return $total_stock;
+		} else {
+			return ! is_null( $this->product->get_stock_quantity() ) ? $this->product->get_stock_quantity() : ShoppingFeedHelper::get_default_product_quantity();
+		}
 	}
 
 	/**
