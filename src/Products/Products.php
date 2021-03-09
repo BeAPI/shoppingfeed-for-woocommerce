@@ -42,8 +42,7 @@ class Products {
 	}
 
 	/**
-	 * Get product list
-	 * @return array
+	 * Generate products list
 	 */
 	public function get_list() {
 		$default_args = array(
@@ -69,16 +68,10 @@ class Products {
 
 		$query = new \WC_Product_Query( $args );
 
-		$products = array();
-
 		if ( empty( $query->get_products() ) ) {
-			return $products;
+			foreach ( $query->get_products() as $wc_product ) {
+				yield [ new Product( $wc_product ) ];
+			}
 		}
-
-		foreach ( $query->get_products() as $wc_product ) {
-			$products[] = array( new Product( $wc_product ) );
-		}
-
-		return $products;
 	}
 }
