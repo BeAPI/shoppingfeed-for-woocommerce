@@ -68,7 +68,7 @@ class Products {
 
 		$query = new \WC_Product_Query( $args );
 
-		if ( empty( $query->get_products() ) ) {
+		if ( ! empty( $query->get_products() ) ) {
 			foreach ( $query->get_products() as $wc_product ) {
 				yield [ new Product( $wc_product ) ];
 			}
