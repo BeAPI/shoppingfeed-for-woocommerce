@@ -30,7 +30,7 @@ class ShoppingFeedHelper {
 	 */
 	public static function get_instance() {
 		if ( is_null( self::$instance ) ) {
-			self::$instance = new static();
+			self::$instance = new self();
 		}
 
 		return self::$instance;
@@ -672,10 +672,10 @@ XML;
 		$action_scheduler = \ActionScheduler::store();
 
 		return $action_scheduler->query_actions(
-			[
+			array(
 				'group'  => 'sf_feed_generation_process',
 				'status' => $action_scheduler::STATUS_PENDING,
-			]
+			)
 		);
 	}
 
