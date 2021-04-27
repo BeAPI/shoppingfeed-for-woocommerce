@@ -8,7 +8,6 @@ defined( 'ABSPATH' ) || exit;
 use ShoppingFeed\ShoppingFeedWC\Actions\Actions;
 use ShoppingFeed\ShoppingFeedWC\Feed\Generator;
 use ShoppingFeed\ShoppingFeedWC\Orders\Operations;
-use ShoppingFeed\ShoppingFeedWC\ShoppingFeed;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
 class Options {
@@ -38,27 +37,26 @@ class Options {
 
 	//Account options
 	const SF_ACCOUNT_OPTIONS = 'sf_account_options';
+	const SF_FEED_OPTIONS    = 'sf_feed_options';
 
+	//Feed options
+	const SF_SHIPPING_OPTIONS = 'sf_shipping_options';
+	const SF_ORDERS_OPTIONS   = 'sf_orders_options';
+
+	//Shipping options
+	const SF_CARRIERS = 'SF_CARRIERS';
 	/** @var array $sf_account_options */
 	private $sf_account_options;
 
-	//Feed options
-	const SF_FEED_OPTIONS = 'sf_feed_options';
+	//Orders options
 	/** @var array $sf_feed_options */
 	private $sf_feed_options;
-
-	//Shipping options
-	const SF_SHIPPING_OPTIONS = 'sf_shipping_options';
 	/** @var array $sf_shipping_options */
 	private $sf_shipping_options;
 
-	//Orders options
-	const SF_ORDERS_OPTIONS = 'sf_orders_options';
+	//SF Carriers
 	/** @var array $sf_orders_options */
 	private $sf_orders_options;
-
-	//SF Carriers
-	const SF_CARRIERS = 'SF_CARRIERS';
 	/** @var bool $connected */
 	private $connected = true;
 
@@ -223,6 +221,9 @@ class Options {
 	public function init_account_setting_page() {
 			$this->connected = ShoppingFeedHelper::is_authenticated();
 
+			//check clean action
+			$this->check_clean_action();
+
 			//load assets
 			$this->load_assets();
 
@@ -265,12 +266,33 @@ class Options {
 				'url',
 				__( 'Your source feed', 'shopping-feed' ),
 				function () {
-					printf(
-						'<a target="_blank" href="%1$s">%1$s</a><br><p>' . __( 'Last update', 'shopping-feed' ) . ': %3$s - <a target="_blank" href="%2$s">' . __( 'Refresh', 'shopping-feed' ) . '</a></p>',
-						esc_html( ShoppingFeedHelper::get_public_feed_url() ),
-						esc_html( ShoppingFeedHelper::get_public_feed_url_with_generation() ),
-						! empty( get_option( Generator::SF_FEED_LAST_GENERATION_DATE ) ) ? esc_html( get_option( Generator::SF_FEED_LAST_GENERATION_DATE ) ) : esc_html( 'Never' )
-					);
+					$sf_feed_public_url = ShoppingFeedHelper::get_public_feed_url();
+					$sf_process_running = ShoppingFeedHelper::generation_process_running();
+					$sf_last_generation_date = get_option( Generator::SF_FEED_LAST_GENERATION_DATE );
+					?>
+					<?php if ( ! $sf_process_running ) : ?>
+						<a href="<?php echo esc_html( $sf_feed_public_url ); ?>" target="_blank">
+							<?php
+							echo esc_url( $sf_feed_public_url );
+							;
+							?>
+						</a>
+					<?php endif; ?>
+					<br>
+					<p>
+						<?php if ( ! $sf_process_running ) : ?>
+							<?php esc_html_e( 'Last update', 'shopping-feed' ); ?> :
+							<?php
+							! empty( $sf_last_generation_date ) ? esc_html( $sf_last_generation_date ) : esc_html_e( 'Never', 'shopping-feed' );
+							?>
+							<a href="<?php echo esc_url( ShoppingFeedHelper::get_public_feed_url_with_generation() ); ?>" target="_blank">
+								<?php esc_html_e( 'Refresh', 'shopping-feed' ); ?>
+							</a>
+						<?php else : ?>
+							<strong>(<?php esc_html_e( 'The feed is update is running', 'shopping-feed' ); ?>) <a href="#" onClick="window.location.reload();"><?php esc_html_e( 'Refresh to check progress', 'shopping-feed' ); ?></a></strong>
+						<?php endif; ?>
+					</p>
+					<?php
 				},
 				self::SF_ACCOUNT_SETTINGS_PAGE,
 				'sf_account_settings'
@@ -317,6 +339,7 @@ class Options {
 			echo wp_kses_post( $requirements->php_requirement() );
 			echo wp_kses_post( $requirements->openssl_requirement() );
 			echo wp_kses_post( $requirements->account_requirement() );
+			echo wp_kses_post( $requirements->uploads_directory_access_requirement() );
 		?>
 				<!--        REQUIREMENTS     -->
 		</div>
@@ -329,6 +352,43 @@ class Options {
 		</div>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Check clean action
+	 */
+	private function check_clean_action() {
+		if ( ! empty( $_GET['clean_process'] ) ) {
+			ShoppingFeedHelper::clean_generation_process_running();
+		}
+	}
+
+	private function load_assets() {
+		wp_enqueue_style(
+			'sf_app',
+			SF_PLUGIN_URL . 'assets/css/app.css',
+			array(),
+			true
+		);
+
+		wp_enqueue_script(
+			'multi_js',
+			SF_PLUGIN_URL . 'assets/js/multi.min.js',
+			array( 'jquery' ),
+			true,
+			true
+		);
+
+		wp_enqueue_script( 'multi_js_init', SF_PLUGIN_URL . 'assets/js/init.js', array( 'multi_js' ), true );
+		wp_localize_script(
+			'multi_js_init',
+			'sf_options',
+			array(
+				'selected_orders'            => __( 'Selected order status', 'shopping-feed' ),
+				'unselected_orders' => __( 'Unselected order status', 'shopping-feed' ),
+				'search' => __( 'Search', 'shopping-feed' ),
+			)
+		);
 	}
 
 	/**
@@ -484,6 +544,38 @@ class Options {
 			'sf_feed_settings_frequency'
 		);
 
+		add_settings_field(
+			'Batch size',
+			__( 'Batch size', 'shopping-feed' ),
+			function () {
+				?>
+				<select name="<?php echo esc_html( sprintf( '%s[part_size]', self::SF_FEED_OPTIONS ) ); ?>">
+					<?php
+					foreach ( [ 10, 20, 50, 100, 200, 500, 1000 ] as $part_size_option ) {
+						?>
+						<option
+								value="<?php echo esc_html( $part_size_option ); ?>"
+							<?php selected( $part_size_option, $this->sf_feed_options['part_size'] ? $this->sf_feed_options['part_size'] : false ); ?>
+						><?php echo esc_html( $part_size_option ); ?></option>
+						<?php
+					}
+					?>
+				</select>
+				<p class="description" id="tagline-description">
+				   <?php esc_attr_e( 'Batch size (default 200 to decrease in case of performance issues)', 'shopping-feed' ); ?>
+				</p>
+				<p class="description">
+					<?php esc_attr_e( 'If the feed is blocked and not generated', 'shopping-feed' ); ?>
+					<a href="<?php echo sprintf( '%s&clean_process=%s', esc_url( ShoppingFeedHelper::get_setting_link() ), true ); ?>" class="button-link-delete"><?php esc_attr_e( 'click here', 'shopping-feed' ); ?></a>
+					<?php esc_attr_e( 'to clean all running process', 'shopping-feed' ); ?>
+					<?php echo esc_html( sprintf( '(%s)', count( ShoppingFeedHelper::get_running_generation_feed_process() ) ) ); ?>
+				</p>
+				<?php
+			},
+			self::SF_FEED_SETTINGS_PAGE,
+			'sf_feed_settings_frequency'
+		);
+
 		add_settings_section(
 			'sf_feed_settings',
 			__( 'Shipping', 'shopping-feed' ),
@@ -554,6 +646,16 @@ class Options {
 			</form>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Check connection with SF platform with correct credentials
+	 * If not redirect to Account page
+	 */
+	private function check_connection() {
+		if ( ! ShoppingFeedHelper::is_authenticated() ) {
+			wp_safe_redirect( sprintf( '%s&no_connected=%s', ShoppingFeedHelper::get_setting_link(), 'true' ) );
+		}
 	}
 
 	/**
@@ -829,44 +931,6 @@ class Options {
 			</form>
 		</div>
 		<?php
-	}
-
-	/**
-	 * Check connection with SF platform with correct credentials
-	 * If not redirect to Account page
-	 */
-	private function check_connection() {
-		if ( ! ShoppingFeedHelper::is_authenticated() ) {
-			wp_safe_redirect( sprintf( '%s&no_connected=%s', ShoppingFeedHelper::get_setting_link(), 'true' ) );
-		}
-	}
-
-	private function load_assets() {
-		wp_enqueue_style(
-			'sf_app',
-			SF_PLUGIN_URL . 'assets/css/app.css',
-			array(),
-			true
-		);
-
-		wp_enqueue_script(
-			'multi_js',
-			SF_PLUGIN_URL . 'assets/js/multi.min.js',
-			array( 'jquery' ),
-			true,
-			true
-		);
-
-		wp_enqueue_script( 'multi_js_init', SF_PLUGIN_URL . 'assets/js/init.js', array( 'multi_js' ), true );
-		wp_localize_script(
-			'multi_js_init',
-			'sf_options',
-			array(
-				'selected_orders'            => __( 'Selected order status', 'shopping-feed' ),
-				'unselected_orders' => __( 'Unselected order status', 'shopping-feed' ),
-				'search' => __( 'Search', 'shopping-feed' ),
-			)
-		);
 	}
 
 }

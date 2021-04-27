@@ -9,6 +9,7 @@ use Exception;
 use ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate;
 use ShoppingFeed\Sdk\Api\Catalog\PricingUpdate;
 use ShoppingFeed\Sdk\Api\Store\StoreResource;
+use ShoppingFeed\ShoppingFeedWC\Feed\AsyncGenerator;
 use ShoppingFeed\ShoppingFeedWC\Feed\Generator;
 use ShoppingFeed\ShoppingFeedWC\Orders\Operations;
 use ShoppingFeed\ShoppingFeedWC\Orders\Order;
@@ -36,6 +37,36 @@ class WoocommerceActions {
 
 
 	public function __construct() {
+
+		//Generate async feed
+		add_action(
+			'sf_feed_generation_process',
+			[
+				AsyncGenerator::get_instance(),
+				'launch',
+			]
+		);
+
+		//Generate feed part
+		add_action(
+			'sf_feed_generation_part',
+			[
+				AsyncGenerator::get_instance(),
+
+				'generate_feed_part',
+			],
+			10,
+			2
+		);
+
+		//Combine feed's parts
+		add_action(
+			'sf_feed_generation_combine_feed_parts',
+			[
+				AsyncGenerator::get_instance(),
+				'combine_feed_parts',
+			]
+		);
 
 		//Product Update
 		add_action( 'woocommerce_update_product', array( $this, 'update_product' ) );

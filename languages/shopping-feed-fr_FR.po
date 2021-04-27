@@ -7,8 +7,8 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2020-04-20T12:04:03+00:00\n"
-"PO-Revision-Date: 2020-06-12 15:18+0200\n"
-"X-Generator: Poedit 2.3.1\n"
+"PO-Revision-Date: 2021-04-26 19:16+0200\n"
+"X-Generator: Poedit 2.4\n"
 "X-Domain: languages\n"
 "Last-Translator: \n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
@@ -345,6 +345,12 @@ msgstr "Dernière mise à jour"
 msgid "Refresh"
 msgstr "Mettre à jour manuellement"
 
+msgid "Refresh to check progress"
+msgstr "Actualiser pour vérifier la progression"
+
+msgid "The feed is update is running"
+msgstr "Mise à jour du flux en cours"
+
 msgid "Methods"
 msgstr "Méthodes"
 
@@ -419,3 +425,18 @@ msgstr "Statut par défaut"
 
 msgid "Default Status for orders imported from from SF"
 msgstr "Statut par défaut avec lequel la commande sera créé"
+
+msgid "Batch size"
+msgstr "Taille du lot"
+
+msgid "Batch size (default 200 to decrease in case of performance issues)"
+msgstr "Taille du lot (200 par défaut a diminuer en cas de problèmes de performances)"
+
+msgid "If the feed is blocked and not generated"
+msgstr "Si le flux est bloqué ou non généré"
+
+msgid "click here"
+msgstr "cliquez ici"
+
+msgid "to clean all running process"
+msgstr "pour nettoyer tous les processus en cours"

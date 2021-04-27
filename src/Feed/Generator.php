@@ -31,12 +31,12 @@ class Generator {
 	/**
 	 * @var ProductGenerator
 	 */
-	private $generator;
+	protected $generator;
 
 	/**
 	 * Generator constructor.
 	 */
-	private function __construct() {
+	public function __construct() {
 		$this->set_platform();
 		$this->set_uri();
 		$this->set_generator();
@@ -78,14 +78,14 @@ class Generator {
 	 * In some case, you may need to pre-process data before to map them.
 	 * This can be achieved in mappers or in your dataset, but sometimes things have to be separated, so you can register processors that are executed before mappers, and prepare your data before the mapping process.
 	 */
-	private function set_processors() {
+	protected function set_processors() {
 	}
 
 	/**
 	 * Filters are designed discard some items from the feed.
 	 * Filters are executed after processors, because item must be completely filled before to make the decision to keep it or not.
 	 */
-	private function set_filters() {
+	protected function set_filters() {
 		# Ignore all items with undefined price
 		$this->generator->addFilter(
 			function (
@@ -102,7 +102,7 @@ class Generator {
 	/**
 	 * As stated above, at least one mapper must be registered, this is where you populate the Product instance, which is later converted to XML by the library
 	 */
-	private function set_mappers() {
+	protected function set_mappers() {
 		//Simple product mapping
 		$this->generator->addMapper(
 			function (
@@ -233,17 +233,16 @@ class Generator {
 		$file_path = Uri::get_instance()->get_full_path();
 
 		if ( true === $no_cache || ! is_file( $file_path ) ) {
-			$generate = $this->generate();
-			if ( is_wp_error( $generate ) ) {
-				ShoppingFeedHelper::get_logger()->error(
-					sprintf(
-						__( 'Cant display feed', 'shopping-feed' )
-					),
-					array(
-						'source' => 'shopping-feed',
-					)
-				);
+			if ( ShoppingFeedHelper::generation_process_running() ) {
+				wp_die( 'Feed generation already launched' );
 			}
+			as_schedule_single_action(
+				false,
+				'sf_feed_generation_process',
+				array(),
+				'sf_feed_generation_process'
+			);
+			wp_die( 'Feed generation launched' );
 		}
 
 		if ( is_file( $file_path ) ) {
