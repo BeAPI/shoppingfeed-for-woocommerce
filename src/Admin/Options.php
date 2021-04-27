@@ -568,7 +568,7 @@ class Options {
 				</p>
 				<p class="description">
 					<?php esc_attr_e( 'If the feed is blocked and not generated', 'shopping-feed' ); ?>
-					<a href="<?php echo sprintf( '%s&clean_process=true', esc_url( ShoppingFeedHelper::get_setting_link() ) ); ?>" class="button-link-delete"><?php esc_attr_e( 'click here', 'shopping-feed' ); ?></a>
+					<a href="<?php echo sprintf( '%s&clean_process=%s', esc_url( ShoppingFeedHelper::get_setting_link() ) ); ?>" class="button-link-delete"><?php esc_attr_e( 'click here', 'shopping-feed' ); ?></a>
 					<?php esc_attr_e( 'to clean all running process', 'shopping-feed' ); ?>
 					<?php echo esc_html( sprintf( '(%s)', $running_process ) ); ?>
 				</p>
