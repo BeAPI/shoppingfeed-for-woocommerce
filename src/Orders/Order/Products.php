@@ -82,43 +82,42 @@ class Products {
 			return array();
 		}
 
-		$default_args = array(
+		$sf_product_quantity = $sf_product->getQuantity();
+
+		$args = array(
 			'name'         => $wc_product->get_name(),
 			'tax_class'    => $wc_product->get_tax_class(),
 			'product_id'   => $wc_product->is_type( 'variation' ) ? $wc_product->get_parent_id() : $wc_product->get_id(),
 			'variation_id' => $wc_product->is_type( 'variation' ) ? $wc_product->get_id() : 0,
 			'variation'    => $wc_product->is_type( 'variation' ) ? $wc_product->get_attributes() : array(),
-		);
-
-		$args = array(
-			'subtotal' => $sf_product->getUnitPrice(),
-			'total'    => $sf_product->getTotalPrice(),
-			'quantity' => $sf_product->getQuantity(),
+			'subtotal'     => $sf_product->getUnitPrice(),
+			'total'        => $sf_product->getTotalPrice(),
+			'quantity'     => $sf_product_quantity,
 		);
 
 		$wc_product_quantity = $wc_product->get_stock_quantity() ? $wc_product->get_stock_quantity() : 0;
 
 		return array(
-			'args'             => wp_parse_args( $args, $default_args ),
-			'outofstock'       => ! $this->validate_product( $wc_product, $sf_product ),
+			'args'             => $args,
+			'outofstock'       => ! $this->validate_product( $wc_product, $sf_product_quantity ),
 			'product_quantity' => $wc_product_quantity,
-			'quantity_needed'  => $sf_product->getQuantity() - $wc_product_quantity,
+			'quantity_needed'  => $sf_product_quantity - $wc_product_quantity,
 		);
 	}
 
 	/**
 	 * @param $wc_product WC_Product
-	 * @param $sf_product OrderItem
+	 * @param $ordered_quantity int
 	 *
 	 * @return bool
 	 */
-	private function validate_product( $wc_product, $sf_product ) {
-		//automatically validate product if backorders or allowed and managin stock is disabled
+	private function validate_product( $wc_product, $ordered_quantity ) {
+		//automatically validate product if backorders or allowed and managing stock is disabled
 		if ( $wc_product->backorders_allowed() || ! $wc_product->managing_stock() ) {
 			return true;
 		}
 
-		return $sf_product->getQuantity() <= $wc_product->get_stock_quantity();
+		return $ordered_quantity <= $wc_product->get_stock_quantity();
 	}
 
 	/**
