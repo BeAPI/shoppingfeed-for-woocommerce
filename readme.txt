@@ -1,8 +1,8 @@
 ## ShoppingFeed
 Contributors: ShoppingFeed, BeAPI
 Tags: shoppingfeed, marketplace, woocommerce, woocommerce shoppingfeed, create woocommerce products shoppingfeed, products feed, generate shoppingfeed, amazon, Jet, Walmart, many marketplace, import orders
-Stable tag: 6.0.17
-Version: 6.0.17
+Stable tag: 6.0.19
+Version: 6.0.19
 Requires PHP: 5.6
 Requires at least: 5.2
 Tested up to: 5.5.3
@@ -30,6 +30,8 @@ Version 6.0.0 is a major version, there are several changes and improvements whi
 6.0.15 add the possibility to choose the default statut for imported order
 6.0.16 sum quantity of all variations on parent
 6.0.17 using generator for generating products list"
+6.0.18 add async generation for feed
+6.0.19 add compat to the plugin Chained Product
 
 == Description ==
 WordPress connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, Google, and 1000's of international marketplaces
