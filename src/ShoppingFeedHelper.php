@@ -642,18 +642,36 @@ XML;
 
 	/**
 	 * Add filter for order tracking number meta key
+	 *
+	 * @param \WC_Order $wc_order
+	 *
 	 * @return string
 	 */
-	public static function wc_tracking_number() {
-		return apply_filters( 'shopping_feed_tracking_number', '' );
+	public static function wc_tracking_number( $wc_order ) {
+		$tracking_number = apply_filters( 'shopping_feed_tracking_number', '', $wc_order );
+		//COMPACT WITH OLD VERSION
+		if ( '6.0.19' <= SF_VERSION ) {
+			return (string) $wc_order->get_meta( $tracking_number );
+		}
+
+		return $tracking_number;
 	}
 
 	/**
 	 * Add filter for order tracking link meta key
+	 *
+	 * @param \WC_Order $wc_order
+	 *
 	 * @return string
 	 */
-	public static function wc_tracking_link() {
-		return apply_filters( 'shopping_feed_tracking_link', '' );
+	public static function wc_tracking_link( $wc_order ) {
+		$tracking_link = apply_filters( 'shopping_feed_tracking_link', '', $wc_order );
+		//COMPACT WITH OLD VERSION
+		if ( '6.0.19' <= SF_VERSION ) {
+			return (string) $wc_order->get_meta( $tracking_link );
+		}
+
+		return $tracking_link;
 	}
 
 	/**
