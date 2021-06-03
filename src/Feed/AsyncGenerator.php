@@ -16,11 +16,15 @@ class AsyncGenerator extends Generator {
 
 		$products       = Products::get_instance()->get_products();
 		$total_products = count( $products );
-		$total_pages    = (int) round( $total_products / $part_size );
+		$total_pages    = 1;
+		if ( $part_size < $total_products ) {
+			$total_pages = (int) round( $total_products / $part_size );
+		}
 
 		$option = array(
 			'total_pages' => $total_pages,
 		);
+
 		update_option( 'sf_feed_generation_process', $option );
 		for ( $page = 1; $page <= $total_pages; $page ++ ) {
 			as_schedule_single_action(
@@ -96,8 +100,6 @@ class AsyncGenerator extends Generator {
 		$last_started_at  = '';
 		$last_finished_at = '';
 		foreach ( $files as $file ) {
-			$file = $dir_parts . '/' . $file;
-
 			$file_xml         = simplexml_load_string( file_get_contents( $file ) );
 			$last_started_at  = $file_xml->metadata->startedAt;
 			$last_finished_at = $file_xml->metadata->finishedAt;

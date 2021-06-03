@@ -134,7 +134,7 @@ class Uri {
 	 * @param mixed $file_path
 	 */
 	public function set_file_path() {
-		$this->file_path = $this->directory . $this->file_name;
+		$this->file_path = $this->directory . '/' . $this->file_name;
 	}
 
 	/**
