@@ -1,6 +1,6 @@
 <?php
 
-namespace ShoppingFeed\ShoppingFeedWC\Addons\ChainedProductsPlugin;
+namespace ShoppingFeed\ShoppingFeedWC\Addons\Plugins\ChainedProductsPlugin;
 
 // Exit on direct access
 defined( 'ABSPATH' ) || exit;

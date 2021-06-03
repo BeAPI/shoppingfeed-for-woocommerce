@@ -120,8 +120,8 @@ class Operations {
 				$this->sf_reference,
 				$this->sf_channel_name,
 				ShoppingFeedHelper::get_sf_carrier_from_wc_shipping( $this->wc_order ),
-				(string) $this->wc_order->get_meta( ShoppingFeedHelper::wc_tracking_number() ),
-				(string) $this->wc_order->get_meta( ShoppingFeedHelper::wc_tracking_link() )
+				ShoppingFeedHelper::wc_tracking_number( $this->wc_order ),
+				ShoppingFeedHelper::wc_tracking_link( $this->wc_order )
 			);
 			$this->order_api->execute( $this->order_operation );
 		} catch ( Exception $exception ) {
