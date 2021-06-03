@@ -548,10 +548,12 @@ class Options {
 			'Batch size',
 			__( 'Batch size', 'shopping-feed' ),
 			function () {
+				$running_process = ShoppingFeedHelper::get_running_generation_feed_process();
+				$running_process = is_array( $running_process ) ? count( $running_process ) : 0;
 				?>
 				<select name="<?php echo esc_html( sprintf( '%s[part_size]', self::SF_FEED_OPTIONS ) ); ?>">
 					<?php
-					foreach ( [ 10, 20, 50, 100, 200, 500, 1000 ] as $part_size_option ) {
+					foreach ( array( 10, 20, 50, 100, 200, 500, 1000 ) as $part_size_option ) {
 						?>
 						<option
 								value="<?php echo esc_html( $part_size_option ); ?>"
@@ -566,9 +568,9 @@ class Options {
 				</p>
 				<p class="description">
 					<?php esc_attr_e( 'If the feed is blocked and not generated', 'shopping-feed' ); ?>
-					<a href="<?php echo sprintf( '%s&clean_process=%s', esc_url( ShoppingFeedHelper::get_setting_link() ), true ); ?>" class="button-link-delete"><?php esc_attr_e( 'click here', 'shopping-feed' ); ?></a>
+					<a href="<?php echo sprintf( '%s&clean_process=true', esc_url( ShoppingFeedHelper::get_setting_link() ) ); ?>" class="button-link-delete"><?php esc_attr_e( 'click here', 'shopping-feed' ); ?></a>
 					<?php esc_attr_e( 'to clean all running process', 'shopping-feed' ); ?>
-					<?php echo esc_html( sprintf( '(%s)', count( ShoppingFeedHelper::get_running_generation_feed_process() ) ) ); ?>
+					<?php echo esc_html( sprintf( '(%s)', $running_process ) ); ?>
 				</p>
 				<?php
 			},

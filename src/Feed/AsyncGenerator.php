@@ -18,9 +18,9 @@ class AsyncGenerator extends Generator {
 		$total_products = count( $products );
 		$total_pages    = (int) round( $total_products / $part_size );
 
-		$option = [
+		$option = array(
 			'total_pages' => $total_pages,
-		];
+		);
 		update_option( 'sf_feed_generation_process', $option );
 		for ( $page = 1; $page <= $total_pages; $page ++ ) {
 			as_schedule_single_action(
@@ -101,9 +101,9 @@ class AsyncGenerator extends Generator {
 			$file_xml         = simplexml_load_string( file_get_contents( $file ) );
 			$last_started_at  = $file_xml->metadata->startedAt;
 			$last_finished_at = $file_xml->metadata->finishedAt;
-			$xml_invalid      += (int) $file_xml->metadata->invalid;
-			$xml_ignored      += (int) $file_xml->metadata->ignored;
-			$xml_written      += (int) $file_xml->metadata->written;
+			$xml_invalid     += (int) $file_xml->metadata->invalid;
+			$xml_ignored     += (int) $file_xml->metadata->ignored;
+			$xml_written     += (int) $file_xml->metadata->written;
 			$products         = $file_xml->products[0];
 			foreach ( $products as $product ) {
 				$xml_content .= $product->asXML();
@@ -172,6 +172,7 @@ class AsyncGenerator extends Generator {
 	 *
 	 * @return bool XML string added
 	 * @see https://gist.github.com/hakre/4761677
+	 * @psalm-suppress all
 	 */
 	public function simplexml_import_xml( \SimpleXMLElement $parent, $xml, $before = false ) {
 		$xml = (string) $xml;
