@@ -79,7 +79,7 @@ class Order {
 
 		//Addresses
 		$wc_order->set_address( $this->shipping_address, 'shipping' );
-		$wc_order->set_address( $this->billing_address, 'billing' );
+		$wc_order->set_address( $this->billing_address );
 
 		//Payment
 		try {
@@ -166,6 +166,7 @@ class Order {
 				}
 				$item->save();
 				$wc_order->add_item( $item );
+				do_action( 'sf_after_order_add_item', $item, $wc_order );
 			}
 		}
 
@@ -203,6 +204,8 @@ class Order {
 
 		$wc_order->calculate_totals( false );
 		$wc_order->save();
+
+		do_action( 'sf_before_add_order', $wc_order );
 
 		//Acknowledge the order so we will not get it next time
 		Operations::acknowledge_order( $wc_order->get_id(), $message );
