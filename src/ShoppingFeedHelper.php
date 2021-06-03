@@ -19,6 +19,36 @@ use WC_Logger;
 class ShoppingFeedHelper {
 
 	/**
+	 * @var ShoppingFeedHelper
+	 */
+	private static $instance;
+
+	/**
+	 * Get the singleton instance.
+	 *
+	 * @return ShoppingFeedHelper
+	 */
+	public static function get_instance() {
+		if ( is_null( self::$instance ) ) {
+			self::$instance = new static();
+		}
+
+		return self::$instance;
+	}
+
+	/**
+	 * Singleton instance can't be cloned.
+	 */
+	private function __clone() {
+	}
+
+	/**
+	 * Singleton instance can't be serialized.
+	 */
+	private function __wakeup() {
+	}
+
+	/**
 	 * Check if current WooCommerce version is below 3.8.0
 	 *
 	 * @return bool
@@ -56,12 +86,35 @@ class ShoppingFeedHelper {
 	 * @return string
 	 */
 	public static function get_feed_directory() {
-		$directory = wp_upload_dir()['basedir'] . '/shopping-feed/';
-		if ( ! is_dir( $directory ) ) {
-			wp_mkdir_p( $directory );
-		}
+		return SF_FEED_DIR;
+	}
 
-		return $directory;
+	/**
+	 * Return the feed's parts directory
+	 * @return string
+	 */
+	public static function get_feed_parts_directory() {
+		return SF_FEED_PARTS_DIR;
+	}
+
+	/**
+	 * @return string
+	 */
+	public static function get_feed_skeleton() {
+		return <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog>
+    <metadata>
+        <platform>WooCommerce:5.1.0</platform>
+        <agent>shopping-feed-generator:1.0.0</agent>
+        <startedAt/>
+        <finishedAt/>
+        <invalid/>
+        <ignored/>
+        <written/>
+    </metadata>
+</catalog>
+XML;
 	}
 
 	/**
@@ -248,6 +301,20 @@ class ShoppingFeedHelper {
 		}
 
 		return $frequency;
+	}
+
+	/**
+	 * Return SF feed part size
+	 * default: 200 product per file
+	 * @return int
+	 */
+	public static function get_sf_part_size() {
+		$part_size = self::get_sf_feed_options( 'part_size' );
+		if ( empty( $part_size ) ) {
+			return 200;
+		}
+
+		return $part_size;
 	}
 
 	/**
@@ -595,5 +662,47 @@ class ShoppingFeedHelper {
 	 */
 	public static function get_default_product_quantity() {
 		return 100;
+	}
+
+	/**
+	 * Get running process list
+	 * @return array|int
+	 */
+	public static function get_running_generation_feed_process() {
+		$action_scheduler = \ActionScheduler::store();
+
+		return $action_scheduler->query_actions(
+			[
+				'group'  => 'sf_feed_generation_process',
+				'status' => $action_scheduler::STATUS_PENDING,
+			]
+		);
+	}
+
+	/**
+	 * Check if a running generation process
+	 * @return bool
+	 */
+	public static function generation_process_running() {
+		$process = self::get_running_generation_feed_process();
+
+		return ! empty( $process );
+	}
+
+	public static function clean_generation_process_running() {
+		try {
+			\ActionScheduler::store()->cancel_actions_by_group( 'sf_feed_generation_process' );
+		} catch ( \Exception $exception ) {
+			self::get_logger()->error(
+				sprintf(
+					__( 'Cant remove running process', 'shopping-feed' ),
+					$exception->getMessage()
+				),
+				array(
+					'source' => 'shopping-feed',
+				)
+			);
+		}
+		wp_safe_redirect( self::get_setting_link(), 302 );
 	}
 }

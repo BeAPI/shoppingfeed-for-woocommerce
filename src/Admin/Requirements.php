@@ -6,7 +6,6 @@ namespace ShoppingFeed\ShoppingFeedWC\Admin;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
-use const OPENSSL_VERSION_TEXT;
 use const PHP_VERSION;
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -89,6 +88,16 @@ class Requirements {
 			: '<p class="failed">' . __( 'You must be logged in your ShoppingFeed account.', 'shopping-feed' ) . '</p>';
 	}
 
+
+	/**
+	 * @return string
+	 */
+	public function uploads_directory_access_requirement() {
+		return ( $this->uploads_directory_writable() )
+			? '<p class="success">' . __( 'You have write access in uploads directory.', 'shopping-feed' ) . '</p>'
+			: '<p class="failed">' . __( 'You must have write access in uploads directory.', 'shopping-feed' ) . '</p>';
+	}
+
 	/**
 	 * Check if CURL is available and support SSL
 	 *
@@ -133,5 +142,14 @@ class Requirements {
 	 */
 	public function valid_account() {
 		return ShoppingFeedHelper::is_authenticated();
+	}
+
+	/**
+	 * Check if the uploads directory is writable
+	 *
+	 * @return bool
+	 */
+	public function uploads_directory_writable() {
+		return is_writable( wp_upload_dir()['basedir'] );
 	}
 }

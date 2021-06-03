@@ -428,3 +428,24 @@ msgstr ""
 
 msgid "Default Status for orders imported from from SF"
 msgstr ""
+
+msgid "The feed is update is running"
+msgstr ""
+
+msgid "Refresh to check progress"
+msgstr ""
+
+msgid "Batch size"
+msgstr ""
+
+msgid "Batch size (default 200 to decrease in case of performance issues)"
+msgstr ""
+
+msgid "If the feed is blocked and not generated"
+msgstr ""
+
+msgid "click here"
+msgstr ""
+
+msgid "to clean all running process"
+msgstr ""

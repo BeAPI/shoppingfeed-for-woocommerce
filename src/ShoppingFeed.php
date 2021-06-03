@@ -206,6 +206,7 @@ class ShoppingFeed {
 	 */
 	public static function activate() {
 		if ( defined( 'WC_VERSION' ) ) {
+			self::add_sf_directory();
 			Actions::register_feed_generation();
 			Actions::register_get_orders();
 		}
@@ -240,6 +241,21 @@ class ShoppingFeed {
 		delete_option( Options::SF_ORDERS_OPTIONS );
 		delete_option( Options::SF_CARRIERS );
 		delete_option( Generator::SF_FEED_LAST_GENERATION_DATE );
-		( new \WP_Filesystem_Direct( false ) )->rmdir( ShoppingFeedHelper::get_feed_directory(), true );
+		self::remove_sf_directory();
+	}
+
+	public static function remove_sf_directory() {
+		rmdir( ShoppingFeedHelper::get_feed_directory() );
+	}
+
+	public static function add_sf_directory() {
+		$directory = ShoppingFeedHelper::get_feed_directory();
+		if ( ! is_dir( $directory ) ) {
+			wp_mkdir_p( $directory );
+		}
+		$part_directory = ShoppingFeedHelper::get_feed_parts_directory();
+		if ( ! is_dir( $part_directory ) ) {
+			wp_mkdir_p( $part_directory );
+		}
 	}
 }
