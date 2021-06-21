@@ -244,6 +244,10 @@ class Order {
 	private function set_billing_address() {
 		$address               = new Address( $this->sf_order->getBillingAddress() );
 		$this->billing_address = $address->get_formatted_address();
+		//If the billing address phone is empty, get the shipping one to display phone on the BO
+		if ( empty( $this->billing_address['phone'] ) ) {
+			$this->billing_address['phone'] = $this->shipping_address['phone'];
+		}
 	}
 
 	/**
