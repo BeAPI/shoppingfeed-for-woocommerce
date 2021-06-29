@@ -650,7 +650,7 @@ XML;
 	public static function wc_tracking_number( $wc_order ) {
 		$tracking_number = apply_filters( 'shopping_feed_tracking_number', '', $wc_order );
 		//COMPACT WITH OLD VERSION
-		if ( '6.0.19' <= SF_VERSION ) {
+		if ( '6.0.19' >= SF_VERSION ) {
 			return (string) $wc_order->get_meta( $tracking_number );
 		}
 
@@ -667,7 +667,7 @@ XML;
 	public static function wc_tracking_link( $wc_order ) {
 		$tracking_link = apply_filters( 'shopping_feed_tracking_link', '', $wc_order );
 		//COMPACT WITH OLD VERSION
-		if ( '6.0.19' <= SF_VERSION ) {
+		if ( '6.0.19' >= SF_VERSION ) {
 			return (string) $wc_order->get_meta( $tracking_link );
 		}
 
