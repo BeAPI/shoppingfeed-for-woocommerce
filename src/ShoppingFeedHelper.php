@@ -1,4 +1,5 @@
 <?php
+
 namespace ShoppingFeed\ShoppingFeedWC;
 
 // Exit on direct access
@@ -37,18 +38,6 @@ class ShoppingFeedHelper {
 	}
 
 	/**
-	 * Singleton instance can't be cloned.
-	 */
-	private function __clone() {
-	}
-
-	/**
-	 * Singleton instance can't be serialized.
-	 */
-	private function __wakeup() {
-	}
-
-	/**
 	 * Check if current WooCommerce version is below 3.8.0
 	 *
 	 * @return bool
@@ -63,22 +52,6 @@ class ShoppingFeedHelper {
 	 */
 	public static function get_wc_version() {
 		return WC()->version;
-	}
-
-	/**
-	 * Return WC Logger
-	 * @return WC_Logger
-	 */
-	public static function get_logger() {
-		return new WC_Logger();
-	}
-
-	/**
-	 * Return the settings link for plugin
-	 * @return string
-	 */
-	public static function get_setting_link() {
-		return admin_url( 'admin.php?page=shopping-feed' );
 	}
 
 	/**
@@ -126,15 +99,6 @@ XML;
 	}
 
 	/**
-	 * Return the feed's public endpoint
-	 * @return string
-	 */
-	public static function get_public_feed_endpoint() {
-		global $wp_rewrite;
-		return $wp_rewrite->root . Rewrite::FEED_PARAM;
-	}
-
-	/**
 	 * Return the feed's public url
 	 * @return string
 	 */
@@ -142,7 +106,18 @@ XML;
 		if ( ! empty( get_option( 'permalink_structure' ) ) ) {
 			return sprintf( '%s/%s/', get_home_url(), self::get_public_feed_endpoint() );
 		}
+
 		return sprintf( '%s?%s', get_home_url(), self::get_public_feed_endpoint() );
+	}
+
+	/**
+	 * Return the feed's public endpoint
+	 * @return string
+	 */
+	public static function get_public_feed_endpoint() {
+		global $wp_rewrite;
+
+		return $wp_rewrite->root . Rewrite::FEED_PARAM;
 	}
 
 	/**
@@ -153,6 +128,7 @@ XML;
 		if ( ! empty( get_option( 'permalink_structure' ) ) ) {
 			return sprintf( '%1$s/%2$s/?version=%3$s', get_home_url(), self::get_public_feed_endpoint(), time() );
 		}
+
 		return sprintf( '%1$s?%2$s&version=%3$s', get_home_url(), self::get_public_feed_endpoint(), time() );
 	}
 
@@ -185,26 +161,6 @@ XML;
 	}
 
 	/**
-	 * Return SF Configuration for Feed Generation
-	 *
-	 * @param string $param
-	 *
-	 * @return mixed|void
-	 */
-	public static function get_sf_feed_options( $param = '' ) {
-		$feed_options = get_option( Options::SF_FEED_OPTIONS );
-		if ( empty( $param ) ) {
-			return $feed_options;
-		}
-
-		if ( ! isset( $feed_options[ $param ] ) ) {
-			return false;
-		}
-
-		return $feed_options[ $param ];
-	}
-
-	/**
 	 * Reset password if bad
 	 *
 	 * @param $token
@@ -230,6 +186,26 @@ XML;
 		}
 
 		return $categories;
+	}
+
+	/**
+	 * Return SF Configuration for Feed Generation
+	 *
+	 * @param string $param
+	 *
+	 * @return mixed|void
+	 */
+	public static function get_sf_feed_options( $param = '' ) {
+		$feed_options = get_option( Options::SF_FEED_OPTIONS );
+		if ( empty( $param ) ) {
+			return $feed_options;
+		}
+
+		if ( ! isset( $feed_options[ $param ] ) ) {
+			return false;
+		}
+
+		return $feed_options[ $param ];
 	}
 
 	/**
@@ -277,6 +253,26 @@ XML;
 	}
 
 	/**
+	 * Return SF Configuration for Shipping
+	 *
+	 * @param string $param
+	 *
+	 * @return mixed|void
+	 */
+	public static function get_sf_shipping_options( $param = '' ) {
+		$shipping_options = get_option( Options::SF_SHIPPING_OPTIONS );
+		if ( empty( $param ) ) {
+			return $shipping_options;
+		}
+
+		if ( ! isset( $shipping_options[ $param ] ) ) {
+			return false;
+		}
+
+		return $shipping_options[ $param ];
+	}
+
+	/**
 	 * Return SF default shipping fees if exist
 	 * @return float
 	 */
@@ -318,14 +314,6 @@ XML;
 	}
 
 	/**
-	 * Return SF orders configuration
-	 * @return mixed|void
-	 */
-	public static function get_sf_orders_options() {
-		return get_option( Options::SF_ORDERS_OPTIONS );
-	}
-
-	/**
 	 * Return action of each wc status
 	 * @return mixed|void
 	 */
@@ -339,6 +327,14 @@ XML;
 		}
 
 		return $orders_options['statuses_actions'];
+	}
+
+	/**
+	 * Return SF orders configuration
+	 * @return mixed|void
+	 */
+	public static function get_sf_orders_options() {
+		return get_option( Options::SF_ORDERS_OPTIONS );
 	}
 
 	/**
@@ -375,27 +371,6 @@ XML;
 		return $orders_options['import_frequency'];
 	}
 
-
-	/**
-	 * Return SF Configuration for Shipping
-	 *
-	 * @param string $param
-	 *
-	 * @return mixed|void
-	 */
-	public static function get_sf_shipping_options( $param = '' ) {
-		$shipping_options = get_option( Options::SF_SHIPPING_OPTIONS );
-		if ( empty( $param ) ) {
-			return $shipping_options;
-		}
-
-		if ( ! isset( $shipping_options[ $param ] ) ) {
-			return false;
-		}
-
-		return $shipping_options[ $param ];
-	}
-
 	/**
 	 * Return zones with related shipping methods
 	 * @return array
@@ -430,103 +405,8 @@ XML;
 				'methods'   => $_shipping_methods,
 			);
 		}
+
 		return $all_shipping_methods;
-	}
-
-	/**
-	 * Return Default shipping method
-	 * @return array
-	 */
-	public static function get_default_shipping_method() {
-		$shipping_options = self::get_sf_shipping_options();
-		if ( empty( $shipping_options ) || empty( $shipping_options['default_shipping_method'] ) ) {
-			return array();
-		}
-
-		return (array) json_decode( $shipping_options['default_shipping_method'], true );
-	}
-
-	/**
-	 * Add new matching for sf carrier
-	 *
-	 * @param $carrier_id
-	 * @param $method
-	 * @return void
-	 */
-	public static function add_matching_shipping_method( $carrier_id, $method ) {
-		if ( empty( $method ) || ! is_int( $carrier_id ) ) {
-			return;
-		}
-		$sf_shipping_option = self::get_sf_shipping_options();
-		if ( empty( $sf_shipping_option ) ) {
-			return;
-		}
-		$method['sf_shipping']                                         = $carrier_id;
-		$sf_shipping_option['matching_shipping_method'][ $carrier_id ] = wp_json_encode( $method );
-		update_option( Options::SF_SHIPPING_OPTIONS, $sf_shipping_option );
-	}
-
-	/**
-	 * Return matching shipping list
-	 * @return array
-	 */
-	public static function get_matching_shipping_method_list() {
-		$orders_options = self::get_sf_shipping_options();
-		if ( empty( $orders_options ) || empty( $orders_options['matching_shipping_method'] ) ) {
-			return array();
-		}
-
-		return (array) $orders_options['matching_shipping_method'];
-	}
-
-	/**
-	 * Return sf carriers
-	 * @return array
-	 */
-	public static function get_sf_carriers() {
-		$sf_carriers = get_option( Options::SF_CARRIERS );
-		if ( empty( $sf_carriers ) || ! is_array( $sf_carriers ) ) {
-			return array();
-		}
-
-		return $sf_carriers;
-	}
-
-	/**
-	 * Get SF carrier id
-	 *
-	 * @param $name
-	 *
-	 * @return int
-	 */
-	public static function get_sf_carrier_id( $name ) {
-		$sf_carriers = self::get_sf_carriers();
-		if ( empty( $sf_carriers ) ) {
-			return 0;
-		}
-
-		$sf_carrier_id = array_search( $name, $sf_carriers, true );
-
-		if ( ! is_int( $sf_carrier_id ) ) {
-			return 0;
-		}
-
-		return $sf_carrier_id;
-	}
-
-	/**
-	 * Add SF carrier
-	 *
-	 * @param $sf_carrier
-	 */
-	public static function add_sf_carrier( $sf_carrier ) {
-		$sf_carriers = self::get_sf_carriers();
-		$index       = count( $sf_carriers );
-		++ $index;
-		$sf_carriers[ (int) $index ] = $sf_carrier;
-		update_option( Options::SF_CARRIERS, $sf_carriers );
-
-		return $index;
 	}
 
 	/**
@@ -554,6 +434,103 @@ XML;
 		}
 
 		return json_decode( $matching_shipping_method_list[ $sf_carrier_id ], true );
+	}
+
+	/**
+	 * Get SF carrier id
+	 *
+	 * @param $name
+	 *
+	 * @return int
+	 */
+	public static function get_sf_carrier_id( $name ) {
+		$sf_carriers = self::get_sf_carriers();
+		if ( empty( $sf_carriers ) ) {
+			return 0;
+		}
+
+		$sf_carrier_id = array_search( $name, $sf_carriers, true );
+
+		if ( ! is_int( $sf_carrier_id ) ) {
+			return 0;
+		}
+
+		return $sf_carrier_id;
+	}
+
+	/**
+	 * Return sf carriers
+	 * @return array
+	 */
+	public static function get_sf_carriers() {
+		$sf_carriers = get_option( Options::SF_CARRIERS );
+		if ( empty( $sf_carriers ) || ! is_array( $sf_carriers ) ) {
+			return array();
+		}
+
+		return $sf_carriers;
+	}
+
+	/**
+	 * Add SF carrier
+	 *
+	 * @param $sf_carrier
+	 */
+	public static function add_sf_carrier( $sf_carrier ) {
+		$sf_carriers = self::get_sf_carriers();
+		$index       = count( $sf_carriers );
+		++ $index;
+		$sf_carriers[ (int) $index ] = $sf_carrier;
+		update_option( Options::SF_CARRIERS, $sf_carriers );
+
+		return $index;
+	}
+
+	/**
+	 * Return matching shipping list
+	 * @return array
+	 */
+	public static function get_matching_shipping_method_list() {
+		$orders_options = self::get_sf_shipping_options();
+		if ( empty( $orders_options ) || empty( $orders_options['matching_shipping_method'] ) ) {
+			return array();
+		}
+
+		return (array) $orders_options['matching_shipping_method'];
+	}
+
+	/**
+	 * Return Default shipping method
+	 * @return array
+	 */
+	public static function get_default_shipping_method() {
+		$shipping_options = self::get_sf_shipping_options();
+		if ( empty( $shipping_options ) || empty( $shipping_options['default_shipping_method'] ) ) {
+			return array();
+		}
+
+		return (array) json_decode( $shipping_options['default_shipping_method'], true );
+	}
+
+	/**
+	 * Add new matching for sf carrier
+	 *
+	 * @param $carrier_id
+	 * @param $method
+	 *
+	 * @return void
+	 */
+	public static function add_matching_shipping_method( $carrier_id, $method ) {
+		if ( empty( $method ) || ! is_int( $carrier_id ) ) {
+			return;
+		}
+		$sf_shipping_option = self::get_sf_shipping_options();
+		if ( empty( $sf_shipping_option ) ) {
+			return;
+		}
+		$method['sf_shipping']                                         = $carrier_id;
+		$sf_shipping_option['matching_shipping_method'][ $carrier_id ] = wp_json_encode( $method );
+		update_option( Options::SF_SHIPPING_OPTIONS, $sf_shipping_option );
 	}
 
 	/**
@@ -650,7 +627,7 @@ XML;
 	public static function wc_tracking_number( $wc_order ) {
 		$tracking_number = apply_filters( 'shopping_feed_tracking_number', '', $wc_order );
 		//COMPACT WITH OLD VERSION
-		if ( '6.0.19' >= SF_VERSION ) {
+		if ( '6.0.19' >= SF_VERSION || ! self::tracking_is_compatible_with_addons() ) {
 			return (string) $wc_order->get_meta( $tracking_number );
 		}
 
@@ -667,7 +644,7 @@ XML;
 	public static function wc_tracking_link( $wc_order ) {
 		$tracking_link = apply_filters( 'shopping_feed_tracking_link', '', $wc_order );
 		//COMPACT WITH OLD VERSION
-		if ( '6.0.19' >= SF_VERSION ) {
+		if ( '6.0.19' >= SF_VERSION || ! self::tracking_is_compatible_with_addons() ) {
 			return (string) $wc_order->get_meta( $tracking_link );
 		}
 
@@ -680,6 +657,16 @@ XML;
 	 */
 	public static function get_default_product_quantity() {
 		return 100;
+	}
+
+	/**
+	 * Check if a running generation process
+	 * @return bool
+	 */
+	public static function generation_process_running() {
+		$process = self::get_running_generation_feed_process();
+
+		return ! empty( $process );
 	}
 
 	/**
@@ -697,16 +684,6 @@ XML;
 		);
 	}
 
-	/**
-	 * Check if a running generation process
-	 * @return bool
-	 */
-	public static function generation_process_running() {
-		$process = self::get_running_generation_feed_process();
-
-		return ! empty( $process );
-	}
-
 	public static function clean_generation_process_running() {
 		try {
 			\ActionScheduler::store()->cancel_actions_by_group( 'sf_feed_generation_process' );
@@ -722,5 +699,46 @@ XML;
 			);
 		}
 		wp_safe_redirect( self::get_setting_link(), 302 );
+	}
+
+	/**
+	 * Return WC Logger
+	 * @return WC_Logger
+	 */
+	public static function get_logger() {
+		return new WC_Logger();
+	}
+
+	/**
+	 * Return the settings link for plugin
+	 * @return string
+	 */
+	public static function get_setting_link() {
+		return admin_url( 'admin.php?page=shopping-feed' );
+	}
+
+	/**
+	 * Check if the Site is compatible with addons
+	 * @return bool
+	 */
+	public static function tracking_is_compatible_with_addons() {
+		$shipping_options = self::get_sf_shipping_options();
+		if ( empty( $shipping_options ) ) {
+			return false;
+		}
+
+		return ! empty( $shipping_options['retrieval_mode'] ) && 'ADDONS' === $shipping_options['retrieval_mode'];
+	}
+
+	/**
+	 * Singleton instance can't be cloned.
+	 */
+	private function __clone() {
+	}
+
+	/**
+	 * Singleton instance can't be serialized.
+	 */
+	private function __wakeup() {
 	}
 }

@@ -681,6 +681,27 @@ class Options {
 			self::SF_SHIPPING_SETTINGS_PAGE
 		);
 		add_settings_field(
+			'shipping_is_compatible_with_addons',
+			__( 'Retrieval mode', 'shopping-feed' ),
+			function () {
+				?>
+					<select id="retrieval_mode" name="<?php echo esc_html( sprintf( '%s[retrieval_mode]', self::SF_SHIPPING_OPTIONS ) ); ?>">
+						<option value="ADDONS"
+							<?php selected( 'ADDONS', $this->sf_shipping_options['retrieval_mode'] ? $this->sf_shipping_options['retrieval_mode'] : false ); ?>>Addons</option>
+						<option value="METAS"
+							<?php selected( 'METAS', $this->sf_shipping_options['retrieval_mode'] ? $this->sf_shipping_options['retrieval_mode'] : false ); ?>>Métas</option>
+					</select>
+					<p class="description"
+					   id="tagline-description">
+					   <?php echo esc_attr_e( 'How shipping information will be retrieved', 'shopping-feed' ); ?>
+					   </p>
+					<?php
+			},
+			self::SF_SHIPPING_SETTINGS_PAGE,
+			'sf_orders_settings_shippings_methods'
+		);
+
+		add_settings_field(
 			'default_shipping_method',
 			__( 'Default Shipping Method', 'shopping-feed' ),
 			function () use ( $zone_with_methods, $sf_orders_options_default_shipping_method_id ) {
