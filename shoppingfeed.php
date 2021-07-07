@@ -25,7 +25,7 @@ if ( file_exists( plugin_dir_path( __FILE__ ) . '/vendor/autoload.php' ) ) {
 	require_once plugin_dir_path( __FILE__ ) . '/vendor/autoload.php';
 }
 
-define( 'SF_VERSION', '6.0.24' );
+define( 'SF_VERSION', '6.0.25' );
 define( 'SF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'SF_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );

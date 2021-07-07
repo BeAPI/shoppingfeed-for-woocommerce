@@ -1,8 +1,8 @@
 ## ShoppingFeed
 Contributors: ShoppingFeed, BeAPI
 Tags: shoppingfeed, marketplace, woocommerce, woocommerce shoppingfeed, create woocommerce products shoppingfeed, products feed, generate shoppingfeed, amazon, Jet, Walmart, many marketplace, import orders
-Stable tag: 6.0.24
-Version: 6.0.24
+Stable tag: 6.0.25
+Version: 6.0.25
 Requires PHP: 5.6
 Requires at least: 5.2
 Tested up to: 5.5.3
@@ -37,6 +37,7 @@ Version 6.0.0 is a major version, there are several changes and improvements whi
 6.0.22 Fix file case issue
 6.0.23 If the billing address phone is empty, get the shipping one to display phone on the BO
 6.0.24 Tracking: fix bad condition
+6.0.25 Tracking: Add option to choose Retrieval Mode
 
 == Description ==
 WordPress connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, Google, and 1000's of international marketplaces
