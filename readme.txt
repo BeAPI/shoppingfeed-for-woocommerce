@@ -5,9 +5,9 @@ Stable tag: 6.0.26
 Version: 6.0.26
 Requires PHP: 5.6
 Requires at least: 5.2
-Tested up to: 5.5.3
+Tested up to: 5.8.0
 WC requires at least: 3.8
-WC tested up to: 4.2.2
+WC tested up to: 5.5.2
 
 == Upgrade Notice ==
 Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
@@ -39,6 +39,7 @@ Version 6.0.0 is a major version, there are several changes and improvements whi
 6.0.24 Tracking: fix bad condition
 6.0.25 Tracking: Add option to choose Retrieval Mode
 6.0.26 Fix version number
+6.0.27 Support WP 5.8
 
 == Description ==
 WordPress connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, Google, and 1000's of international marketplaces
