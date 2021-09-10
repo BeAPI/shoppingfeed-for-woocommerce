@@ -18,8 +18,8 @@ class ASTPlugin {
 		if ( ! class_exists( '\WC_Advanced_Shipment_Tracking_Actions' ) ) {
 			return;
 		}
-		add_filter( 'shopping_feed_tracking_number', array( $this, 'get_tracking_number' ), 10, 2 );
-		add_filter( 'shopping_feed_tracking_link', array( $this, 'get_tracking_link' ), 10, 2 );
+		add_filter( 'shopping_feed_tracking_number', array( $this, 'get_tracking_number' ), 11, 2 );
+		add_filter( 'shopping_feed_tracking_link', array( $this, 'get_tracking_link' ), 11, 2 );
 	}
 
 	/**
