@@ -93,6 +93,10 @@ class WoocommerceFilters {
 	 * @return bool
 	 */
 	public function disable_wc_emails( $is_enabled, $wc_order ) {
-		return ! Order::is_sf_order( $wc_order );
+		if ( ! Order::is_sf_order( $wc_order ) ) {
+			return false;
+		}
+
+		return $is_enabled;
 	}
 }
