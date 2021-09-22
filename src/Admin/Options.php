@@ -163,6 +163,11 @@ class Options {
 				'url' => '?page=' . self::SF_SLUG . '&tab=orders-settings',
 				'title' => __( 'Orders', 'shopping-feed' ),
 			),
+			array(
+				'tab' => 'logs',
+				'url' => admin_url( 'admin.php?page=wc-status&tab=logs' ),
+				'title' => __( 'Logs', 'shopping-feed' ),
+			),
 		);
 		?>
 		<div class="wrap sf__plugin">
