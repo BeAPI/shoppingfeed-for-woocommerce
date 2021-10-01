@@ -5,7 +5,6 @@ namespace ShoppingFeed\ShoppingFeedWC\Sdk;
 // Exit on direct access
 defined( 'ABSPATH' ) || exit;
 
-use ShoppingFeed\Sdk\Api\Session\SessionResource;
 use ShoppingFeed\Sdk\Client;
 use ShoppingFeed\Sdk\Credential;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
@@ -15,121 +14,52 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
  */
 class Sdk {
 
-	/** @var SessionResource */
-	private $session;
-
-	/** @var string|null */
-	private $username;
-
-	/** @var string|null */
-	private $password;
-
-	/** @var string|null */
-	private $token;
-
 	/**
-	 * @var Sdk
+	 * @param int $account_id
 	 */
-	private static $instance;
+	public static function get_sf_account_shop( $account_id ) {
+		$sf_account = ShoppingFeedHelper::get_sf_account_credentials( $account_id );
+
+		return self::get_sf_shop( $sf_account );
+	}
+
 
 	/**
-	 * Get the singleton instance.
+	 * Return account deault shop
 	 *
-	 * @return Sdk
+	 * @param array $sf_account
+	 *
+	 * @return false|\ShoppingFeed\Sdk\Api\Store\StoreResource
+	 * @psalm-suppress all
 	 */
-	public static function get_instance() {
-		if ( is_null( self::$instance ) ) {
-			self::$instance = new static();
-		}
-
-		return self::$instance;
-	}
-
-	/**
-	 * Singleton instance can't be cloned.
-	 */
-	private function __clone() {
-	}
-
-	/**
-	 * Singleton instance can't be serialized.
-	 */
-	private function __wakeup() {
-	}
-
-	/**
-	 * Sdk constructor.
-	 */
-	private function __construct() {
-		if ( empty( $this->session ) ) {
-			$options = ShoppingFeedHelper::get_sf_account_options();
-			if ( empty( $options ) ) {
-				ShoppingFeedHelper::get_logger()->error(
-					__( 'No settings founds', 'shopping-feed' ),
-					array(
-						'source' => 'shopping-feed',
-					)
-				);
-
-				return;
-			}
-
-			$this->token    = ! empty( $options['token'] ) ? $options['token'] : null;
-			$this->username = ! empty( $options['username'] ) ? $options['username'] : null;
-			$this->password = ! empty( $options['password'] ) ? $options['password'] : null;
-
-			$this->authenticate();
-		}
-	}
-
-	/**
-	 * @return Credential\Password|Credential\Token|\WP_Error
-	 */
-	private function get_credential() {
-
-		//Check if we have Token to connect directly
-		if ( ! empty( $this->token ) ) {
-			return new Credential\Token( $this->token );
-		}
-
-		//If no credentials found go back
-		if ( empty( $this->username ) || empty( $this->password ) ) {
+	public static function get_sf_shop( $sf_account ) {
+		if (
+			empty( $sf_account['token'] ) && (
+				empty( $sf_account['username'] ) ||
+				empty( $sf_account['password'] )
+			)
+		) {
 			ShoppingFeedHelper::get_logger()->error(
-				__( 'Need username/password to connect', 'shopping-feed' ),
+				sprintf(
+					__( 'No Credentials found to connect', 'shopping-feed' )
+				),
 				array(
 					'source' => 'shopping-feed',
 				)
 			);
-			return new \WP_Error( 'shopping_feed_auth_required', __( 'Need username/password to connect', 'shopping-feed' ) );
-		}
 
-		//Return Credentials username/password
-		return new Credential\Password( $this->username, $this->password );
-	}
-
-	/**
-	 * Try to connect if we have credentials
-	 * Set Token if the connection is set
-	 * @return bool
-	 */
-	public function authenticate() {
-		if ( is_wp_error( $this->get_credential() ) ) {
 			return false;
 		}
 
-		/** @var Credential\Password|Credential\Token $credentials */
-		$credentials = $this->get_credential();
+		$credentials = new Credential\Password( $sf_account['username'], $sf_account['password'] );
+
+		if ( ! empty( $sf_account['token'] ) ) {
+			$credentials = new Credential\Token( $sf_account['token'] );
+		}
 
 		try {
-			$this->session = Client\Client::createSession( $credentials );
-
-			if ( empty( $this->token ) ) {
-				ShoppingFeedHelper::set_sf_token( $this->session->getToken() );
-			}
-
-			return true;
+			$session = Client\Client::createSession( $credentials );
 		} catch ( \Exception $exception ) {
-
 			ShoppingFeedHelper::get_logger()->error(
 				sprintf(
 				/* translators: %s: Error message. */
@@ -141,30 +71,26 @@ class Sdk {
 				)
 			);
 
-			ShoppingFeedHelper::clean_password();
-			return false;
-		}
-	}
-
-	/**
-	 * Return the main store if the connection is set
-	 * @return false|\ShoppingFeed\Sdk\Api\Store\StoreResource
-	 */
-	public function get_default_shop() {
-
-		if ( ! $this->authenticate() ) {
 			return false;
 		}
 
-		$main_shop = $this->session->getMainStore();
+		$main_shop = $session->getMainStore();
 
-		if ( ! $main_shop ) {
+		//add storeId to account
+		$account_options                          = ShoppingFeedHelper::get_sf_account_options();
+		$index                                    = array_search( $sf_account['username'], array_column( $account_options, 'username' ), true );
+		$account_options[ $index ]['sf_store_id'] = $main_shop->getId();
+		$account_options[ $index ]['token']       = $session->getToken();
+		ShoppingFeedHelper::set_sf_account_options( $account_options );
+
+		if ( empty( $main_shop ) ) {
 			ShoppingFeedHelper::get_logger()->error(
 				__( 'No store found', 'shopping-feed' ),
 				array(
 					'source' => 'shopping-feed',
 				)
 			);
+
 			return false;
 		}
 

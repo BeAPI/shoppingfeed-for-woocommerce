@@ -312,11 +312,13 @@ class Order {
 			return array();
 		}
 
+		$sf_store_id     = $order->get_meta( Query::$wc_meta_sf_store_id );
 		$sf_reference    = $order->get_meta( Query::$wc_meta_sf_reference );
 		$sf_channel_name = $order->get_meta( Query::$wc_meta_sf_channel_name );
 
 		return array(
 			'order'           => $order,
+			'sf_store_id'     => $sf_store_id,
 			'sf_reference'    => $sf_reference,
 			'sf_channel_name' => $sf_channel_name,
 		);

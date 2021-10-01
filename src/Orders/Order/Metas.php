@@ -38,6 +38,7 @@ class Metas {
 		$this->add_order_referene();
 		$this->add_order_channel_name();
 		$this->add_order_shipping();
+		$this->add_sf_store_id();
 
 		do_action_ref_array( 'sf_add_metas', array( $this ) );
 	}
@@ -79,5 +80,13 @@ class Metas {
 			'value'  => $value,
 			'unique' => $unique,
 		);
+	}
+
+	/**
+	 * Add store id
+	 */
+	private function add_sf_store_id() {
+		$sf_order_array = $this->sf_order->toArray();
+		$this->add_meta( Query::$wc_meta_sf_store_id, $sf_order_array['storeId'] );
 	}
 }

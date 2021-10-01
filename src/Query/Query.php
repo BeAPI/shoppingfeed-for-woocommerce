@@ -9,6 +9,11 @@ defined( 'ABSPATH' ) || exit;
  * Class Query to manage custom WC queries & metas
  */
 class Query {
+	/**
+	 * Custom Meta for SF accpunt ID
+	 * @var string
+	 */
+	public static $wc_meta_sf_store_id = 'sf_store_id';
 
 	/**
 	 * Custom Meta for SF reference

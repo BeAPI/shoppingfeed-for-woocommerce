@@ -19,14 +19,16 @@ class Notices {
 	}
 
 	public function admin_notices() {
-		$options = ShoppingFeedHelper::get_sf_account_options();
-		if (
-			empty( $options['token'] ) &&
-			get_current_screen()->parent_base !== Options::SF_SLUG ) {
-			if ( empty( $options['username'] ) || empty( $options['password'] ) ) {
-				$this->display_notice();
-			}
-		}
+		//TODO: CHECK ALL CREDENTIALS
+		return;
+		//      $options = ShoppingFeedHelper::get_sf_account_options();
+		//      if (
+		//          empty( $options['token'] ) &&
+		//          get_current_screen()->parent_base !== Options::SF_SLUG ) {
+		//          if ( empty( $options['username'] ) || empty( $options['password'] ) ) {
+		//              $this->display_notice();
+		//          }
+		//      }
 	}
 
 	/**

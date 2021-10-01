@@ -1,5 +1,19 @@
 .sf {
 
+  &__inline{
+    display: inline-block;
+    margin-right: 0;
+  }
+
+  &__table {
+    tr:first-child button{
+      display: none;
+    }
+    td {
+      padding-left: 0;
+    }
+  }
+
   &__logo {
     overflow: hidden;
     text-indent: -99999px;
@@ -28,6 +42,7 @@
     }
   }
 
+  &__button__secondary.button,
   &__button__logout.button {
     color: $white;
     text-transform: uppercase;

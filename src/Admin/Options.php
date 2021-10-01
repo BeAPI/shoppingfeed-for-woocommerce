@@ -57,8 +57,7 @@ class Options {
 	//SF Carriers
 	/** @var array $sf_orders_options */
 	private $sf_orders_options;
-	/** @var bool $connected */
-	private $connected = true;
+
 
 	/**
 	 * Options constructor.
@@ -113,11 +112,14 @@ class Options {
 			}
 		);
 
+		/**
+		 * Clean and register new cron once account option updated
+		 */
 		add_action(
-			'admin_action_sf_logout',
+			'admin_action_update',
 			function () {
-				delete_option( Options::SF_ACCOUNT_OPTIONS );
-				wp_safe_redirect( ShoppingFeedHelper::get_setting_link(), 302 );
+				Actions::clean_get_orders();
+				Actions::register_get_orders();
 			}
 		);
 
@@ -224,8 +226,6 @@ class Options {
 	 * Define Account Page
 	 */
 	public function init_account_setting_page() {
-			$this->connected = ShoppingFeedHelper::is_authenticated();
-
 			//check clean action
 			$this->check_clean_action();
 
@@ -241,38 +241,11 @@ class Options {
 			);
 
 			add_settings_field(
-				'username',
-				__( 'Username', 'shopping-feed' ),
-				function () {
-					printf(
-						'<input class="regular-text" type="text" name="sf_account_options[username]" id="username" value="%s">',
-						isset( $this->sf_account_options['username'] ) ? esc_attr( $this->sf_account_options['username'] ) : ''
-					);
-				},
-				self::SF_ACCOUNT_SETTINGS_PAGE,
-				'sf_account_settings'
-			);
-
-			add_settings_field(
-				'password',
-				__( 'Password', 'shopping-feed' ),
-				function () {
-					printf(
-						'<input class="regular-text" type="password" name="sf_account_options[password]" id="password" value="%s">',
-						isset( $this->sf_account_options['password'] ) ? esc_attr( $this->sf_account_options['password'] ) : ''
-					);
-				},
-				self::SF_ACCOUNT_SETTINGS_PAGE,
-				'sf_account_settings'
-			);
-
-		if ( $this->connected ) {
-			add_settings_field(
 				'url',
 				__( 'Your source feed', 'shopping-feed' ),
 				function () {
-					$sf_feed_public_url = ShoppingFeedHelper::get_public_feed_url();
-					$sf_process_running = ShoppingFeedHelper::generation_process_running();
+					$sf_feed_public_url      = ShoppingFeedHelper::get_public_feed_url();
+					$sf_process_running      = ShoppingFeedHelper::is_process_running( 'sf_feed_generation_process' );
 					$sf_last_generation_date = get_option( Generator::SF_FEED_LAST_GENERATION_DATE );
 					?>
 					<?php if ( ! $sf_process_running ) : ?>
@@ -302,50 +275,116 @@ class Options {
 				self::SF_ACCOUNT_SETTINGS_PAGE,
 				'sf_account_settings'
 			);
-		}
-
-			add_settings_field(
-				'status',
-				__( 'Status', 'shopping-feed' ),
-				function () {
-					?>
-				<div class="notice-<?php echo esc_html( $this->connected ? 'success' : 'error' ); ?> regular-text notice-alt">
-					<?php
-					echo esc_html( $this->connected ? _e( 'Connected', 'shopping-feed' ) : _e( 'Not connected', 'shopping-feed' ) );
-					?>
-				</div>
-					<?php
-				},
-				self::SF_ACCOUNT_SETTINGS_PAGE,
-				'sf_account_settings'
-			);
 		?>
 		<div class="wrap">
 			<?php settings_errors(); ?>
 
-<div class="sf__columns">
-		<div class="sf__column">
-			 <form method="post" action="options.php">
+			<div class="sf__columns">
+				<div class="sf__column account__wrapper">
+					<form method="post" action="options.php">
+
+						<div class="blocks">
+							<div class="block_links">
+								<table class="form-table sf__table">
+									<thead>
+									<tr>
+										<th> <?php esc_html_e( 'Username', 'shopping-feed' ); ?> </th>
+										<th> <?php esc_html_e( 'Password', 'shopping-feed' ); ?> </th>
+										<th></th>
+									</tr>
+									</thead>
+									<tbody>
+									<tr>
+										<td><input class="regular-text user" type="text"
+												   name="sf_account_options[0][username]"
+												   value="<?php echo isset( $this->sf_account_options[0]['username'] ) ? esc_attr( $this->sf_account_options[0]['username'] ) : ''; ?>">
+										</td>
+										<td><input class="regular-text pass" type="password"
+												   name="sf_account_options[0][password]"
+												   value="<?php echo isset( $this->sf_account_options[0]['password'] ) ? esc_attr( $this->sf_account_options[0]['password'] ) : ''; ?>">
+										</td>
+										<td>
+											<button class="button sf__button__secondary delete_link sf__button--delete">
+												Delete
+											</button>
+										</td>
+										<td class="hidden"><input name="sf_account_options[0][token]"
+																  value="<?php echo isset( $this->sf_account_options[0]['token'] ) ? esc_attr( $this->sf_account_options[0]['token'] ) : ''; ?>">
+										</td>
+										<td class="hidden"><input name="sf_account_options[0][sf_store_id]"
+																  value="<?php echo isset( $this->sf_account_options[0]['sf_store_id'] ) ? esc_attr( $this->sf_account_options[0]['sf_store_id'] ) : ''; ?>">
+										</td>
+									</tr>
+									<?php
+									if ( count( $this->sf_account_options ) > 1 ) {
+										foreach ( $this->sf_account_options as $key => $sf_account_option ) {
+											if ( 0 === $key ) {
+												continue;
+											}
+											?>
+											<tr>
+												<td><input class="regular-text user" type="text"
+														   name="sf_account_options[<?php echo esc_attr( $key ); ?>][username]"
+														   value="<?php echo isset( $this->sf_account_options[ $key ]['username'] ) ? esc_attr( $this->sf_account_options[ $key ]['username'] ) : ''; ?>">
+												</td>
+												<td><input class="regular-text pass" type="password"
+														   name="sf_account_options[<?php echo esc_attr( $key ); ?>][password]"
+														   value="<?php echo isset( $this->sf_account_options[ $key ]['password'] ) ? esc_attr( $this->sf_account_options[ $key ]['password'] ) : ''; ?>">
+												</td>
+												<td class="hidden"><input
+															name="sf_account_options[<?php echo esc_attr( $key ); ?>][token]"
+															value="<?php echo isset( $this->sf_account_options[ $key ]['token'] ) ? esc_attr( $this->sf_account_options[ $key ]['token'] ) : ''; ?>">
+												</td>
+												<td class="hidden"><input
+															name="sf_account_options[<?php echo esc_attr( $key ); ?>][sf_store_id]"
+															value="<?php echo isset( $this->sf_account_options[ $key ]['sf_store_id'] ) ? esc_attr( $this->sf_account_options[ $key ]['sf_store_id'] ) : ''; ?>">
+												</td>
+												<td>
+													<button class="button sf__button__secondary delete_link sf__button--delete">
+														Delete
+													</button>
+												</td>
+											</tr>
+											<?php
+										}
+									}
+									?>
+									</tbody>
+								</table>
+								<div class="sf__inline">
+									<p>
+										<button class="button sf__button__secondary add_link"><?php esc_html_e( 'Add account', 'shopping-feed' ); ?></button>
+									</p>
+								</div>
+								<div class="sf__inline">
+									<?php
+									settings_fields( 'sf_account_page_fields' );
+									submit_button( __( 'Save', 'shopping-feed' ), 'sf__button' );
+									?>
+								</div>
+					</form>
+				</div>
+			</div>
+			<!-- Line template -->
+			<script type="text/html" id="tpl-line">
+				<tr>
+					<td><input class="regular-text user" type="text" name="sf_account_options[<%= row %>][username]"
+							   value="<%= user %>"></td>
+					<td><input class="regular-text pass" type="password" name="sf_account_options[<%= row %>][password]"
+							   value="<%= pass %>"></td>
+					<td>
+						<button class="button sf__button__secondary sf__button--delete delete_link">Delete</button>
+					</td>
+				</tr>
+			</script>
+			<div class="sf__requirements">
 				<?php
-				settings_fields( 'sf_account_page_fields' );
-				do_settings_sections( self::SF_ACCOUNT_SETTINGS_PAGE );
-				if ( ! $this->connected ) {
-					submit_button( __( 'Login', 'shopping-feed' ), 'sf__button' );
-				} else {
-					echo '<input class="hidden" name="action" value="sf_logout">';
-					submit_button( __( 'Logout', 'shopping-feed' ), 'sf__button__logout', 'logout' );
-				}
+				$requirements = Requirements::get_instance();
+				echo wp_kses_post( $requirements->curl_requirement() );
+				echo wp_kses_post( $requirements->php_requirement() );
+				echo wp_kses_post( $requirements->openssl_requirement() );
+				echo wp_kses_post( $requirements->uploads_directory_access_requirement() );
 				?>
-			</form>
-		<div class="sf__requirements">
-		<?php
-		$requirements = Requirements::get_instance();
-			echo wp_kses_post( $requirements->curl_requirement() );
-			echo wp_kses_post( $requirements->php_requirement() );
-			echo wp_kses_post( $requirements->openssl_requirement() );
-			echo wp_kses_post( $requirements->account_requirement() );
-			echo wp_kses_post( $requirements->uploads_directory_access_requirement() );
-		?>
 				<!--        REQUIREMENTS     -->
 		</div>
 		</div>
@@ -364,7 +403,7 @@ class Options {
 	 */
 	private function check_clean_action() {
 		if ( ! empty( $_GET['clean_process'] ) ) {
-			ShoppingFeedHelper::clean_generation_process_running();
+			ShoppingFeedHelper::clean_process_running( 'sf_feed_generation_process' );
 		}
 	}
 
@@ -384,14 +423,22 @@ class Options {
 			true
 		);
 
+		wp_enqueue_script(
+			'accounts',
+			SF_PLUGIN_URL . 'assets/js/accounts.js',
+			array( 'jquery', 'underscore' ),
+			true,
+			true
+		);
+
 		wp_enqueue_script( 'multi_js_init', SF_PLUGIN_URL . 'assets/js/init.js', array( 'multi_js' ), true );
 		wp_localize_script(
 			'multi_js_init',
 			'sf_options',
 			array(
-				'selected_orders'            => __( 'Selected order status', 'shopping-feed' ),
+				'selected_orders'   => __( 'Selected order status', 'shopping-feed' ),
 				'unselected_orders' => __( 'Unselected order status', 'shopping-feed' ),
-				'search' => __( 'Search', 'shopping-feed' ),
+				'search'            => __( 'Search', 'shopping-feed' ),
 			)
 		);
 	}
@@ -400,7 +447,6 @@ class Options {
 	 * Define Feed Page
 	 */
 	private function init_feed_setting_page() {
-		$this->check_connection();
 
 		//load assets
 		$this->load_assets();
@@ -553,7 +599,7 @@ class Options {
 			'Batch size',
 			__( 'Batch size', 'shopping-feed' ),
 			function () {
-				$running_process = ShoppingFeedHelper::get_running_generation_feed_process();
+				$running_process = ShoppingFeedHelper::get_running_process( 'sf_feed_generation_process' );
 				$running_process = is_array( $running_process ) ? count( $running_process ) : 0;
 				?>
 				<select name="<?php echo esc_html( sprintf( '%s[part_size]', self::SF_FEED_OPTIONS ) ); ?>">
@@ -656,21 +702,9 @@ class Options {
 	}
 
 	/**
-	 * Check connection with SF platform with correct credentials
-	 * If not redirect to Account page
-	 */
-	private function check_connection() {
-		if ( ! ShoppingFeedHelper::is_authenticated() ) {
-			wp_safe_redirect( sprintf( '%s&no_connected=%s', ShoppingFeedHelper::get_setting_link(), 'true' ) );
-		}
-	}
-
-	/**
 	 * Define Shipping Page
 	 */
 	private function init_shipping_setting_page() {
-		$this->check_connection();
-
 		//load assets
 		$this->load_assets();
 
@@ -825,8 +859,6 @@ class Options {
 	}
 
 	private function init_orders_setting_page() {
-		$this->check_connection();
-
 		//load assets
 		$this->load_assets();
 

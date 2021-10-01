@@ -116,8 +116,14 @@ class ShoppingFeed {
 			return;
 		}
 
-		$this->query   = new Query();
 		$this->actions = new WoocommerceActions();
+
+		//Check Upgrade
+		if ( ! $this->check_upgrade() ) {
+			return;
+		}
+
+		$this->query   = new Query();
 		$this->filters = new WoocommerceFilters();
 		$this->notices = new Notices();
 		$this->options = new Options();
@@ -257,5 +263,69 @@ class ShoppingFeed {
 		if ( ! is_dir( $part_directory ) ) {
 			wp_mkdir_p( $part_directory );
 		}
+	}
+
+	public function check_upgrade() {
+		if ( ! ShoppingFeedHelper::sf_has_upgrade() ) {
+			return true;
+		}
+
+		//check if we have a running migration
+		if ( ShoppingFeedHelper::is_upgrade_running() ) {
+			add_action(
+				'admin_notices',
+				function () {
+					?>
+					<div id="message" class="notice notice-error">
+						<p><?php esc_html_e( 'ShoppingFeed migration is running', 'shopping-feed' ); ?></p>
+					</div>
+					<?php
+				}
+			);
+
+			return false;
+		}
+
+		//check if we need to do migration
+		if (
+			! empty( $_GET['sf_action'] ) &&
+			'sf_migrate_single' === $_GET['sf_action'] &&
+			isset( $_GET['_wpnonce'] ) &&
+			wp_verify_nonce( wp_unslash( $_GET['_wpnonce'] ), 'sf_migrate_single' ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		) {
+			$id_action = as_enqueue_async_action( 'sf_migrate_single_action', array(), 'sf_migrate_single' );
+			update_option( SF_UPGRADE_RUNNING, $id_action );
+			wp_safe_redirect( admin_url( '/' ), 302 );
+
+			return false;
+		}
+
+		add_action(
+			'admin_notices',
+			function () {
+				?>
+				<div id="message" class="notice notice-error">
+					<p><?php esc_html_e( 'ShoppingFeed need to migrate old data', 'shopping-feed' ); ?></p>
+					<a href="
+					<?php
+					esc_url(
+						wp_nonce_url(
+							add_query_arg(
+								array(
+									'sf_action' => 'sf_migrate_single',
+								),
+								admin_url()
+							),
+							'sf_migrate_single'
+						)
+					)
+					?>
+					">Migrate</a>
+				</div>
+				<?php
+			}
+		);
+
+		return false;
 	}
 }
