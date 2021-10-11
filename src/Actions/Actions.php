@@ -48,18 +48,17 @@ class Actions {
 			);
 
 			return;
-		} else {
-			foreach ( $sf_accounts as $key => $sf_account ) {
-				as_schedule_recurring_action(
-					time() + 60,
-					ShoppingFeedHelper::get_sf_orders_import_frequency(),
-					'sf_get_orders_action_' . $key,
-					array(
-						'sf_account' => $sf_account,
-					),
-					self::ORDERS_GROUP
-				);
-			}
+		}
+		foreach ( $sf_accounts as $key => $sf_account ) {
+			as_schedule_recurring_action(
+				time() + 60,
+				ShoppingFeedHelper::get_sf_orders_import_frequency(),
+				'sf_get_orders_action_' . $key,
+				array(
+					'sf_account' => $sf_account,
+				),
+				self::ORDERS_GROUP
+			);
 		}
 	}
 

@@ -39,6 +39,7 @@ class Sdk {
 				empty( $sf_account['password'] )
 			)
 		) {
+			//TODO: add more informations about concerned sf account
 			ShoppingFeedHelper::get_logger()->error(
 				sprintf(
 					__( 'No Credentials found to connect', 'shopping-feed' )
@@ -76,15 +77,9 @@ class Sdk {
 
 		$main_shop = $session->getMainStore();
 
-		//add storeId to account
-		$account_options                          = ShoppingFeedHelper::get_sf_account_options();
-		$index                                    = array_search( $sf_account['username'], array_column( $account_options, 'username' ), true );
-		$account_options[ $index ]['sf_store_id'] = $main_shop->getId();
-		$account_options[ $index ]['token']       = $session->getToken();
-		ShoppingFeedHelper::set_sf_account_options( $account_options );
-
 		if ( empty( $main_shop ) ) {
 			ShoppingFeedHelper::get_logger()->error(
+			//TODO: add more informations about concerned sf account
 				__( 'No store found', 'shopping-feed' ),
 				array(
 					'source' => 'shopping-feed',
@@ -93,6 +88,16 @@ class Sdk {
 
 			return false;
 		}
+
+		//add storeId to account
+		$account_options = ShoppingFeedHelper::get_sf_account_options();
+		$index           = array_search( $sf_account['username'], array_column( $account_options, 'username' ), true );
+		if ( false === $index || empty( $account_options[ $index ] ) ) {
+			return false;
+		}
+		$account_options[ $index ]['sf_store_id'] = $main_shop->getId();
+		$account_options[ $index ]['token']       = $session->getToken();
+		ShoppingFeedHelper::set_sf_account_options( $account_options );
 
 		return $main_shop;
 	}

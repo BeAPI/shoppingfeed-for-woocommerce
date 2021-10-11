@@ -59,7 +59,11 @@ class Operations {
 			empty( $order_sf_metas['sf_store_id'] )
 		) {
 			throw new Exception(
-				__( 'No Order found', 'shopping-feed' )
+				sprintf(
+				/* translators: %s: Error message. */
+					__( 'No SF order found in %s', 'shopping-feed' ),
+					$order_id
+				)
 			);
 		}
 

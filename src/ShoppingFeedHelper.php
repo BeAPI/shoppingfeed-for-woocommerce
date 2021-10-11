@@ -140,10 +140,10 @@ XML;
 
 	/**
 	 * Return SF Configuration for Account
-	 * @return mixed|void
+	 * @return array
 	 */
 	public static function get_sf_account_options() {
-		return get_option( Options::SF_ACCOUNT_OPTIONS );
+		return get_option( Options::SF_ACCOUNT_OPTIONS, array() );
 	}
 
 

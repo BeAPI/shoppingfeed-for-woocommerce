@@ -296,8 +296,7 @@ class ShoppingFeed {
 			$id_action = as_enqueue_async_action( 'sf_migrate_single_action', array(), 'sf_migrate_single' );
 			update_option( SF_UPGRADE_RUNNING, $id_action );
 			wp_safe_redirect( admin_url( '/' ), 302 );
-
-			return false;
+			exit;
 		}
 
 		add_action(

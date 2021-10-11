@@ -64,10 +64,10 @@ class WoocommerceActions {
 		//Combine feed's parts
 		add_action(
 			'sf_feed_generation_combine_feed_parts',
-			[
+			array(
 				AsyncGenerator::get_instance(),
 				'combine_feed_parts',
-			]
+			)
 		);
 
 		//Product Update
@@ -95,8 +95,6 @@ class WoocommerceActions {
 					'source' => 'shopping-feed',
 				)
 			);
-
-			return;
 		} else {
 			foreach ( $sf_accounts as $key => $sf_account ) {
 				add_action(
@@ -119,75 +117,75 @@ class WoocommerceActions {
 		);
 
 		/**
+		 * Migrate old accounts to multi account format
+		 */
+		add_action( 'sf_migrate_single_action', array( $this, 'migrate_old_accounts' ) );
+
+		/**
 		 * Orders Statuses Mapping
 		 * Each status with action
 		 * @see Operations
 		 */
 		$statuses_actions = ShoppingFeedHelper::get_sf_statuses_actions();
-		if ( 0 < $statuses_actions ) {
-			foreach ( $statuses_actions as $sf_action => $wc_statuses ) {
-				if ( ! is_array( $wc_statuses ) || '' === $sf_action ) {
-					continue;
-				}
+		if ( empty( $statuses_actions ) ) {
+			return;
+		}
+		foreach ( $statuses_actions as $sf_action => $wc_statuses ) {
+			if ( ! is_array( $wc_statuses ) || '' === $sf_action ) {
+				continue;
+			}
 
-				foreach ( $wc_statuses as $wc_status ) {
-					$status = str_replace( 'wc-', '', $wc_status );
-					$action = 'woocommerce_order_status_' . $status;
-					add_action(
-						$action,
-						function ( $order_id ) use ( $sf_action ) {
-							//if its not a sf order
-							if ( ! Order::is_sf_order( $order_id ) ) {
-								return;
-							}
-							try {
-								$operations = new Operations( $order_id );
-								if ( ! method_exists( $operations, $sf_action ) ) {
-									ShoppingFeedHelper::get_logger()->error(
-										sprintf(
-										/* translators: %s: Action name. */
-											__( 'Cant find any matched method for %s', 'shopping-feed' ),
-											$sf_action
-										),
-										array(
-											'source' => 'shopping-feed',
-										)
-									);
-
-									return;
-								}
-								call_user_func( array( $operations, $sf_action ) );
-							} catch ( Exception $exception ) {
-								wc_get_order( $order_id )->add_order_note(
-									sprintf(
-									/* translators: %s: Action */
-										__( 'Failed to %s order', 'shopping-feed' ),
-										ucfirst( $sf_action )
-									)
-								);
+			foreach ( $wc_statuses as $wc_status ) {
+				$status = str_replace( 'wc-', '', $wc_status );
+				$action = 'woocommerce_order_status_' . $status;
+				add_action(
+					$action,
+					function ( $order_id ) use ( $sf_action ) {
+						//if its not a sf order
+						if ( ! Order::is_sf_order( $order_id ) ) {
+							return;
+						}
+						try {
+							$operations = new Operations( $order_id );
+							if ( ! method_exists( $operations, $sf_action ) ) {
 								ShoppingFeedHelper::get_logger()->error(
 									sprintf(
-									/* translators: %1$s: Action. %2$s: Error Message */
-										__( 'Failed to %1$s order => %2$s', 'shopping-feed' ),
-										ucfirst( $sf_action ),
-										$exception->getMessage()
+									/* translators: %s: Action name. */
+										__( 'Cant find any matched method for %s', 'shopping-feed' ),
+										$sf_action
 									),
 									array(
 										'source' => 'shopping-feed',
 									)
 								);
+
+								return;
 							}
+							call_user_func( array( $operations, $sf_action ) );
+						} catch ( Exception $exception ) {
+							wc_get_order( $order_id )->add_order_note(
+								sprintf(
+								/* translators: %s: Action */
+									__( 'Failed to %s order', 'shopping-feed' ),
+									ucfirst( $sf_action )
+								)
+							);
+							ShoppingFeedHelper::get_logger()->error(
+								sprintf(
+								/* translators: %1$s: Action. %2$s: Error Message */
+									__( 'Failed to %1$s order => %2$s', 'shopping-feed' ),
+									ucfirst( $sf_action ),
+									$exception->getMessage()
+								),
+								array(
+									'source' => 'shopping-feed',
+								)
+							);
 						}
-					);
-				}
+					}
+				);
 			}
 		}
-
-		/**
-		 * Migrate old accounts to multi account format
-		 */
-		add_action( 'sf_migrate_single_action', array( $this, 'migrate_old_accounts' ) );
-
 	}
 
 
@@ -245,43 +243,13 @@ class WoocommerceActions {
 
 			$product = new Product( $product_id );
 			if ( $product->has_variations() ) {
-				foreach ( $product->get_variations() as $variation ) {
-					if ( empty( $variation['sku'] ) ) {
-						ShoppingFeedHelper::get_logger()->warning(
-							sprintf(
-							/* translators: %s: Product ID. */
-								__( 'Cant update product without SKU => %s', 'shopping-feed' ),
-								$product_id
-							),
-							array(
-								'source' => 'shopping-feed',
-							)
-						);
-
-						continue;
-					}
-
-					$this->may_update_pricing( $variation['sku'], ! empty( $variation['discount'] ) ? $variation['discount'] : $variation['price'] );
-					$this->may_update_inventory( $variation['sku'], $variation['quantity'] );
-				}
-			} else {
-				if ( empty( $product->get_sku() ) ) {
-					ShoppingFeedHelper::get_logger()->warning(
-						sprintf(
-						/* translators: %s: Product ID. */
-							__( 'Cant update product without SKU => %s', 'shopping-feed' ),
-							$product_id
-						),
-						array(
-							'source' => 'shopping-feed',
-						)
-					);
-
+				if ( ! $this->update_variation_product( $product ) ) {
 					continue;
 				}
-
-				$this->may_update_pricing( $product->get_sku(), ! empty( $product->get_discount() ) ? $product->get_discount() : $product->get_price() );
-				$this->may_update_inventory( $product->get_sku(), $product->get_quantity() );
+			} else {
+				if ( ! $this->update_normal_product( $product ) ) {
+					continue;
+				}
 			}
 			/**
 			 * Check if we need to update the price or only the stock
@@ -298,6 +266,63 @@ class WoocommerceActions {
 			 */
 			$inventory_api->execute( $this->inventory_update );
 		}
+	}
+
+	/**
+	 * @param Product $product
+	 *
+	 * @psalm-suppress all
+	 */
+	public function update_normal_product( $product ) {
+		if ( empty( $product->get_sku() ) ) {
+			ShoppingFeedHelper::get_logger()->warning(
+				sprintf(
+				/* translators: %s: Product ID. */
+					__( 'Cant update product without SKU => %s', 'shopping-feed' ),
+					$product->get_wc_product()->get_id()
+				),
+				array(
+					'source' => 'shopping-feed',
+				)
+			);
+
+			return false;
+		}
+
+		$this->may_update_pricing( $product->get_sku(), ! empty( $product->get_discount() ) ? $product->get_discount() : $product->get_price() );
+		$this->may_update_inventory( $product->get_sku(), $product->get_quantity() );
+
+		return true;
+	}
+
+	/**
+	 * @param Product $product
+	 *
+	 * @psalm-suppress all
+	 * @return bool
+	 */
+	public function update_variation_product( $product ) {
+		foreach ( $product->get_variations() as $variation ) {
+			if ( empty( $variation['sku'] ) ) {
+				ShoppingFeedHelper::get_logger()->warning(
+					sprintf(
+					/* translators: %s: Product ID. */
+						__( 'Cant update product without SKU => %s', 'shopping-feed' ),
+						$product->get_wc_product()->get_id()
+					),
+					array(
+						'source' => 'shopping-feed',
+					)
+				);
+
+				return false;
+			}
+
+			$this->may_update_pricing( $variation['sku'], ! empty( $variation['discount'] ) ? $variation['discount'] : $variation['price'] );
+			$this->may_update_inventory( $variation['sku'], $variation['quantity'] );
+		}
+
+		return true;
 	}
 
 	/**
@@ -415,7 +440,7 @@ class WoocommerceActions {
 		//Migrate old orders to default account
 		$args = array(
 			'limit'        => - 1,
-			'meta_key'     => Query::$wc_meta_sf_reference,
+			'meta_key'     => Query::WC_META_SF_REFERENCE,
 			'meta_compare' => 'EXISTS',
 		);
 
@@ -438,7 +463,7 @@ class WoocommerceActions {
 		foreach ( $wc_orders as $wc_order ) {
 			//add store id
 			/** @var \WC_Order $wc_order */
-			$wc_order->add_meta_data( Query::$wc_meta_sf_store_id, $account_id );
+			$wc_order->add_meta_data( Query::WC_META_SF_STORE_ID, $account_id );
 			$wc_order->save();
 		}
 
