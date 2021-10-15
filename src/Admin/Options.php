@@ -239,42 +239,6 @@ class Options {
 				},
 				self::SF_ACCOUNT_SETTINGS_PAGE
 			);
-
-			add_settings_field(
-				'url',
-				__( 'Your source feed', 'shopping-feed' ),
-				function () {
-					$sf_feed_public_url      = ShoppingFeedHelper::get_public_feed_url();
-					$sf_process_running      = ShoppingFeedHelper::is_process_running( 'sf_feed_generation_process' );
-					$sf_last_generation_date = get_option( Generator::SF_FEED_LAST_GENERATION_DATE );
-					?>
-					<?php if ( ! $sf_process_running ) : ?>
-						<a href="<?php echo esc_html( $sf_feed_public_url ); ?>" target="_blank">
-							<?php
-							echo esc_url( $sf_feed_public_url );
-							;
-							?>
-						</a>
-					<?php endif; ?>
-					<br>
-					<p>
-						<?php if ( ! $sf_process_running ) : ?>
-							<?php esc_html_e( 'Last update', 'shopping-feed' ); ?> :
-							<?php
-							! empty( $sf_last_generation_date ) ? esc_html( $sf_last_generation_date ) : esc_html_e( 'Never', 'shopping-feed' );
-							?>
-							<a href="<?php echo esc_url( ShoppingFeedHelper::get_public_feed_url_with_generation() ); ?>" target="_blank">
-								<?php esc_html_e( 'Refresh', 'shopping-feed' ); ?>
-							</a>
-						<?php else : ?>
-							<strong>(<?php esc_html_e( 'The feed is update is running', 'shopping-feed' ); ?>) <a href="#" onClick="window.location.reload();"><?php esc_html_e( 'Refresh to check progress', 'shopping-feed' ); ?></a></strong>
-						<?php endif; ?>
-					</p>
-					<?php
-				},
-				self::SF_ACCOUNT_SETTINGS_PAGE,
-				'sf_account_settings'
-			);
 		?>
 		<div class="wrap">
 			<?php settings_errors(); ?>
@@ -282,7 +246,6 @@ class Options {
 			<div class="sf__columns">
 				<div class="sf__column account__wrapper">
 					<form method="post" action="options.php">
-
 						<div class="blocks">
 							<div class="block_links">
 								<table class="form-table sf__table">
@@ -458,6 +421,42 @@ class Options {
 			function () {
 			},
 			self::SF_FEED_SETTINGS_PAGE
+		);
+
+		add_settings_field(
+			'url',
+			__( 'Your source feed', 'shopping-feed' ),
+			function () {
+				$sf_feed_public_url      = ShoppingFeedHelper::get_public_feed_url();
+				$sf_process_running      = ShoppingFeedHelper::is_process_running( 'sf_feed_generation_process' );
+				$sf_last_generation_date = get_option( Generator::SF_FEED_LAST_GENERATION_DATE );
+				?>
+				<?php if ( ! $sf_process_running ) : ?>
+					<a href="<?php echo esc_html( $sf_feed_public_url ); ?>" target="_blank">
+						<?php
+						echo esc_url( $sf_feed_public_url );
+						;
+						?>
+					</a>
+				<?php endif; ?>
+				<br>
+				<p>
+					<?php if ( ! $sf_process_running ) : ?>
+						<?php esc_html_e( 'Last update', 'shopping-feed' ); ?> :
+						<?php
+						echo ! empty( $sf_last_generation_date ) ? esc_html( $sf_last_generation_date ) : esc_html__( 'Never', 'shopping-feed' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						?>
+						<a href="<?php echo esc_url( ShoppingFeedHelper::get_public_feed_url_with_generation() ); ?>" target="_blank">
+							<?php esc_html_e( 'Refresh', 'shopping-feed' ); ?>
+						</a>
+					<?php else : ?>
+						<strong>(<?php esc_html_e( 'The feed is update is running', 'shopping-feed' ); ?>) <a href="#" onClick="window.location.reload();"><?php esc_html_e( 'Refresh to check progress', 'shopping-feed' ); ?></a></strong>
+					<?php endif; ?>
+				</p>
+				<?php
+			},
+			self::SF_FEED_SETTINGS_PAGE,
+			'sf_feed_settings_categories'
 		);
 
 		//get available categories

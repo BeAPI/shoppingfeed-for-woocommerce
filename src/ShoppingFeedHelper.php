@@ -723,6 +723,17 @@ XML;
 	}
 
 	/**
+	 * Check if new customer
+	 * @return bool
+	 */
+	public static function sf_new_customer() {
+		return empty( get_option( Options::SF_ACCOUNT_OPTIONS ) ) &&
+			   empty( get_option( Options::SF_FEED_OPTIONS ) ) &&
+			   empty( get_option( Options::SF_SHIPPING_OPTIONS ) ) &&
+			   empty( get_option( Options::SF_ORDERS_OPTIONS ) );
+	}
+
+	/**
 	 * Singleton instance can't be cloned.
 	 */
 	private function __clone() {

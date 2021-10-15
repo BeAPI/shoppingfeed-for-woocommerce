@@ -247,6 +247,8 @@ class ShoppingFeed {
 		delete_option( Options::SF_ORDERS_OPTIONS );
 		delete_option( Options::SF_CARRIERS );
 		delete_option( Generator::SF_FEED_LAST_GENERATION_DATE );
+		delete_option( SF_DB_VERSION_SLUG );
+		delete_option( SF_UPGRADE_RUNNING );
 		self::remove_sf_directory();
 	}
 
@@ -266,7 +268,7 @@ class ShoppingFeed {
 	}
 
 	public function check_upgrade() {
-		if ( ! ShoppingFeedHelper::sf_has_upgrade() ) {
+		if ( ! ShoppingFeedHelper::sf_has_upgrade() || ShoppingFeedHelper::sf_new_customer() ) {
 			return true;
 		}
 
@@ -307,7 +309,7 @@ class ShoppingFeed {
 					<p><?php esc_html_e( 'ShoppingFeed need to migrate old data', 'shopping-feed' ); ?></p>
 					<a href="
 					<?php
-					esc_url(
+					echo esc_url(
 						wp_nonce_url(
 							add_query_arg(
 								array(
