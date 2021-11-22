@@ -369,7 +369,7 @@ class Product {
 	/**
 	 * @return string
 	 */
-	public function get_ean( $wc_product = false, $index = null ) {
+	public function get_ean( $wc_product = false, $variation_id = null ) {
 		$ean_meta_key = ShoppingFeedHelper::wc_product_ean();
 
 		if ( empty( $ean_meta_key ) ) {
@@ -382,18 +382,12 @@ class Product {
 				return $wc_product->get_meta( $ean_meta_key );
 			}
 
-			if ( ! is_null( $index ) ) {
-				$ean_meta_key .= '_' . (int) $index;
-				$meta = get_post_meta( (int) $ean_meta_key );
+			if ( ! is_null( $variation_id ) ) {
+				$meta = get_post_meta( (int) $variation_id );
 				$ean = $meta[ current( preg_grep( '/^sf_advanced_ean_field_/', array_keys( $meta ) ) ) ];
-
-				if ( ! empty( $ean ) ) {
-
-					return $ean;
-				}
 			}
 
-			return '';
+			return ! empty( $ean ) ? $ean : '';
 		}
 
 		return $this->product->get_meta( $ean_meta_key ) ? $this->product->get_meta( $ean_meta_key ) : '';
