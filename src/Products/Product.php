@@ -367,7 +367,7 @@ class Product {
 	}
 
 	/**
-	 * @return string
+	 * return the ean of a product or a variation
 	 */
 	public function get_ean( $wc_product = false, $variation_id = null ) {
 		$ean_meta_key = ShoppingFeedHelper::wc_product_ean();
@@ -383,7 +383,9 @@ class Product {
 			}
 
 			if ( ! is_null( $variation_id ) ) {
+				// get the post meta for the pos with the id of the variation
 				$meta = get_post_meta( (int) $variation_id );
+				// retrieve the value in array fot the key that begins with sf_advanced_ean_field_
 				$ean = $meta[ current( preg_grep( '/^sf_advanced_ean_field_/', array_keys( $meta ) ) ) ];
 			}
 
