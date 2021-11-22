@@ -344,10 +344,11 @@ class Product {
 
 			$variations = array();
 			foreach ( $wc_product_variations as $wc_product_variation ) {
+				$variation_id = $wc_product_variation['variation_id'];
 				$wc_product_variation  = new \WC_Product_Variation( $wc_product_variation['variation_id'] );
 				$variation             = array();
 				$variation['sku']      = ( 'id' === $this->product_identifier ) ? $wc_product_variation->get_id() : $wc_product_variation->get_sku();
-				$variation['ean']      = $this->get_ean( $wc_product_variation );
+				$variation['ean']      = $this->get_ean( $wc_product_variation, $variation_id );
 				$variation['quantity'] = ! is_null( $wc_product_variation->get_stock_quantity() ) ? $wc_product_variation->get_stock_quantity() : ShoppingFeedHelper::get_default_product_quantity();
 				$variation['price']    = ! is_null( $wc_product_variation->get_regular_price() ) ? $wc_product_variation->get_regular_price() : $wc_product_variation->get_price();
 				$variation['discount'] = $wc_product_variation->get_sale_price();
@@ -368,7 +369,7 @@ class Product {
 	/**
 	 * @return string
 	 */
-	public function get_ean( $wc_product = false ) {
+	public function get_ean( $wc_product = false, $index = null ) {
 		$ean_meta_key = ShoppingFeedHelper::wc_product_ean();
 
 		if ( empty( $ean_meta_key ) ) {
@@ -376,7 +377,23 @@ class Product {
 		}
 
 		if ( ! empty( $wc_product ) ) {
-			return $wc_product->get_meta( $ean_meta_key ) ? $wc_product->get_meta( $ean_meta_key ) : '';
+			if ( ! empty( $wc_product->get_meta( $ean_meta_key ) ) ) {
+
+				return $wc_product->get_meta( $ean_meta_key );
+			}
+
+			if ( ! is_null( $index ) ) {
+				$ean_meta_key .= '_' . (int) $index;
+				$meta = get_post_meta( (int) $ean_meta_key );
+				$ean = $meta[ current( preg_grep( '/^sf_advanced_ean_field_/', array_keys( $meta ) ) ) ];
+
+				if ( ! empty( $ean ) ) {
+
+					return $ean;
+				}
+			}
+
+			return '';
 		}
 
 		return $this->product->get_meta( $ean_meta_key ) ? $this->product->get_meta( $ean_meta_key ) : '';

@@ -114,8 +114,8 @@ class Generator {
 				$product->setName( $sf_product->get_name() );
 				$product->setPrice( $sf_product->get_price() );
 
-				if ( ! empty( $sf_product->get_ean() ) ) {
-					$product->setGtin( $sf_product->get_ean() );
+				if ( ! empty( $sf_product->get_ean( false, null ) ) ) {
+					$product->setGtin( $sf_product->get_ean( false, null ) );
 				}
 
 				$product->setQuantity( $sf_product->get_quantity() );
