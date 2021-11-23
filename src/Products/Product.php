@@ -375,7 +375,9 @@ class Product {
 		if ( empty( $ean_meta_key ) ) {
 			return '';
 		}
-
+		// If the $wc_product is not empty, it could be a product or a variation
+		// If the meta is not empty, it is a product.
+		// If $wc_product is not empty, but has no ean, and we have a $variation_id, we try to get the ean.
 		if ( ! empty( $wc_product ) ) {
 			if ( ! empty( $wc_product->get_meta( $ean_meta_key ) ) ) {
 
