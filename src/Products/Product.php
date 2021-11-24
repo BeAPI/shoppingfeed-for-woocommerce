@@ -388,7 +388,9 @@ class Product {
 				// get the post meta for the pos with the id of the variation
 				$meta = get_post_meta( (int) $variation_id );
 				// retrieve the value in array fot the key that begins with sf_advanced_ean_field_
-				$ean = $meta[ current( preg_grep( '/^sf_advanced_ean_field_/', array_keys( $meta ) ) ) ];
+				if ( is_array( $meta ) && ! empty( $meta[ current( preg_grep( '/^sf_advanced_ean_field_/', array_keys( $meta ) ) ) ] ) ) {
+					$ean = $meta[ current( preg_grep( '/^sf_advanced_ean_field_/', array_keys( $meta ) ) ) ];
+				}
 			}
 
 			return ! empty( $ean ) ? $ean : '';
