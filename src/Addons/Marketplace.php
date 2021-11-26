@@ -59,4 +59,12 @@ trait Marketplace {
 		);
 	}
 
+	private function is_zalando( $sf_order ) {
+		return (
+			// Replace with with the real values
+			strtoupper( $sf_order->getChannel()->getName() ) === 'ZALANDO' ||
+			$sf_order->getChannel()->getId() === 123
+		);
+	}
+
 }

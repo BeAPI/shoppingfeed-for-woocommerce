@@ -7,6 +7,7 @@ defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Addons\Marketplaces\Types\AmazonBusiness;
 use ShoppingFeed\ShoppingFeedWC\Addons\Marketplaces\Types\AmazonPrime;
+use ShoppingFeed\ShoppingFeedWC\Addons\Marketplaces\Types\Zalando;
 
 /**
  * Class Shipping
@@ -24,9 +25,15 @@ class Marketplaces {
 	 */
 	private $amazon_prime;
 
+	/**
+	 * @var Zalando
+	 */
+	private $zalando;
+
 	public function __construct() {
 		$this->amazon_business = new AmazonBusiness();
 		$this->amazon_prime    = new AmazonPrime();
+		$this->zalando         = new Zalando();
 
 		add_action( 'sf_show_metas', array( $this, 'show_metas' ) );
 	}
