@@ -60,10 +60,17 @@ trait Marketplace {
 	}
 
 	private function is_zalando( $sf_order ) {
+
+		$name = $sf_order->getChannel()->getName();
+		$id   = $sf_order->getChannel()->getId();
+
+		if ( empty( $name ) || empty( $id ) ) {
+			return false;
+		}
+
 		return (
-			// Replace with with the real values
-			strtoupper( $sf_order->getChannel()->getName() ) === 'ZALANDO' ||
-			$sf_order->getChannel()->getId() === 123
+			( 0 === strpos( $name, 'zalando' ) ) &&
+			( 'zalando' . $id === $name )
 		);
 	}
 
