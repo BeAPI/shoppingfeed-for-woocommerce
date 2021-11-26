@@ -69,8 +69,8 @@ trait Marketplace {
 		}
 
 		return (
-			( 0 === strpos( $name, 'zalando' ) ) &&
-			( 'zalando' . $id === $name )
+			( 'ZALANDO' === strtoupper( substr( $name, 0, 7 ) ) ) &&
+			( substr( $name, 0, 7 ) . $id === $name )
 		);
 	}
 
