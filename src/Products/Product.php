@@ -375,16 +375,15 @@ class Product {
 		if ( empty( $ean_meta_key ) ) {
 			return '';
 		}
-		// If the $wc_product is not empty, it could be a product or a variation
-		// If the meta is not empty, it is a product.
-		// If $wc_product is not empty, but has no ean, and we have a $variation_id, we try to get the ean.
+
 		if ( ! empty( $wc_product ) ) {
-			if ( ! empty( $wc_product->get_meta( $ean_meta_key ) ) ) {
+
+			if ( empty( $variation_id ) && ! empty( $wc_product->get_meta( $ean_meta_key ) ) ) {
 
 				return $wc_product->get_meta( $ean_meta_key );
 			}
 
-			if ( ! is_null( $variation_id ) ) {
+			if ( ! empty( $variation_id ) ) {
 				// get the post meta for the post with the id of the variation
 				$meta = get_post_meta( (int) $variation_id );
 				// retrieve the value in array fot the key that begins with sf_advanced_ean_field_
