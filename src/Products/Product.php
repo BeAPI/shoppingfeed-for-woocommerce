@@ -389,6 +389,9 @@ class Product {
 				// retrieve the value in array fot the key that begins with sf_advanced_ean_field_
 				if ( is_array( $meta ) && ! empty( $meta[ current( preg_grep( '/^sf_advanced_ean_field_/', array_keys( $meta ) ) ) ] ) ) {
 					$ean = $meta[ current( preg_grep( '/^sf_advanced_ean_field_/', array_keys( $meta ) ) ) ];
+					if ( ! empty( $ean ) && is_array( $ean ) ) {
+						$ean = reset( $ean );
+					}
 				}
 			}
 
