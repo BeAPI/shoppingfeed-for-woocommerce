@@ -162,7 +162,7 @@ XML;
 	 */
 	public static function get_sf_account_credentials( $account_id ) {
 		$account_options = self::get_sf_account_options();
-		$index           = array_search( $account_id, array_column( $account_options, 'sf_store_id' ), true );
+		$index           = array_search( (int) $account_id, array_column( $account_options, 'sf_store_id' ), true );
 		if ( false === $index || empty( $account_options[ $index ] ) ) {
 			return array();
 		}
