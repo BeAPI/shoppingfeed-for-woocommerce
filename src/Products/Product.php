@@ -30,6 +30,11 @@ class Product {
 	private $brand;
 
 	/**
+	 * @var string
+	 */
+	private $weight;
+
+	/**
 	 * @var bool|mixed|\WP_Term
 	 */
 	private $category;
@@ -45,6 +50,7 @@ class Product {
 		$this->id                 = $this->product->get_id();
 		$this->brand              = $this->set_brand();
 		$this->category           = $this->set_category();
+		$this->weight             = $this->product->get_weight();
 
 		return $this;
 	}
@@ -184,6 +190,17 @@ class Product {
 		}
 
 		return get_term_link( $this->brand );
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_weight() {
+		if ( empty( $this->weight ) ) {
+			return '';
+		}
+
+		return $this->weight;
 	}
 
 	/**

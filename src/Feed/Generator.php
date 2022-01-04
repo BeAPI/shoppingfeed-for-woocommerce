@@ -138,6 +138,10 @@ class Generator {
 					$product->setBrand( $sf_product->get_brand_name(), $sf_product->get_brand_link() );
 				}
 
+				if ( ! empty( $sf_product->get_weight() ) ) {
+					$product->setWeight( $sf_product->get_weight() );
+				}
+
 				if ( ! empty( $sf_product->get_category_name() ) ) {
 					$product->setCategory( $sf_product->get_category_name(), $sf_product->get_category_link() );
 				}
