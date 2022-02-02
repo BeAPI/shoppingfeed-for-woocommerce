@@ -67,6 +67,18 @@ class Metas {
 	}
 
 	/**
+	 * Add meta fees (fees not defined as WC_Order_Item_Fee objects)
+	 *
+	 * @param $meta_fees
+	 * @return void
+	 */
+	public function add_meta_fees( $meta_fees ) {
+		if ( ! empty( $meta_fees ) ) {
+			$this->add_meta( 'sf_meta_fees', wp_json_encode( $meta_fees ) );
+		}
+	}
+
+	/**
 	 * @return array
 	 */
 	public function get_metas() {

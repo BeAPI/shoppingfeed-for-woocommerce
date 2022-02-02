@@ -6,6 +6,7 @@ namespace ShoppingFeed\ShoppingFeedWC\Orders;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
+use ShoppingFeed\ShoppingFeedWC\Addons\Marketplace;
 use ShoppingFeed\ShoppingFeedWC\Orders\Order\Address;
 use ShoppingFeed\ShoppingFeedWC\Orders\Order\Fees;
 use ShoppingFeed\ShoppingFeedWC\Orders\Order\Metas;
@@ -21,6 +22,8 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
  * @package ShoppingFeed\Orders
  */
 class Order {
+
+	use Marketplace;
 
 	/** @var OrderResource $sf_order */
 	private $sf_order;
@@ -174,12 +177,18 @@ class Order {
 		 * Add Extra Fees
 		 */
 		if ( ! empty( $this->fees ) ) {
-			$item_fee = new \WC_Order_Item_Fee();
-			$item_fee->set_name( __( 'Fees', 'shopping-feed' ) );
-			$item_fee->set_amount( $this->fees );
-			$item_fee->set_tax_status( 'none' );
-			$item_fee->set_total( $this->fees );
-			$wc_order->add_item( $item_fee );
+			// If Cdiscount fees, set it as meta
+			if ( $this->is_cdiscount( $wc_order ) ) {
+				$item_fee = new Metas( $wc_order, $this->shipping );
+				$item_fee->add_meta_fees( $item_fee );
+			} else { // If not, set is as WC_Order_Item_Fee object
+				$item_fee = new \WC_Order_Item_Fee();
+				$item_fee->set_name( __( 'Fees', 'shopping-feed' ) );
+				$item_fee->set_amount( $this->fees );
+				$item_fee->set_tax_status( 'none' );
+				$item_fee->set_total( $this->fees );
+				$wc_order->add_item( $item_fee );
+			}
 		}
 
 		/**
