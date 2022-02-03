@@ -15,11 +15,6 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 class Orders {
 
 	/**
-	 * @var false|StoreResource
-	 */
-	private $shop;
-
-	/**
 	 * @var Orders
 	 */
 	private static $instance;
@@ -50,27 +45,26 @@ class Orders {
 	}
 
 	/**
-	 * Orders constructor.
-	 */
-	private function __construct() {
-		if ( empty( $this->shop ) ) {
-			$sdk = Sdk::get_instance();
-			if ( $sdk->get_default_shop() ) {
-				$this->shop = $sdk->get_default_shop();
-			}
-		}
-	}
-
-	/**
 	 * Get Orders from SF
-	 * @return bool
 	 */
-	public function get_orders() {
-		if ( ! $this->shop ) {
+	public function get_orders( $sf_account ) {
+		$shop = Sdk::get_sf_shop( $sf_account );
+
+		if ( ! $shop instanceof StoreResource ) {
+			ShoppingFeedHelper::get_logger()->error(
+				sprintf(
+				/* translators: %s: Error message. */
+					__( 'Cannot retrieve shop from SDK for account : %s', 'shopping-feed' ),
+					$sf_account['username']
+				),
+				array(
+					'source' => 'shopping-feed',
+				)
+			);
 			return false;
 		}
 
-		$order_api                 = $this->shop->getOrderApi();
+		$order_api                 = $shop->getOrderApi();
 		$filters                   = array();
 		$filters['acknowledgment'] = 'unacknowledged';
 

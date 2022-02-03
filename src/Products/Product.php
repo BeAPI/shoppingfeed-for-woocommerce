@@ -50,6 +50,14 @@ class Product {
 	}
 
 	/**
+	 * Return WC Product
+	 * @return false|\WC_Product|null
+	 */
+	public function get_wc_product() {
+		return $this->product;
+	}
+
+	/**
 	 * @return bool|mixed|\WP_Term
 	 */
 	private function set_brand() {

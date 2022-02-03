@@ -63,8 +63,8 @@ class Metabox {
 			return;
 		}
 
-		$reference    = $order->get_meta( Query::$wc_meta_sf_reference );
-		$channel_name = $order->get_meta( Query::$wc_meta_sf_channel_name );
+		$reference    = $order->get_meta( Query::WC_META_SF_REFERENCE );
+		$channel_name = $order->get_meta( Query::WC_META_SF_CHANNEL_NAME );
 
 		if ( empty( $reference ) && empty( $channel_name ) ) : ?>
 			<p><?php esc_html_e( 'No metadata available for the current order.', 'shopping-feed' ); ?></p>

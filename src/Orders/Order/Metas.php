@@ -38,6 +38,7 @@ class Metas {
 		$this->add_order_referene();
 		$this->add_order_channel_name();
 		$this->add_order_shipping();
+		$this->add_sf_store_id();
 
 		do_action_ref_array( 'sf_add_metas', array( $this ) );
 	}
@@ -46,14 +47,14 @@ class Metas {
 	 * Add Order Reference
 	 */
 	private function add_order_referene() {
-		$this->add_meta( Query::$wc_meta_sf_reference, $this->sf_order->getReference(), true );
+		$this->add_meta( Query::WC_META_SF_REFERENCE, $this->sf_order->getReference(), true );
 	}
 
 	/**
 	 * Add Order Channel Name
 	 */
 	private function add_order_channel_name() {
-		$this->add_meta( Query::$wc_meta_sf_channel_name, $this->sf_order->getChannel()->getName() );
+		$this->add_meta( Query::WC_META_SF_CHANNEL_NAME, $this->sf_order->getChannel()->getName() );
 	}
 
 	/**
@@ -79,5 +80,13 @@ class Metas {
 			'value'  => $value,
 			'unique' => $unique,
 		);
+	}
+
+	/**
+	 * Add store id
+	 */
+	private function add_sf_store_id() {
+		$sf_order_array = $this->sf_order->toArray();
+		$this->add_meta( Query::WC_META_SF_STORE_ID, $sf_order_array['storeId'] );
 	}
 }

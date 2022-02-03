@@ -82,16 +82,6 @@ class Requirements {
 	/**
 	 * @return string
 	 */
-	public function account_requirement() {
-		return ( $this->valid_account() )
-			? '<p class="success">' . __( 'You are logged in your ShoppingFeed account.', 'shopping-feed' ) . '</p>'
-			: '<p class="failed">' . __( 'You must be logged in your ShoppingFeed account.', 'shopping-feed' ) . '</p>';
-	}
-
-
-	/**
-	 * @return string
-	 */
 	public function uploads_directory_access_requirement() {
 		return ( $this->uploads_directory_writable() )
 			? '<p class="success">' . __( 'You have write access in uploads directory.', 'shopping-feed' ) . '</p>'
@@ -133,15 +123,6 @@ class Requirements {
 	 */
 	public function valid_openssl() {
 		return OPENSSL_VERSION_NUMBER >= self::OPENSSL_MIN;
-	}
-
-	/**
-	 * Check if the user is logged in.
-	 *
-	 * @return bool
-	 */
-	public function valid_account() {
-		return ShoppingFeedHelper::is_authenticated();
 	}
 
 	/**

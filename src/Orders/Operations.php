@@ -52,25 +52,43 @@ class Operations {
 	 * @throws Exception
 	 */
 	public function __construct( $order_id ) {
-		$sdk = Sdk::get_instance();
-		if ( ! $sdk->get_default_shop() instanceof StoreResource ) {
+		//Check if the order from SF and return it with metas data
+		$order_sf_metas = Order::get_order_sf_metas( $order_id );
+		if (
+			empty( $order_sf_metas ) ||
+			empty( $order_sf_metas['sf_store_id'] )
+		) {
+			throw new Exception(
+				sprintf(
+				/* translators: %s: Error message. */
+					__( 'No SF order found in %s', 'shopping-feed' ),
+					$order_id
+				)
+			);
+		}
+
+		$account_id = $order_sf_metas['sf_store_id'];
+
+		$shop = Sdk::get_sf_account_shop( $account_id );
+
+		if ( ! $shop instanceof StoreResource ) {
+			ShoppingFeedHelper::get_logger()->error(
+				sprintf(
+				/* translators: %s: Error message. */
+					__( 'Cannot retrieve shop from SDK for account : %s', 'shopping-feed' ),
+					$account_id
+				),
+				array(
+					'source' => 'shopping-feed',
+				)
+			);
 			throw new Exception(
 				__( 'No store found', 'shopping-feed' )
 			);
 		}
-		/** @var StoreResource $default_shop */
-		$default_shop = $sdk->get_default_shop();
-
-		//Check if the order from SF and return it with metas data
-		$order_sf_metas = Order::get_order_sf_metas( $order_id );
-		if ( empty( $order_sf_metas ) ) {
-			throw new Exception(
-				__( 'No Order found', 'shopping-feed' )
-			);
-		}
 
 		$this->wc_order           = $order_sf_metas['order'];
-		$this->order_api          = $default_shop->getOrderApi();
+		$this->order_api          = $shop->getOrderApi();
 		$this->order_operation    = new OrderOperation();
 		$this->sf_reference       = (string) $order_sf_metas['sf_reference'];
 		$this->sf_channel_name    = (string) $order_sf_metas['sf_channel_name'];
