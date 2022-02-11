@@ -31,6 +31,11 @@ class Options {
 	const SF_SHIPPING_SETTINGS_PAGE = 'sf_shipping_settings_page';
 
 	/**
+	 *  Yoast settings page
+	 */
+	const SF_YOAST_SETTINGS_PAGE = 'sf_yoast_settings_page';
+
+	/**
 	 * Orders settings page
 	 */
 	const SF_ORDERS_SETTINGS_PAGE = 'sf_orders_settings_page';
@@ -47,6 +52,12 @@ class Options {
 	const SF_CARRIERS = 'SF_CARRIERS';
 	/** @var array $sf_account_options */
 	private $sf_account_options;
+
+	// Yoast options
+	const SF_YOAST_OPTIONS = 'sf_yoast_options';
+	/** @var array $sf_yoast_options */
+	private $sf_yoast_options;
+
 
 	//Orders options
 	/** @var array $sf_feed_options */
@@ -109,6 +120,12 @@ class Options {
 					'sf_orders_page_fields',
 					self::SF_ORDERS_OPTIONS
 				);
+
+				// Yoast page
+				register_setting(
+					'sf_yoast_page_fields',
+					self::SF_YOAST_OPTIONS
+				);
 			}
 		);
 
@@ -131,6 +148,8 @@ class Options {
 		$this->sf_shipping_options = ShoppingFeedHelper::get_sf_shipping_options();
 		//get orders options
 		$this->sf_orders_options = ShoppingFeedHelper::get_sf_orders_options();
+		//get yoast options
+		$this->sf_yoast_options = ShoppingFeedHelper::get_sf_yoast_options();
 	}
 
 	/**
@@ -171,6 +190,15 @@ class Options {
 				'title' => __( 'Logs', 'shopping-feed' ),
 			),
 		);
+
+		if ( is_plugin_active( 'wordpress-seo/wp-seo.php' ) ) {
+			$tabs[] = array(
+				'tab' => 'yoast-settings',
+				'url' => '?page=' . self::SF_SLUG . '&tab=yoast-settings',
+				'title' => __( 'Yoast', 'shopping-feed' ),
+			);
+		}
+
 		?>
 		<div class="wrap sf__plugin">
 
@@ -214,12 +242,62 @@ class Options {
 					case 'orders-settings':
 						$this->init_orders_setting_page();
 						break;
+					case 'yoast-settings':
+						$this->init_yoast_setting_page();
+						break;
 					default:
 						break;
 		endswitch;
 				?>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Add tab and setting if Yoast is activated
+	 *
+	 * @author Stéphane Gillot
+	 */
+	public function init_yoast_setting_page() {
+
+		//load assets
+		$this->load_assets();
+
+		add_settings_section(
+			'sf_yoast_settings_categories',
+			__( 'Yoast Categories settings', 'shopping-feed' ),
+			function () {
+			},
+			self::SF_YOAST_SETTINGS_PAGE
+		);
+
+		add_settings_field(
+			'sf_yoast_page_fields',
+			__( 'Use Primary categories ?', 'shopping-feed' ),
+			function () {
+				?>
+				<!-- Here we are comparing stored value with 1. Stored value is 1 if user checks the checkbox otherwise empty string. -->
+				<input type="checkbox" name="<?php echo esc_html( sprintf( '%s[use_principal_categories]', self::SF_YOAST_OPTIONS ) ); ?>" value="1" <?php checked( 1, (int) $this->sf_yoast_options['use_principal_categories'], true ); ?> />
+				<?php
+			},
+			self::SF_YOAST_SETTINGS_PAGE,
+			'sf_yoast_settings_categories'
+		);
+
+		?>
+		<div class="wrap">
+			<?php settings_errors(); ?>
+
+			<form method="post" action="options.php">
+				<?php
+				settings_fields( 'sf_yoast_page_fields' );
+				do_settings_sections( self::SF_YOAST_SETTINGS_PAGE );
+				submit_button( __( 'Save changes', 'shopping-feed' ), 'sf__button' );
+				?>
+			</form>
+		</div>
+		<?php
+
 	}
 
 	/**

@@ -146,6 +146,21 @@ XML;
 		return get_option( Options::SF_ACCOUNT_OPTIONS, array() );
 	}
 
+	/**
+	 * Return SF Configuration for Yoast
+	 * @return array
+	 */
+	public static function get_sf_yoast_options() {
+		$yoast_options = get_option( Options::SF_YOAST_OPTIONS, [] );
+
+		return wp_parse_args(
+			$yoast_options,
+			[
+				'use_principal_categories' => '0',
+			]
+		);
+	}
+
 
 	/**
 	 * Set SF Configuration for Account
