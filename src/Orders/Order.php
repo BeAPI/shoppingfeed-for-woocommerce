@@ -187,8 +187,6 @@ class Order {
 				$item_fee->set_total( $this->fees );
 				$wc_order->add_item( $item_fee );
 			}
-
-			do_action( 'sf_after_order_add_fee_item', $this->fees, $wc_order, $this );
 		}
 
 		/**
