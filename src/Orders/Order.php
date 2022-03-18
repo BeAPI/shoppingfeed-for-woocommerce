@@ -177,7 +177,7 @@ class Order {
 		 * Add Extra Fees
 		 */
 		if ( ! empty( $this->fees ) ) {
-			$pre_save_fees = apply_filters( 'sf_pre_add_fees', $wc_order, $this );
+			$pre_save_fees = apply_filters( 'sf_pre_add_fees', false, $wc_order, $this, $this->fees );
 
 			if ( ! $pre_save_fees ) {
 				$item_fee = new \WC_Order_Item_Fee();
