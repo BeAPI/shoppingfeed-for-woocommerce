@@ -177,14 +177,18 @@ class Order {
 		 * Add Extra Fees
 		 */
 		if ( ! empty( $this->fees ) ) {
-			$item_fee = new \WC_Order_Item_Fee();
-			$item_fee->set_name( __( 'Fees', 'shopping-feed' ) );
-			$item_fee->set_amount( $this->fees );
-			$item_fee->set_tax_status( 'none' );
-			$item_fee->set_total( $this->fees );
-			$wc_order->add_item( $item_fee );
+			$pre_save_fees = apply_filters( 'sf_pre_add_fees', $wc_order, $this );
 
-			do_action( 'sf_after_order_add_fee_item', $item_fee, $wc_order, $this->fees );
+			if ( ! $pre_save_fees ) {
+				$item_fee = new \WC_Order_Item_Fee();
+				$item_fee->set_name( __( 'Fees', 'shopping-feed' ) );
+				$item_fee->set_amount( $this->fees );
+				$item_fee->set_tax_status( 'none' );
+				$item_fee->set_total( $this->fees );
+				$wc_order->add_item( $item_fee );
+			}
+
+			do_action( 'sf_after_order_add_fee_item', $this->fees, $wc_order, $this );
 		}
 
 		/**
