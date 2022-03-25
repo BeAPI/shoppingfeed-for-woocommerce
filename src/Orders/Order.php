@@ -6,6 +6,7 @@ namespace ShoppingFeed\ShoppingFeedWC\Orders;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
+use ShoppingFeed\ShoppingFeedWC\Addons\Marketplace;
 use ShoppingFeed\ShoppingFeedWC\Orders\Order\Address;
 use ShoppingFeed\ShoppingFeedWC\Orders\Order\Fees;
 use ShoppingFeed\ShoppingFeedWC\Orders\Order\Metas;
@@ -21,6 +22,8 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
  * @package ShoppingFeed\Orders
  */
 class Order {
+
+	use Marketplace;
 
 	/** @var OrderResource $sf_order */
 	private $sf_order;
@@ -174,12 +177,16 @@ class Order {
 		 * Add Extra Fees
 		 */
 		if ( ! empty( $this->fees ) ) {
-			$item_fee = new \WC_Order_Item_Fee();
-			$item_fee->set_name( __( 'Fees', 'shopping-feed' ) );
-			$item_fee->set_amount( $this->fees );
-			$item_fee->set_tax_status( 'none' );
-			$item_fee->set_total( $this->fees );
-			$wc_order->add_item( $item_fee );
+			$pre_save_fees = apply_filters( 'sf_pre_add_fees', false, $wc_order, $this->sf_order, $this->fees );
+
+			if ( ! $pre_save_fees ) {
+				$item_fee = new \WC_Order_Item_Fee();
+				$item_fee->set_name( __( 'Fees', 'shopping-feed' ) );
+				$item_fee->set_amount( $this->fees );
+				$item_fee->set_tax_status( 'none' );
+				$item_fee->set_total( $this->fees );
+				$wc_order->add_item( $item_fee );
+			}
 		}
 
 		/**
