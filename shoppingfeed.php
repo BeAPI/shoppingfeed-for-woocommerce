@@ -7,7 +7,7 @@
  * Author URI:      https://www.shopping-feed.com/
  * Text Domain:     shopping-feed
  * Domain Path:     /languages
- * Version:         6.0.33
+ * Version:         6.1.3
  * Requires at least WP: 5.7
  * Requires at least WooCommerce: 5.1.0
  * Requires PHP:      5.6
@@ -25,7 +25,10 @@ if ( file_exists( plugin_dir_path( __FILE__ ) . '/vendor/autoload.php' ) ) {
 	require_once plugin_dir_path( __FILE__ ) . '/vendor/autoload.php';
 }
 
-define( 'SF_VERSION', '6.0.33' );
+define( 'SF_VERSION', '6.1.3' );
+define( 'SF_DB_VERSION_SLUG', 'SF_DB_VERSION' );
+define( 'SF_DB_VERSION', '1.0.0' );
+define( 'SF_UPGRADE_RUNNING', 'SF_UPGRADE_RUNNING' );
 define( 'SF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'SF_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );

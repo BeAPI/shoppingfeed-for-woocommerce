@@ -9,18 +9,20 @@ defined( 'ABSPATH' ) || exit;
  * Class Query to manage custom WC queries & metas
  */
 class Query {
+	/**
+	 * Custom Meta for SF accpunt ID
+	 */
+	const WC_META_SF_STORE_ID = 'sf_store_id';
 
 	/**
 	 * Custom Meta for SF reference
-	 * @var string
 	 */
-	public static $wc_meta_sf_reference = 'sf_reference';
+	const WC_META_SF_REFERENCE = 'sf_reference';
 
 	/**
 	 * Custom Meta for SF channel name
-	 * @var string
 	 */
-	public static $wc_meta_sf_channel_name = 'sf_marketplace';
+	const WC_META_SF_CHANNEL_NAME = 'sf_marketplace';
 
 	public function __construct() {
 		add_filter(
@@ -43,10 +45,10 @@ class Query {
 	 * @return array modified $query
 	 */
 	public function wc_get_by_sf_reference( $query, $query_vars ) {
-		if ( ! empty( $query_vars[ self::$wc_meta_sf_reference ] ) ) {
+		if ( ! empty( $query_vars[ self::WC_META_SF_REFERENCE ] ) ) {
 			$query['meta_query'][] = array(
-				'key'   => self::$wc_meta_sf_reference,
-				'value' => esc_attr( $query_vars[ self::$wc_meta_sf_reference ] ),
+				'key'   => self::WC_META_SF_REFERENCE,
+				'value' => esc_attr( $query_vars[ self::WC_META_SF_REFERENCE ] ),
 			);
 		}
 

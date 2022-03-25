@@ -9,15 +9,17 @@ use Exception;
 use ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate;
 use ShoppingFeed\Sdk\Api\Catalog\PricingUpdate;
 use ShoppingFeed\Sdk\Api\Store\StoreResource;
+use ShoppingFeed\Sdk\Client;
+use ShoppingFeed\Sdk\Credential;
 use ShoppingFeed\ShoppingFeedWC\Feed\AsyncGenerator;
 use ShoppingFeed\ShoppingFeedWC\Feed\Generator;
 use ShoppingFeed\ShoppingFeedWC\Orders\Operations;
 use ShoppingFeed\ShoppingFeedWC\Orders\Order;
 use ShoppingFeed\ShoppingFeedWC\Orders\Orders;
 use ShoppingFeed\ShoppingFeedWC\Products\Product;
+use ShoppingFeed\ShoppingFeedWC\Query\Query;
 use ShoppingFeed\ShoppingFeedWC\Sdk\Sdk;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
-
 
 /**
  * Custom WooCommerce actions.
@@ -62,10 +64,10 @@ class WoocommerceActions {
 		//Combine feed's parts
 		add_action(
 			'sf_feed_generation_combine_feed_parts',
-			[
+			array(
 				AsyncGenerator::get_instance(),
 				'combine_feed_parts',
-			]
+			)
 		);
 
 		//Product Update
@@ -83,12 +85,26 @@ class WoocommerceActions {
 		);
 
 		//Get Orders
-		add_action(
-			'sf_get_orders_action',
-			function () {
-				Orders::get_instance()->get_orders();
+		$sf_accounts = ShoppingFeedHelper::get_sf_account_options();
+		if ( empty( $sf_accounts ) ) {
+			ShoppingFeedHelper::get_logger()->error(
+				sprintf(
+					__( 'No Accounts founds', 'shopping-feed' )
+				),
+				array(
+					'source' => 'shopping-feed',
+				)
+			);
+		} else {
+			foreach ( $sf_accounts as $key => $sf_account ) {
+				add_action(
+					'sf_get_orders_action_' . $key,
+					function ( $sf_account ) {
+						Orders::get_instance()->get_orders( $sf_account );
+					}
+				);
 			}
-		);
+		}
 
 		//Acknowledge Remain Order
 		add_action(
@@ -101,67 +117,73 @@ class WoocommerceActions {
 		);
 
 		/**
+		 * Migrate old accounts to multi account format
+		 */
+		add_action( 'sf_migrate_single_action', array( $this, 'migrate_old_accounts' ) );
+
+		/**
 		 * Orders Statuses Mapping
 		 * Each status with action
 		 * @see Operations
 		 */
 		$statuses_actions = ShoppingFeedHelper::get_sf_statuses_actions();
-		if ( 0 < $statuses_actions ) {
-			foreach ( $statuses_actions as $sf_action => $wc_statuses ) {
-				if ( ! is_array( $wc_statuses ) || '' === $sf_action ) {
-					continue;
-				}
+		if ( empty( $statuses_actions ) ) {
+			return;
+		}
+		foreach ( $statuses_actions as $sf_action => $wc_statuses ) {
+			if ( ! is_array( $wc_statuses ) || '' === $sf_action ) {
+				continue;
+			}
 
-				foreach ( $wc_statuses as $wc_status ) {
-					$status = str_replace( 'wc-', '', $wc_status );
-					$action = 'woocommerce_order_status_' . $status;
-					add_action(
-						$action,
-						function ( $order_id ) use ( $sf_action ) {
-							//if its not a sf order
-							if ( ! Order::is_sf_order( $order_id ) ) {
-								return;
-							}
-							try {
-								$operations = new Operations( $order_id );
-								if ( ! method_exists( $operations, $sf_action ) ) {
-									ShoppingFeedHelper::get_logger()->error(
-										sprintf(
-										/* translators: %s: Action name. */
-											__( 'Cant find any matched method for %s', 'shopping-feed' ),
-											$sf_action
-										),
-										array(
-											'source' => 'shopping-feed',
-										)
-									);
-
-									return;
-								}
-								call_user_func( array( $operations, $sf_action ) );
-							} catch ( Exception $exception ) {
-								wc_get_order( $order_id )->add_order_note(
-									sprintf(
-									/* translators: %s: Action */
-										__( 'Failed to %s order', 'shopping-feed' ),
-										ucfirst( $sf_action )
-									)
-								);
+			foreach ( $wc_statuses as $wc_status ) {
+				$status = str_replace( 'wc-', '', $wc_status );
+				$action = 'woocommerce_order_status_' . $status;
+				add_action(
+					$action,
+					function ( $order_id ) use ( $sf_action ) {
+						//if its not a sf order
+						if ( ! Order::is_sf_order( $order_id ) ) {
+							return;
+						}
+						try {
+							$operations = new Operations( $order_id );
+							if ( ! method_exists( $operations, $sf_action ) ) {
 								ShoppingFeedHelper::get_logger()->error(
 									sprintf(
-									/* translators: %1$s: Action. %2$s: Error Message */
-										__( 'Failed to %1$s order => %2$s', 'shopping-feed' ),
-										ucfirst( $sf_action ),
-										$exception->getMessage()
+									/* translators: %s: Action name. */
+										__( 'Cant find any matched method for %s', 'shopping-feed' ),
+										$sf_action
 									),
 									array(
 										'source' => 'shopping-feed',
 									)
 								);
+
+								return;
 							}
+							call_user_func( array( $operations, $sf_action ) );
+						} catch ( Exception $exception ) {
+							wc_get_order( $order_id )->add_order_note(
+								sprintf(
+								/* translators: %s: Action */
+									__( 'Failed to %s order', 'shopping-feed' ),
+									ucfirst( $sf_action )
+								)
+							);
+							ShoppingFeedHelper::get_logger()->error(
+								sprintf(
+								/* translators: %1$s: Action. %2$s: Error Message */
+									__( 'Failed to %1$s order => %2$s', 'shopping-feed' ),
+									ucfirst( $sf_action ),
+									$exception->getMessage()
+								),
+								array(
+									'source' => 'shopping-feed',
+								)
+							);
 						}
-					);
-				}
+					}
+				);
 			}
 		}
 	}
@@ -181,53 +203,112 @@ class WoocommerceActions {
 	 *
 	 * @param $product_id
 	 * @param bool $only_stock
-	 *
-	 * @return bool
 	 */
 	public function update_product( $product_id, $only_stock = false ) {
-		$sdk = Sdk::get_instance();
-		if ( ! $sdk->get_default_shop() instanceof StoreResource ) {
-			ShoppingFeedHelper::get_logger()->error( __( 'Can\'t find default shop', 'shopping-feed' ) );
+		$sf_accounts = ShoppingFeedHelper::get_sf_account_options();
+		if ( empty( $sf_accounts ) ) {
+			ShoppingFeedHelper::get_logger()->error(
+				sprintf(
+					__( 'No Accounts founds', 'shopping-feed' )
+				),
+				array(
+					'source' => 'shopping-feed',
+				)
+			);
+
+			return;
+		}
+
+		foreach ( $sf_accounts as $sf_account ) {
+			$shop = Sdk::get_sf_shop( $sf_account );
+			if ( ! $shop instanceof StoreResource ) {
+				ShoppingFeedHelper::get_logger()->error(
+					sprintf(
+					/* translators: %s: Error message. */
+						__( 'Cannot retrieve shop from SDK for account : %s', 'shopping-feed' ),
+						$sf_account['username']
+					),
+					array(
+						'source' => 'shopping-feed',
+					)
+				);
+				continue;
+			}
+
+			$pricing_api   = $shop->getPricingApi();
+			$inventory_api = $shop->getInventoryApi();
+
+			$this->pricing_update   = new \ShoppingFeed\Sdk\Api\Catalog\PricingUpdate();
+			$this->inventory_update = new \ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate();
+
+			$product = new Product( $product_id );
+			if ( $product->has_variations() ) {
+				if ( ! $this->update_variation_product( $product ) ) {
+					continue;
+				}
+			} else {
+				if ( ! $this->update_normal_product( $product ) ) {
+					continue;
+				}
+			}
+			/**
+			 * Check if we need to update the price or only the stock
+			 */
+			if ( ! $only_stock ) {
+				/**
+				 * Send api request to update the price
+				 */
+				$pricing_api->execute( $this->pricing_update );
+			}
+
+			/**
+			 * Send api request to update the inventory
+			 */
+			$inventory_api->execute( $this->inventory_update );
+		}
+	}
+
+	/**
+	 * @param Product $product
+	 *
+	 * @psalm-suppress all
+	 */
+	public function update_normal_product( $product ) {
+		if ( empty( $product->get_sku() ) ) {
+			ShoppingFeedHelper::get_logger()->warning(
+				sprintf(
+				/* translators: %s: Product ID. */
+					__( 'Cant update product without SKU => %s', 'shopping-feed' ),
+					$product->get_wc_product()->get_id()
+				),
+				array(
+					'source' => 'shopping-feed',
+				)
+			);
 
 			return false;
 		}
 
-		/** @var StoreResource $shop */
-		$shop          = $sdk->get_default_shop();
-		$pricing_api   = $shop->getPricingApi();
-		$inventory_api = $shop->getInventoryApi();
+		$this->may_update_pricing( $product->get_sku(), ! empty( $product->get_discount() ) ? $product->get_discount() : $product->get_price() );
+		$this->may_update_inventory( $product->get_sku(), $product->get_quantity() );
 
-		$this->pricing_update   = new \ShoppingFeed\Sdk\Api\Catalog\PricingUpdate();
-		$this->inventory_update = new \ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate();
+		return true;
+	}
 
-		$product = new Product( $product_id );
-		if ( $product->has_variations() ) {
-			foreach ( $product->get_variations() as $variation ) {
-				if ( empty( $variation['sku'] ) ) {
-					ShoppingFeedHelper::get_logger()->warning(
-						sprintf(
-						/* translators: %s: Product ID. */
-							__( 'Cant update product without SKU => %s', 'shopping-feed' ),
-							$product_id
-						),
-						array(
-							'source' => 'shopping-feed',
-						)
-					);
-
-					continue;
-				}
-
-				$this->may_update_pricing( $variation['sku'], ! empty( $variation['discount'] ) ? $variation['discount'] : $variation['price'] );
-				$this->may_update_inventory( $variation['sku'], $variation['quantity'] );
-			}
-		} else {
-			if ( empty( $product->get_sku() ) ) {
+	/**
+	 * @param Product $product
+	 *
+	 * @psalm-suppress all
+	 * @return bool
+	 */
+	public function update_variation_product( $product ) {
+		foreach ( $product->get_variations() as $variation ) {
+			if ( empty( $variation['sku'] ) ) {
 				ShoppingFeedHelper::get_logger()->warning(
 					sprintf(
 					/* translators: %s: Product ID. */
 						__( 'Cant update product without SKU => %s', 'shopping-feed' ),
-						$product_id
+						$product->get_wc_product()->get_id()
 					),
 					array(
 						'source' => 'shopping-feed',
@@ -237,23 +318,9 @@ class WoocommerceActions {
 				return false;
 			}
 
-			$this->may_update_pricing( $product->get_sku(), ! empty( $product->get_discount() ) ? $product->get_discount() : $product->get_price() );
-			$this->may_update_inventory( $product->get_sku(), $product->get_quantity() );
+			$this->may_update_pricing( $variation['sku'], ! empty( $variation['discount'] ) ? $variation['discount'] : $variation['price'] );
+			$this->may_update_inventory( $variation['sku'], $variation['quantity'] );
 		}
-		/**
-		 * Check if we need to update the price or only the stock
-		 */
-		if ( ! $only_stock ) {
-			/**
-			 * Send api request to update the price
-			 */
-			$pricing_api->execute( $this->pricing_update );
-		}
-
-		/**
-		 * Send api request to update the inventory
-		 */
-		$inventory_api->execute( $this->inventory_update );
 
 		return true;
 	}
@@ -304,5 +371,104 @@ class WoocommerceActions {
 			return;
 		}
 		$this->inventory_update->add( $sku, intval( $inventory ) );
+	}
+
+	/**
+	 * @return bool
+	 * @throws Exception
+	 * @psalm-suppress all
+	 */
+	public function migrate_old_accounts() {
+		//migrate account data and retrieve account ID
+		$account_options = ShoppingFeedHelper::get_sf_account_options();
+
+		if ( empty( $account_options['token'] ) ) {
+			ShoppingFeedHelper::get_logger()->error(
+				sprintf(
+					__( 'No token founds', 'shopping-feed' )
+				),
+				array(
+					'source' => 'shopping-feed',
+				)
+			);
+			ShoppingFeedHelper::end_upgrade();
+
+			return false;
+		}
+		try {
+			$main_store = Client\Client::createSession( new Credential\Token( $account_options['token'] ) )->getMainStore();
+			if ( is_null( $main_store ) ) {
+				ShoppingFeedHelper::get_logger()->error(
+					sprintf(
+						__( 'Cant retrieve main store', 'shopping-feed' )
+					),
+					array(
+						'source' => 'shopping-feed',
+					)
+				);
+
+				ShoppingFeedHelper::end_upgrade();
+
+				return false;
+			}
+			$account_id            = $main_store->getId();
+			$new_account_options   = array();
+			$new_account_options[] = array(
+				'sf_store_id' => $account_id,
+				'username'    => ! empty( $account_options['username'] ) ? $account_options['username'] : '',
+				'password'    => ! empty( $account_options['password'] ) ? $account_options['password'] : '',
+				'token'       => $account_options['token'],
+			);
+			ShoppingFeedHelper::set_sf_account_options( $new_account_options );
+		} catch ( \Exception $exception ) {
+			ShoppingFeedHelper::get_logger()->error(
+				sprintf(
+				/* translators: %s: Error message. */
+					__( 'Cant login with actual credentials => %s', 'shopping-feed' ),
+					$exception->getMessage()
+				),
+				array(
+					'source' => 'shopping-feed',
+				)
+			);
+
+			ShoppingFeedHelper::end_upgrade();
+
+			return false;
+		}
+
+		//Migrate old orders to default account
+		$args = array(
+			'limit'        => - 1,
+			'meta_key'     => Query::WC_META_SF_REFERENCE,
+			'meta_compare' => 'EXISTS',
+		);
+
+		$query     = new \WC_Order_Query( $args );
+		$wc_orders = $query->get_orders();
+		if ( empty( $wc_orders ) ) {
+			ShoppingFeedHelper::get_logger()->error(
+				sprintf(
+					__( 'No SF orders founds for migration', 'shopping-feed' )
+				),
+				array(
+					'source' => 'shopping-feed',
+				)
+			);
+			ShoppingFeedHelper::end_upgrade();
+
+			return false;
+		}
+
+		foreach ( $wc_orders as $wc_order ) {
+			//add store id
+			/** @var \WC_Order $wc_order */
+			$wc_order->add_meta_data( Query::WC_META_SF_STORE_ID, $account_id );
+			$wc_order->save();
+		}
+
+		ShoppingFeedHelper::end_upgrade();
+
+		return true;
 	}
 }

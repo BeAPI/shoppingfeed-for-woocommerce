@@ -233,7 +233,7 @@ class Generator {
 		$file_path = Uri::get_instance()->get_full_path();
 
 		if ( true === $no_cache || ! is_file( $file_path ) ) {
-			if ( ShoppingFeedHelper::generation_process_running() ) {
+			if ( ShoppingFeedHelper::is_process_running( 'sf_feed_generation_process' ) ) {
 				wp_die( 'Feed generation already launched' );
 			}
 			as_schedule_single_action(

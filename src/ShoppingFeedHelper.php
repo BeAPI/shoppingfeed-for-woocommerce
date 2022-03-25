@@ -6,7 +6,6 @@ namespace ShoppingFeed\ShoppingFeedWC;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Admin\Options;
-use ShoppingFeed\ShoppingFeedWC\Sdk\Sdk;
 use ShoppingFeed\ShoppingFeedWC\Url\Rewrite;
 use WC_Logger;
 
@@ -140,39 +139,35 @@ XML;
 	}
 
 	/**
-	 * Set SF token after connection
-	 *
-	 * @param $token
-	 *
-	 */
-	public static function set_sf_token( $token ) {
-		$options          = self::get_sf_account_options();
-		$options['token'] = $token;
-
-		update_option( Options::SF_ACCOUNT_OPTIONS, $options );
-	}
-
-	/**
 	 * Return SF Configuration for Account
-	 * @return mixed|void
+	 * @return array
 	 */
 	public static function get_sf_account_options() {
-		return get_option( Options::SF_ACCOUNT_OPTIONS );
+		return get_option( Options::SF_ACCOUNT_OPTIONS, array() );
+	}
+
+
+	/**
+	 * Set SF Configuration for Account
+	 * @return bool
+	 */
+	public static function set_sf_account_options( $option ) {
+		return update_option( Options::SF_ACCOUNT_OPTIONS, $option );
 	}
 
 	/**
-	 * Reset password if bad
-	 *
-	 * @param $token
-	 *
+	 * @param $account_id
+	 * @psalm-suppress all
+	 * @return array
 	 */
-	public static function clean_password() {
-		$options = self::get_sf_account_options();
-		if ( isset( $options ) && isset( $options['password'] ) ) {
-			unset( $options['password'] );
+	public static function get_sf_account_credentials( $account_id ) {
+		$account_options = self::get_sf_account_options();
+		$index           = array_search( (int) $account_id, array_column( $account_options, 'sf_store_id' ), true );
+		if ( false === $index || empty( $account_options[ $index ] ) ) {
+			return array();
 		}
 
-		update_option( Options::SF_ACCOUNT_OPTIONS, $options );
+		return $account_options[ $index ];
 	}
 
 	/**
@@ -565,18 +560,6 @@ XML;
 	}
 
 	/**
-	 * @return bool
-	 */
-	public static function is_authenticated() {
-		$sdk = Sdk::get_instance();
-		if ( empty( $sdk ) ) {
-			return false;
-		}
-
-		return $sdk->authenticate();
-	}
-
-	/**
 	 * Add filter for category taxonomy
 	 * default: product_cat
 	 * @return string
@@ -661,32 +644,41 @@ XML;
 
 	/**
 	 * Check if a running generation process
+	 *
+	 * @param $group
+	 *
 	 * @return bool
 	 */
-	public static function generation_process_running() {
-		$process = self::get_running_generation_feed_process();
+	public static function is_process_running( $group ) {
+		$process = self::get_running_process( $group );
 
 		return ! empty( $process );
 	}
 
 	/**
 	 * Get running process list
+	 *
+	 * @param string $group
+	 *
 	 * @return array|int
 	 */
-	public static function get_running_generation_feed_process() {
+	public static function get_running_process( $group ) {
 		$action_scheduler = \ActionScheduler::store();
 
 		return $action_scheduler->query_actions(
 			array(
-				'group'  => 'sf_feed_generation_process',
+				'group'  => $group,
 				'status' => $action_scheduler::STATUS_PENDING,
 			)
 		);
 	}
 
-	public static function clean_generation_process_running() {
+	/**
+	 * @param string $group
+	 */
+	public static function clean_process_running( $group ) {
 		try {
-			\ActionScheduler::store()->cancel_actions_by_group( 'sf_feed_generation_process' );
+			\ActionScheduler::store()->cancel_actions_by_group( $group );
 		} catch ( \Exception $exception ) {
 			self::get_logger()->error(
 				sprintf(
@@ -731,6 +723,17 @@ XML;
 	}
 
 	/**
+	 * Check if new customer
+	 * @return bool
+	 */
+	public static function sf_new_customer() {
+		return empty( get_option( Options::SF_ACCOUNT_OPTIONS ) ) &&
+			   empty( get_option( Options::SF_FEED_OPTIONS ) ) &&
+			   empty( get_option( Options::SF_SHIPPING_OPTIONS ) ) &&
+			   empty( get_option( Options::SF_ORDERS_OPTIONS ) );
+	}
+
+	/**
 	 * Singleton instance can't be cloned.
 	 */
 	private function __clone() {
@@ -740,5 +743,32 @@ XML;
 	 * Singleton instance can't be serialized.
 	 */
 	private function __wakeup() {
+	}
+
+	/**
+	 * Check if we have an upgrade
+	 * @return bool
+	 */
+	public static function sf_has_upgrade() {
+
+		$db_version = get_option( SF_DB_VERSION_SLUG );
+
+		return empty( $db_version ) || version_compare( $db_version, SF_DB_VERSION, '<' );
+	}
+
+	/**
+	 * Check if we have a running upgrade
+	 * @return bool
+	 */
+	public static function is_upgrade_running() {
+		return ! empty( get_option( SF_UPGRADE_RUNNING ) );
+	}
+
+	/*
+	 * End upgrade
+	 */
+	public static function end_upgrade() {
+		delete_option( SF_UPGRADE_RUNNING );
+		update_option( SF_DB_VERSION_SLUG, SF_DB_VERSION );
 	}
 }

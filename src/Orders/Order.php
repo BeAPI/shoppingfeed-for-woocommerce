@@ -227,7 +227,7 @@ class Order {
 	 * @return bool
 	 */
 	public static function exists( $sf_order ) {
-		return ! empty( wc_get_orders( array( Query::$wc_meta_sf_reference => $sf_order->getReference() ) ) );
+		return ! empty( wc_get_orders( array( Query::WC_META_SF_REFERENCE => $sf_order->getReference() ) ) );
 	}
 
 
@@ -319,11 +319,13 @@ class Order {
 			return array();
 		}
 
-		$sf_reference    = $order->get_meta( Query::$wc_meta_sf_reference );
-		$sf_channel_name = $order->get_meta( Query::$wc_meta_sf_channel_name );
+		$sf_store_id     = $order->get_meta( Query::WC_META_SF_STORE_ID );
+		$sf_reference    = $order->get_meta( Query::WC_META_SF_REFERENCE );
+		$sf_channel_name = $order->get_meta( Query::WC_META_SF_CHANNEL_NAME );
 
 		return array(
 			'order'           => $order,
+			'sf_store_id'     => $sf_store_id,
 			'sf_reference'    => $sf_reference,
 			'sf_channel_name' => $sf_channel_name,
 		);
@@ -342,7 +344,7 @@ class Order {
 			return false;
 		}
 
-		return ! empty( $wc_order->get_meta( Query::$wc_meta_sf_reference ) );
+		return ! empty( $wc_order->get_meta( Query::WC_META_SF_REFERENCE ) );
 	}
 
 	/**
@@ -353,6 +355,6 @@ class Order {
 	 * @return boolean
 	 */
 	public static function can_update_stock( $wc_order ) {
-		return empty( $wc_order->get_meta( Query::$wc_meta_sf_reference ) ) || empty( $wc_order->get_meta( Metas::$dont_update_inventory ) );
+		return empty( $wc_order->get_meta( Query::WC_META_SF_REFERENCE ) ) || empty( $wc_order->get_meta( Metas::$dont_update_inventory ) );
 	}
 }

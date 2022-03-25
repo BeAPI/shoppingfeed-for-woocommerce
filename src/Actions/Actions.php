@@ -36,13 +36,30 @@ class Actions {
 	 * Register new action to get orders
 	 */
 	public static function register_get_orders() {
-		as_schedule_recurring_action(
-			time() + 60,
-			ShoppingFeedHelper::get_sf_orders_import_frequency(),
-			'sf_get_orders_action',
-			array(),
-			self::ORDERS_GROUP
-		);
+		$sf_accounts = ShoppingFeedHelper::get_sf_account_options();
+		if ( empty( $sf_accounts ) ) {
+			ShoppingFeedHelper::get_logger()->error(
+				sprintf(
+					__( 'No Accounts founds', 'shopping-feed' )
+				),
+				array(
+					'source' => 'shopping-feed',
+				)
+			);
+
+			return;
+		}
+		foreach ( $sf_accounts as $key => $sf_account ) {
+			as_schedule_recurring_action(
+				time() + 60,
+				ShoppingFeedHelper::get_sf_orders_import_frequency(),
+				'sf_get_orders_action_' . $key,
+				array(
+					'sf_account' => $sf_account,
+				),
+				self::ORDERS_GROUP
+			);
+		}
 	}
 
 	/**
