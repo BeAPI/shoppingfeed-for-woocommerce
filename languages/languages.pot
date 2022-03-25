@@ -1,19 +1,22 @@
+# Copyright (C) 2022 Shopping-Feed
+# This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: ShoppingFeed 6.1.3\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/shoppingfeed-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2020-04-20T12:04:03+00:00\n"
+"POT-Creation-Date: 2022-03-25T09:28:55+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.4.0\n"
-"X-Domain: languages\n"
-
+"X-Generator: WP-CLI 2.6.0\n"
+"X-Domain: shopping-feed\n"
 
 #. Plugin Name of the plugin
+#: src/Admin/Options.php:74
+#: src/Admin/Options.php:75
 msgid "ShoppingFeed"
 msgstr ""
 
@@ -22,7 +25,7 @@ msgid "https://wordpress.org/plugins/shoppingfeed/"
 msgstr ""
 
 #. Description of the plugin
-msgid "Connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, Google, and 1000's of international marketplaces"
+msgid "WordPress connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, Google, and 1000's of international marketplaces"
 msgstr ""
 
 #. Author of the plugin
@@ -33,419 +36,541 @@ msgstr ""
 msgid "https://www.shopping-feed.com/"
 msgstr ""
 
-#: src/Cli/FeedGeneration.php:25
-msgid "Error during feed generation : %s"
+#: src/Actions/Actions.php:43
+#: src/Admin/WoocommerceActions.php:92
+#: src/Admin/WoocommerceActions.php:212
+msgid "No Accounts founds"
 msgstr ""
 
-#: src/ShoppingFeed.php:93
-msgid "ShoppingFeed requires an active version of WooCommerce"
+#: src/Addons/Marketplaces/Marketplaces.php:45
+msgid "Type"
 msgstr ""
 
-#: src/ShoppingFeed.php:106
-msgid "ShoppingFeed requires WooCommerce version 3.8 at least"
+#: src/Addons/Marketplaces/Types/AmazonBusiness.php:30
+msgid "Amazon Business"
 msgstr ""
 
-#: src/Admin/WoocommerceActions.php:74
-msgid "Cant find any matched method for %s"
+#: src/Addons/Marketplaces/Types/AmazonPrime.php:30
+msgid "Amazon Prime"
 msgstr ""
 
-#: src/Admin/WoocommerceActions.php:74
-msgid "Cant find any matched method for %s"
+#: src/Addons/Shipping/Shipping.php:63
+msgid "Relais Colis"
 msgstr ""
 
-#: src/Admin/WoocommerceActions.php:134
-msgid "Cant update product without SKU => %s"
+#: src/Admin/MarketingBord.php:42
+msgid "Welcome on Shoppingfeed"
 msgstr ""
 
-#: src/Admin/WoocommerceActions.php:193
-msgid "Cant update product without price => %s"
+#: src/Admin/MarketingBord.php:43
+msgid "Fix your syndication struggle"
 msgstr ""
 
-#: src/Admin/WoocommerceActions.php:219
-msgid "Cant update product without quantity => %s"
+#: src/Admin/MarketingBord.php:44
+msgid "To go further and discover how to eliminate order fulfilment friction and enrich your products listings"
 msgstr ""
 
-#: src/Admin/Notices.php:36
-msgid "Thank you for installing Shopping-feed."
+#: src/Admin/MarketingBord.php:44
+msgid "please download our white papers"
 msgstr ""
 
-#: src/Admin/Notices.php:39
-msgid "Only one step left to activate the plugin on your site !"
+#: src/Admin/MarketingBord.php:46
+msgid "Migration to Shoppingfeed"
 msgstr ""
 
-#: src/Admin/Notices.php:40
+#: src/Admin/MarketingBord.php:47
+msgid "Google Shopping Ads"
+msgstr ""
+
+#: src/Admin/MarketingBord.php:48
+msgid "Google Shopping Action"
+msgstr ""
+
+#: src/Admin/MarketingBord.php:49
+msgid "Product Graph"
+msgstr ""
+
+#: src/Admin/MarketingBord.php:52
+msgid "Join more than 2000+ sellers worldwide"
+msgstr ""
+
+#: src/Admin/MarketingBord.php:53
+msgid "Discover our offers"
+msgstr ""
+
+#: src/Admin/Metabox.php:48
+msgid "ShoppingFeed details"
+msgstr ""
+
+#: src/Admin/Metabox.php:70
+msgid "No metadata available for the current order."
+msgstr ""
+
+#: src/Admin/Metabox.php:74
+msgid "Reference"
+msgstr ""
+
+#: src/Admin/Metabox.php:77
+msgid "MarketPlace"
+msgstr ""
+
+#: src/Admin/Notices.php:60
+msgid "Thank your for downloading Shoppingfeed"
+msgstr ""
+
+#: src/Admin/Notices.php:61
+msgid "Connect your Ecommerce to 1,000+ Channels"
+msgstr ""
+
+#: src/Admin/Notices.php:62
 msgid "Login"
 msgstr ""
 
-msgid "Logout"
-msgstr ""
-
-#: src/Admin/Options.php:116
+#: src/Admin/Options.php:151
 msgid "Account"
 msgstr ""
 
-#: src/Admin/Options.php:121
+#: src/Admin/Options.php:156
 msgid "Feed"
 msgstr ""
 
-#: src/Admin/Options.php:126
+#: src/Admin/Options.php:161
+#: src/Admin/Options.php:633
+msgid "Shipping"
+msgstr ""
+
+#: src/Admin/Options.php:166
 msgid "Orders"
 msgstr ""
 
-#: src/Admin/Options.php:175
+#: src/Admin/Options.php:171
+msgid "Logs"
+msgstr ""
+
+#: src/Admin/Options.php:179
+msgid "Plugin version:"
+msgstr ""
+
+#: src/Admin/Options.php:237
 msgid "Account settings"
 msgstr ""
 
-#: src/Admin/Options.php:183
+#: src/Admin/Options.php:254
 msgid "Username"
 msgstr ""
 
-#: src/Admin/Options.php:196
+#: src/Admin/Options.php:255
 msgid "Password"
 msgstr ""
 
-#: src/Admin/Options.php:209
-msgid "Status"
+#: src/Admin/Options.php:319
+msgid "Add account"
 msgstr ""
 
-#: src/Admin/Options.php:214
-msgid "Connected"
-msgstr ""
-
-#: src/Admin/Options.php:214
-msgid "Not connected"
-msgstr ""
-
-#: src/Admin/Options.php:296
-msgid "Your source feed"
-msgstr ""
-
-#: src/Admin/Options.php:246
-msgid "Shipping"
-msgstr ""
-
-#: src/Admin/Options.php:569
-msgid "Default shipping price added in the feed if no shipping methods were founded or no shipping zone is selected"
-msgstr ""
-
-#: src/Admin/Options.php:559
-msgid "Default Shipping Fees"
-msgstr ""
-
-#: src/Admin/Options.php:545
-msgid "Selected shipping zone defines shipping method data used in the feed"
-msgstr ""
-
-#: src/Admin/Options.php:532
-msgid "None"
-msgstr ""
-
-#: src/Admin/Options.php:527
-msgid "Default Shipping Zone"
-msgstr ""
-
-#: src/Admin/Options.php:190
-msgid "Shipping"
-msgstr ""
-
-#: src/Admin/Options.php:430
-msgid "Product categories to export to Shoppingfeed. Default : all"
-msgstr ""
-
-#: src/Admin/Options.php:413
-msgid "Categories to export"
+#: src/Admin/Options.php:325
+msgid "Save"
 msgstr ""
 
 #: src/Admin/Options.php:402
+msgid "Selected order status"
+msgstr ""
+
+#: src/Admin/Options.php:403
+msgid "Unselected order status"
+msgstr ""
+
+#: src/Admin/Options.php:404
+msgid "Search"
+msgstr ""
+
+#: src/Admin/Options.php:420
+msgid "Products"
+msgstr ""
+
+#: src/Admin/Options.php:428
+msgid "Your source feed"
+msgstr ""
+
+#: src/Admin/Options.php:445
+msgid "Last update"
+msgstr ""
+
+#: src/Admin/Options.php:447
+msgid "Never"
+msgstr ""
+
+#: src/Admin/Options.php:450
+msgid "Refresh"
+msgstr ""
+
+#: src/Admin/Options.php:453
+msgid "The feed is update is running"
+msgstr ""
+
+#: src/Admin/Options.php:453
+msgid "Refresh to check progress"
+msgstr ""
+
+#: src/Admin/Options.php:475
+#: src/Admin/Options.php:487
 msgid "Product identifier"
 msgstr ""
 
-#: src/Admin/Options.php:395
+#: src/Admin/Options.php:480
 msgid "Product ID (recommended)"
 msgstr ""
 
-#: src/Admin/Options.php:768
-msgid "Selected Status will send update on Shoppingfeed"
+#: src/Admin/Options.php:483
+msgid "SKU"
 msgstr ""
 
-#: src/Orders/Operations.php:215
-msgid "Canceled orders"
+#: src/Admin/Options.php:498
+#: src/Admin/Options.php:509
+msgid "Category Display Mode"
 msgstr ""
 
-#: src/Orders/Operations.php:216
-msgid "Shipped orders"
+#: src/Admin/Options.php:503
+msgid "Normal"
 msgstr ""
 
-#: src/Admin/Options.php:303
+#: src/Admin/Options.php:506
+msgid "Breadcrumb"
+msgstr ""
+
+#: src/Admin/Options.php:519
+msgid "Categories to export"
+msgstr ""
+
+#: src/Admin/Options.php:536
+msgid "Product categories to export to Shoppingfeed. Default : all"
+msgstr ""
+
+#: src/Admin/Options.php:549
+msgid "Feed generation frequency"
+msgstr ""
+
+#. translators: %s: Frequency.
+#: src/Admin/Options.php:562
 msgid "%s hour"
 msgid_plural "%s hours"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Admin/Options.php:314
-msgid "Feed generation frequency"
-msgstr ""
-
-#: src/Admin/Options.php:314
+#: src/Admin/Options.php:574
 msgid "Number of hours"
 msgstr ""
 
-#: src/Admin/Options.php:351
-msgid "Products"
-msgstr ""
-
-#: src/Admin/Options.php:371
-msgid "Identifier"
-msgstr ""
-
-#: src/Admin/Options.php:376
-msgid "ID (recommended)"
-msgstr ""
-
-#: src/Admin/Options.php:379
-msgid "SKU"
-msgstr ""
-
-#: src/Admin/Options.php:484
+#: src/Admin/Options.php:590
 msgid "Frequency to generate the feed (usually 6h)"
 msgstr ""
 
-#: src/Admin/Options.php:391
-msgid "Categories to export"
-msgstr ""
-
-#: src/Admin/Options.php:435
-msgid "Import Options"
-msgstr ""
-
-#: src/Admin/Options.php:430
-msgid "min"
-msgstr ""
-
-#: src/Admin/Options.php:447
-msgid "Frequency"
-msgstr ""
-
-#: src/Admin/Options.php:484
-msgid "Default Import Status"
-msgstr ""
-
-#: src/Admin/Options.php:519
-msgid "Orders to import"
-msgstr ""
-
-#: src/Admin/Options.php:722
-msgid "Frequency to import orders from SF"
-msgstr ""
-
-#: src/Admin/Options.php:745
-msgid "Synchronization"
-msgstr ""
-
-#: src/Admin/Options.php:544
-msgid "Actions"
-msgstr ""
-
-#: src/Orders/Order/Products.php:50
-msgid "cant match product  %1$1s => in order %2$2s"
-msgstr ""
-
-#: src/Orders/Operations.php:81
-msgid "Failed to accept sf order %s"
-msgstr ""
-
-#: src/Orders/Operations.php:112
-msgid "Failed to refuse sf order %s"
-msgstr ""
-
-#: src/Orders/Operations.php:144
-msgid "Failed to cancel sf order %s"
-msgstr ""
-
-#: src/Orders/Operations.php:176
-msgid "Failed to ship sf order %s"
-msgstr ""
-
-#: src/Orders/Operations.php:208
-msgid "Failed to acknowledge sf order %s"
-msgstr ""
-
-#: src/Orders/Operations.php:237
-msgid "Failed to unacknowledge sf order %s"
-msgstr ""
-
-#: src/Orders/Operations.php:255
-msgid "Accept order"
-msgstr ""
-
-#: src/Orders/Operations.php:256
-msgid "Cancel order"
-msgstr ""
-
-#: src/Orders/Operations.php:257
-msgid "Refuse order"
-msgstr ""
-
-#: src/Orders/Operations.php:258
-msgid "Ship order"
-msgstr ""
-
-#: src/Orders/Operations.php:259
-msgid "Acknowledge order"
-msgstr ""
-
-#: src/Orders/Operations.php:260
-msgid "Unacknowledge order"
-msgstr ""
-
-#: src/Orders/Order.php:75
-msgid "Cant add order with no products  %1$1s => %2$2s"
-msgstr ""
-
-#: src/Orders/Order.php:105
-msgid "Cant set payment to order  %1$1s => %2$2s"
-msgstr ""
-
-#: src/Orders/Order.php:126
-msgid "Cant set shippin to order  %1$1s => %2$2s"
-msgstr ""
-
-#: src/Orders/Order.php:147
-msgid "Available: %1$1s - Need : %2$2s"
-msgstr ""
-
-#: src/Orders/Order.php:160
-msgid "Out of stock"
-msgstr ""
-
-#: src/Orders/Order.php:168
-msgid "Products are unavailable"
-msgstr ""
-
-#: src/Orders/Orders.php:52
-msgid "Order already imported  %1$1s => %2$2s"
-msgstr ""
-
-#: src/Sdk/Sdk.php:40
-msgid "No settings founds"
-msgstr ""
-
-#: src/Orders/Orders.php:71
-msgid "Need username/password to connect"
-msgstr ""
-
-#: src/Orders/Orders.php:105
-msgid "Cant login with actual credentials => %s"
-msgstr ""
-
-#: src/Orders/Orders.php:130
-msgid "No store found"
-msgstr ""
-
-msgid "Save changes"
-msgstr ""
-
-msgid "Last update"
-msgstr ""
-
-msgid "Refresh"
-msgstr ""
-
-msgid "Methods"
-msgstr ""
-
-msgid "Default Shipping Method"
-msgstr ""
-
-msgid "Shipping Matching"
-msgstr ""
-
-msgid "Import Options"
-msgstr ""
-
-msgid "Selected order status"
-msgstr ""
-
-msgid "Unselected order status"
-msgstr ""
-
-msgid "Selected categories"
-msgstr ""
-
-msgid "Unselected categories"
-msgstr ""
-
-msgid "Search"
-msgstr ""
-
-msgid "Thank your for downloading Shoppingfeed"
-msgstr ""
-
-msgid "Connect your Ecommerce to 1,000+ Channels"
-msgstr ""
-
-msgid "Welcome on Shoppingfeed"
-msgstr ""
-
-msgid "Fix your syndication struggle"
-msgstr ""
-
-msgid "To go further and discover how to eliminate order fulfilment friction and enrich your products listings"
-msgstr ""
-
-msgid "please download our white papers"
-msgstr ""
-
-msgid "Migration to Shoppingfeed"
-msgstr ""
-
-msgid "Google Shopping Ads"
-msgstr ""
-
-msgid "Google Shopping Action"
-msgstr ""
-
-msgid "Product Graph"
-msgstr ""
-
-msgid "Join more than 2000+ sellers worldwide"
-msgstr ""
-
-msgid "Discover our offers"
-msgstr ""
-
-msgid "Category Display Mode"
-msgstr ""
-
-msgid "Normal"
-msgstr ""
-
-msgid "Breadcrumb"
-msgstr ""
-
-msgid "Default Order Status"
-msgstr ""
-
-msgid "Default Status for orders imported from from SF"
-msgstr ""
-
-msgid "The feed is update is running"
-msgstr ""
-
-msgid "Refresh to check progress"
-msgstr ""
-
+#: src/Admin/Options.php:599
 msgid "Batch size"
 msgstr ""
 
+#: src/Admin/Options.php:617
 msgid "Batch size (default 200 to decrease in case of performance issues)"
 msgstr ""
 
+#: src/Admin/Options.php:620
 msgid "If the feed is blocked and not generated"
 msgstr ""
 
+#: src/Admin/Options.php:621
 msgid "click here"
 msgstr ""
 
+#: src/Admin/Options.php:622
 msgid "to clean all running process"
+msgstr ""
+
+#: src/Admin/Options.php:643
+msgid "Default Shipping Zone"
+msgstr ""
+
+#: src/Admin/Options.php:648
+msgid "None"
+msgstr ""
+
+#: src/Admin/Options.php:662
+msgid "Selected shipping zone defines shipping method data used in the feed"
+msgstr ""
+
+#: src/Admin/Options.php:671
+msgid "Default Shipping Fees"
+msgstr ""
+
+#: src/Admin/Options.php:681
+msgid "Default shipping price added in the feed if no shipping methods were founded or no shipping zone is selected"
+msgstr ""
+
+#: src/Admin/Options.php:696
+#: src/Admin/Options.php:853
+#: src/Admin/Options.php:988
+msgid "Save changes"
+msgstr ""
+
+#: src/Admin/Options.php:716
+msgid "Methods"
+msgstr ""
+
+#: src/Admin/Options.php:723
+msgid "Retrieval mode"
+msgstr ""
+
+#: src/Admin/Options.php:734
+msgid "How shipping information will be retrieved"
+msgstr ""
+
+#: src/Admin/Options.php:744
+msgid "Default Shipping Method"
+msgstr ""
+
+#: src/Admin/Options.php:748
+#: src/Admin/Options.php:811
+msgid "-"
+msgstr ""
+
+#: src/Admin/Options.php:774
+msgid "Default shipping method for imported orders from SF"
+msgstr ""
+
+#: src/Admin/Options.php:789
+msgid "Shipping Matching"
+msgstr ""
+
+#: src/Admin/Options.php:866
+msgid "Import Options"
+msgstr ""
+
+#: src/Admin/Options.php:879
+msgid "min"
+msgstr ""
+
+#: src/Admin/Options.php:884
+msgid "Frequency"
+msgstr ""
+
+#: src/Admin/Options.php:900
+msgid "Frequency to import orders from SF"
+msgstr ""
+
+#: src/Admin/Options.php:921
+msgid "Default Order Status"
+msgstr ""
+
+#: src/Admin/Options.php:937
+msgid "Default Status for orders imported from from SF"
+msgstr ""
+
+#: src/Admin/Options.php:949
+msgid "Synchronization"
+msgstr ""
+
+#: src/Admin/Options.php:972
+msgid "Selected Status will send update on Shoppingfeed"
+msgstr ""
+
+#: src/Admin/Requirements.php:58
+msgid "The PHP cURL extension is installed and activated on your server."
+msgstr ""
+
+#: src/Admin/Requirements.php:59
+msgid "The PHP cURL extension must be installed and activated on your server."
+msgstr ""
+
+#: src/Admin/Requirements.php:67
+msgid "The PHP version on your server is valid."
+msgstr ""
+
+#. translators: %s: minimum required PHP version
+#: src/Admin/Requirements.php:69
+msgid "The PHP version on your server is not supported. Your server must run PHP %s or greater."
+msgstr ""
+
+#: src/Admin/Requirements.php:77
+msgid "OpenSSL is up to date."
+msgstr ""
+
+#. translators: %s: minimum required OpenSSL version
+#: src/Admin/Requirements.php:79
+msgid "OpenSSL is not up to date. Please update to OpenSSL %s or later."
+msgstr ""
+
+#: src/Admin/Requirements.php:87
+msgid "You have write access in uploads directory."
+msgstr ""
+
+#: src/Admin/Requirements.php:88
+msgid "You must have write access in uploads directory."
+msgstr ""
+
+#. translators: %s: Action name.
+#: src/Admin/WoocommerceActions.php:154
+msgid "Cant find any matched method for %s"
+msgstr ""
+
+#. translators: %s: Action
+#: src/Admin/WoocommerceActions.php:169
+msgid "Failed to %s order"
+msgstr ""
+
+#. translators: %1$s: Action. %2$s: Error Message
+#: src/Admin/WoocommerceActions.php:176
+msgid "Failed to %1$s order => %2$s"
+msgstr ""
+
+#. translators: %s: Error message.
+#: src/Admin/WoocommerceActions.php:228
+#: src/Orders/Operations.php:78
+#: src/Orders/Orders.php:57
+msgid "Cannot retrieve shop from SDK for account : %s"
+msgstr ""
+
+#. translators: %s: Product ID.
+#: src/Admin/WoocommerceActions.php:281
+#: src/Admin/WoocommerceActions.php:310
+msgid "Cant update product without SKU => %s"
+msgstr ""
+
+#. translators: %s: Product SKU.
+#: src/Admin/WoocommerceActions.php:339
+msgid "Cant update product without price => %s"
+msgstr ""
+
+#. translators: %s: Product SKU.
+#: src/Admin/WoocommerceActions.php:363
+msgid "Cant update product without quantity => %s"
+msgstr ""
+
+#: src/Admin/WoocommerceActions.php:388
+msgid "No token founds"
+msgstr ""
+
+#: src/Admin/WoocommerceActions.php:403
+msgid "Cant retrieve main store"
+msgstr ""
+
+#. translators: %s: Error message.
+#: src/Admin/WoocommerceActions.php:427
+#: src/Sdk/Sdk.php:67
+msgid "Cant login with actual credentials => %s"
+msgstr ""
+
+#: src/Admin/WoocommerceActions.php:452
+msgid "No SF orders founds for migration"
+msgstr ""
+
+#. translators: %s: Error message
+#: src/Cli/FeedGeneration.php:22
+msgid "Error during feed generation : %s"
+msgstr ""
+
+#. translators: %s: Action name.
+#: src/Feed/AsyncGenerator.php:128
+msgid "Cant read create temporary file (products_tmp.xml) : %s"
+msgstr ""
+
+#. translators: %s: Action name.
+#: src/Feed/AsyncGenerator.php:153
+msgid "Cant read create xml file (products.xml) : %s"
+msgstr ""
+
+#. translators: %s: Error message.
+#: src/Orders/Operations.php:64
+msgid "No SF order found in %s"
+msgstr ""
+
+#: src/Orders/Operations.php:86
+#: src/Sdk/Sdk.php:83
+msgid "No store found"
+msgstr ""
+
+#. translators: %s: Error message.
+#: src/Orders/Operations.php:117
+msgid "Failed to cancel sf order %s"
+msgstr ""
+
+#. translators: %s: Error message.
+#: src/Orders/Operations.php:149
+msgid "Failed to ship sf order %s"
+msgstr ""
+
+#. translators: %s: Error message.
+#: src/Orders/Operations.php:219
+msgid "Failed to acknowledge order %s, we will retry in 15 minutes"
+msgstr ""
+
+#: src/Orders/Operations.php:235
+msgid "Canceled orders"
+msgstr ""
+
+#: src/Orders/Operations.php:236
+msgid "Shipped orders"
+msgstr ""
+
+#. translators: %1$1s: Order id. %2$2s: Error message.
+#: src/Orders/Order.php:95
+msgid "Cant set payment to order  %1$1s => %2$2s"
+msgstr ""
+
+#. translators: %1$1s: Order id. %2$2s: Error message.
+#: src/Orders/Order.php:124
+msgid "Cant set shipping to order  %1$1s => %2$2s"
+msgstr ""
+
+#. translators: %1$1s: Order reference. %2$2s: Order id.
+#: src/Orders/Order.php:144
+msgid "Cant add order with no products  %1$1s => %2$2s"
+msgstr ""
+
+#. translators: %1$1s: Product quantity. %2$2s: Quantity needed.
+#: src/Orders/Order.php:166
+msgid "Available: %1$1s - Need : %2$2s"
+msgstr ""
+
+#: src/Orders/Order.php:186
+msgid "Fees"
+msgstr ""
+
+#: src/Orders/Order.php:210
+msgid "Products are unavailable"
+msgstr ""
+
+#. translators: %1$1s: Product reference. %2$2s: Order id.
+#: src/Orders/Order/Products.php:49
+msgid "cant match product  %1$1s => in order %2$2s"
+msgstr ""
+
+#. translators: %1$1s: Order reference. %2$2s: Order id.
+#: src/Orders/Orders.php:78
+msgid "Order already imported  %1$1s => %2$2s"
+msgstr ""
+
+#: src/Sdk/Sdk.php:45
+msgid "No Credentials found to connect"
+msgstr ""
+
+#: src/ShoppingFeed.php:165
+msgid "ShoppingFeed requires an active version of WooCommerce"
+msgstr ""
+
+#: src/ShoppingFeed.php:181
+msgid "ShoppingFeed requires WooCommerce version 3.8 at least"
+msgstr ""
+
+#: src/ShoppingFeed.php:202
+msgid "Settings"
+msgstr ""
+
+#: src/ShoppingFeed.php:282
+msgid "ShoppingFeed migration is running"
+msgstr ""
+
+#: src/ShoppingFeed.php:309
+msgid "ShoppingFeed need to migrate old data"
+msgstr ""
+
+#: src/ShoppingFeedHelper.php:685
+msgid "Cant remove running process"
 msgstr ""
