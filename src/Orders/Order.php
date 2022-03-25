@@ -108,6 +108,7 @@ class Order {
 			$item          = new \WC_Order_Item_Shipping();
 			$item->set_shipping_rate( $shipping_rate );
 			$wc_order->add_item( $item );
+			do_action( 'sf_after_order_add_shipping', $item, $wc_order );
 		} else {
 			try {
 				$item = new \WC_Order_Item_Shipping();
@@ -115,6 +116,7 @@ class Order {
 				$item->set_total( $this->shipping->get_total() );
 				$item->save();
 				$wc_order->add_item( $item );
+				do_action( 'sf_after_order_add_shipping', $item, $wc_order );
 			} catch ( \Exception $exception ) {
 				ShoppingFeedHelper::get_logger()->error(
 					sprintf(
