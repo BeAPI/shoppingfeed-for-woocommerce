@@ -19,7 +19,8 @@ class WoocommerceFilters {
 	public function __construct() {
 		$this->sf_disable_wc_emails_filters();
 		$this->sf_disable_wc_stock_change();
-		$this->sf_extra_attributes();
+		// We don't want the 'weight' as an attribute at the moment
+		//$this->sf_extra_attributes();
 	}
 
 	public function sf_extra_attributes() {
