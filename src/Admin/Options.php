@@ -637,21 +637,25 @@ class Options {
 		);
 
 		$shipping_zones = \WC_Shipping_Zones::get_zones();
-		$selected_shipping_zone = ! empty( $this->sf_shipping_options['zone'] ) ? $this->sf_shipping_options['zone'] : false;
+		// Ensure retro compatibility
+		$selected_shipping_zone = ! empty( $this->sf_feed_options['zone'] ) ? $this->sf_feed_options['zone'] : false;
+        if ( false === $selected_shipping_zone ) {
+            $selected_shipping_zone = ! empty( $this->sf_shipping_options['zone'] ) ? $this->sf_shipping_options['zone'] : false;
+        }
 		add_settings_field(
 			'default_zone',
 			__( 'Default Shipping Zone', 'shopping-feed' ),
 			function () use ( $shipping_zones, $selected_shipping_zone ) {
 				?>
-					<input class="hidden" id="selected_shipping_zone" value="<?php echo esc_html( $selected_shipping_zone ); ?>">
-					<select id="default_shipping_zone" name="<?php echo esc_html( sprintf( '%s[zone]', self::SF_SHIPPING_OPTIONS ) ); ?>">
+					<input class="hidden" id="selected_shipping_zone" value="<?php echo esc_attr( $selected_shipping_zone ); ?>">
+					<select id="default_shipping_zone" name="<?php echo esc_attr( sprintf( '%s[zone]', self::SF_FEED_OPTIONS ) ); ?>">
 						<option value=""><?php echo esc_attr_e( 'None', 'shopping-feed' ); ?></option>
 						<?php
 						if ( ! empty( $shipping_zones ) ) {
 							foreach ( $shipping_zones as $zone ) {
 								?>
 							<option
-									value="<?php echo esc_html( $zone['id'] ); ?>"
+									value="<?php echo esc_attr( $zone['id'] ); ?>"
 								<?php selected( $zone['id'], $selected_shipping_zone ); ?>
 							><?php echo esc_html( $zone['zone_name'] ); ?></option>
 								<?php
@@ -670,12 +674,17 @@ class Options {
 			'shipping_fees',
 			__( 'Default Shipping Fees', 'shopping-feed' ),
 			function () {
+				// Ensure retro compatibility
+				$shipping_fees = isset( $this->sf_feed_options['fees'] ) ? $this->sf_feed_options['fees'] : 0;
+                if ( 0 === $shipping_fees ) {
+                    $shipping_fees = isset( $this->sf_shipping_options['fees'] ) ? $this->sf_shipping_options['fees'] : 0;
+                }
 				?>
 				<input type="number"
 					   id="shipping_fees"
 					   step="any"
-					   name='<?php echo esc_html( sprintf( '%s[fees]', self::SF_SHIPPING_OPTIONS ) ); ?>'
-					   value='<?php echo esc_html( isset( $this->sf_shipping_options['fees'] ) ? esc_attr( $this->sf_shipping_options['fees'] ) : 0 ); ?>'>
+					   name='<?php echo esc_attr( sprintf( '%s[fees]', self::SF_FEED_OPTIONS ) ); ?>'
+					   value='<?php echo esc_attr( $shipping_fees ); ?>'>
 
 				<p class="description"
 				   id="tagline-description"><?php echo esc_attr_e( 'Default shipping price added in the feed if no shipping methods were founded or no shipping zone is selected', 'shopping-feed' ); ?></p>
