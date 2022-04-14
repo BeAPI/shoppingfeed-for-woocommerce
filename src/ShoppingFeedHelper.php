@@ -234,6 +234,12 @@ XML;
 	 * @return bool|int
 	 */
 	public static function get_sf_default_shipping_zone() {
+		// Ensure retro compatibility
+		$shipping_configuration = self::get_sf_feed_options();
+		if ( is_array( $shipping_configuration ) && isset( $shipping_configuration['zone'] ) && ! empty( $shipping_configuration['zone'] ) ) {
+			return (int) $shipping_configuration['zone'];
+		}
+
 		$shipping_configuration = self::get_sf_shipping_options();
 		if ( ! is_array( $shipping_configuration ) || ! isset( $shipping_configuration['zone'] ) ) {
 			return false;
@@ -272,6 +278,11 @@ XML;
 	 * @return float
 	 */
 	public static function get_sf_default_shipping_fees() {
+		$shipping_configuration = self::get_sf_feed_options();
+		if ( is_array( $shipping_configuration ) && ! empty( $shipping_configuration['fees'] ) && is_numeric( $shipping_configuration['fees'] ) ) {
+			return (float) $shipping_configuration['fees'];
+		}
+
 		$shipping_configuration = self::get_sf_feed_options( 'shipping' );
 		if ( ! is_array( $shipping_configuration ) || empty( $shipping_configuration['fees'] ) || ! is_numeric( $shipping_configuration['fees'] ) ) {
 			return 0;
