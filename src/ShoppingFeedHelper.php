@@ -698,7 +698,7 @@ XML;
 	 * @return WC_Logger
 	 */
 	public static function get_logger() {
-		return new WC_Logger();
+		return wc_get_logger();
 	}
 
 	/**
