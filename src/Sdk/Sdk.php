@@ -59,7 +59,13 @@ class Sdk {
 		}
 
 		try {
-			$session = Client\Client::createSession( $credentials );
+			$options = new Client\ClientOptions();
+			$options->addHeaders(
+				[
+					'Connection' => 'close',
+				]
+			);
+			$session = Client\Client::createSession( $credentials, $options );
 		} catch ( \Exception $exception ) {
 			ShoppingFeedHelper::get_logger()->error(
 				sprintf(
