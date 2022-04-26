@@ -639,9 +639,9 @@ class Options {
 		$shipping_zones = \WC_Shipping_Zones::get_zones();
 		// Ensure retro compatibility
 		$selected_shipping_zone = ! empty( $this->sf_feed_options['zone'] ) ? $this->sf_feed_options['zone'] : false;
-        if ( false === $selected_shipping_zone ) {
-            $selected_shipping_zone = ! empty( $this->sf_shipping_options['zone'] ) ? $this->sf_shipping_options['zone'] : false;
-        }
+		if ( false === $selected_shipping_zone ) {
+			$selected_shipping_zone = ! empty( $this->sf_shipping_options['zone'] ) ? $this->sf_shipping_options['zone'] : false;
+		}
 		add_settings_field(
 			'default_zone',
 			__( 'Default Shipping Zone', 'shopping-feed' ),
@@ -676,9 +676,9 @@ class Options {
 			function () {
 				// Ensure retro compatibility
 				$shipping_fees = isset( $this->sf_feed_options['fees'] ) ? $this->sf_feed_options['fees'] : 0;
-                if ( 0 === $shipping_fees ) {
-                    $shipping_fees = isset( $this->sf_shipping_options['fees'] ) ? $this->sf_shipping_options['fees'] : 0;
-                }
+				if ( 0 === $shipping_fees ) {
+					$shipping_fees = isset( $this->sf_shipping_options['fees'] ) ? $this->sf_shipping_options['fees'] : 0;
+				}
 				?>
 				<input type="number"
 					   id="shipping_fees"
