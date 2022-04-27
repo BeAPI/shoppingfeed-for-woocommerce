@@ -725,9 +725,9 @@ class Options {
 				?>
 					<select id="retrieval_mode" name="<?php echo esc_html( sprintf( '%s[retrieval_mode]', self::SF_SHIPPING_OPTIONS ) ); ?>">
 						<option value="ADDONS"
-							<?php selected( 'ADDONS', isset( $this->sf_feed_options['retrieval_mode'] ) ? $this->sf_shipping_options['retrieval_mode'] : false ); ?>>Addons</option>
+							<?php selected( 'ADDONS', isset( $this->sf_shipping_options['retrieval_mode'] ) ? $this->sf_shipping_options['retrieval_mode'] : false ); ?>>Addons</option>
 						<option value="METAS"
-							<?php selected( 'METAS', isset( $this->sf_feed_options['retrieval_mode'] ) ? $this->sf_shipping_options['retrieval_mode'] : false ); ?>>Métas</option>
+							<?php selected( 'METAS', isset( $this->sf_shipping_options['retrieval_mode'] ) ? $this->sf_shipping_options['retrieval_mode'] : false ); ?>>Métas</option>
 					</select>
 					<p class="description"
 					   id="tagline-description">
@@ -890,7 +890,7 @@ class Options {
 						?>
 						<option
 								value="<?php echo esc_html( $frequency ); ?>"
-							<?php selected( $frequency, isset( $this->sf_feed_options['import_frequency'] ) ? $this->sf_orders_options['import_frequency'] : false ); ?>
+							<?php selected( $frequency, isset( $this->sf_orders_options['import_frequency'] ) ? $this->sf_orders_options['import_frequency'] : false ); ?>
 						><?php echo esc_html( $name ); ?></option>
 						<?php
 					}
@@ -927,7 +927,7 @@ class Options {
 						?>
 						<option
 								value="<?php echo esc_html( $wc_order_statuse ); ?>"
-							<?php selected( $wc_order_statuse, isset( $this->sf_feed_options['default_status'] ) ? $this->sf_orders_options['default_status'] : false ); ?>
+							<?php selected( $wc_order_statuse, isset( $this->sf_orders_options['default_status'] ) ? $this->sf_orders_options['default_status'] : false ); ?>
 						><?php echo esc_html( $name ); ?></option>
 						<?php
 					}
