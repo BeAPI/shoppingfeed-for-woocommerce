@@ -476,10 +476,10 @@ class Options {
 			function () {
 				?>
 				<select name="<?php echo esc_html( sprintf( '%s[product_identifier]', self::SF_FEED_OPTIONS ) ); ?>">
-					<option value="id" <?php selected( 'id', $this->sf_feed_options['product_identifier'] ? $this->sf_feed_options['product_identifier'] : false ); ?>>
+					<option value="id" <?php selected( 'id', isset( $this->sf_feed_options['product_identifier'] ) ? $this->sf_feed_options['product_identifier'] : false ); ?>>
 						<?php esc_html_e( 'Product ID (recommended)', 'shopping-feed' ); ?>
 					</option>
-					<option value="sku" <?php selected( 'sku', $this->sf_feed_options['product_identifier'] ? $this->sf_feed_options['product_identifier'] : false ); ?>>
+					<option value="sku" <?php selected( 'sku', isset( $this->sf_feed_options['product_identifier'] ) ? $this->sf_feed_options['product_identifier'] : false ); ?>>
 						<?php esc_html_e( 'SKU', 'shopping-feed' ); ?>
 					</option>
 				</select>
@@ -499,10 +499,10 @@ class Options {
 			function () {
 				?>
 				<select name="<?php echo esc_html( sprintf( '%s[category_display_mode]', self::SF_FEED_OPTIONS ) ); ?>">
-					<option value="normal" <?php selected( 'id', $this->sf_feed_options['category_display_mode'] ? $this->sf_feed_options['category_display_mode'] : false ); ?>>
+					<option value="normal" <?php selected( 'id', isset( $this->sf_feed_options['category_display_mode'] ) ? $this->sf_feed_options['category_display_mode'] : false ); ?>>
 						<?php esc_html_e( 'Normal', 'shopping-feed' ); ?>
 					</option>
-					<option value="breadcrumb" <?php selected( 'breadcrumb', $this->sf_feed_options['category_display_mode'] ? $this->sf_feed_options['category_display_mode'] : false ); ?>>
+					<option value="breadcrumb" <?php selected( 'breadcrumb', isset( $this->sf_feed_options['category_display_mode'] ) ? $this->sf_feed_options['category_display_mode'] : false ); ?>>
 						<?php esc_html_e( 'Breadcrumb', 'shopping-feed' ); ?>
 					</option>
 				</select>
@@ -580,7 +580,7 @@ class Options {
 						?>
 						<option
 								value="<?php echo esc_html( $frequency ); ?>"
-							<?php selected( $frequency, $this->sf_feed_options['frequency'] ? $this->sf_feed_options['frequency'] : false ); ?>
+							<?php selected( $frequency, isset( $this->sf_feed_options['frequency'] ) ? $this->sf_feed_options['frequency'] : false ); ?>
 						><?php echo esc_html( $name ); ?></option>
 						<?php
 					}
@@ -607,7 +607,7 @@ class Options {
 						?>
 						<option
 								value="<?php echo esc_html( $part_size_option ); ?>"
-							<?php selected( $part_size_option, $this->sf_feed_options['part_size'] ? $this->sf_feed_options['part_size'] : false ); ?>
+							<?php selected( $part_size_option, isset( $this->sf_feed_options['part_size'] ) ? $this->sf_feed_options['part_size'] : false ); ?>
 						><?php echo esc_html( $part_size_option ); ?></option>
 						<?php
 					}
@@ -725,9 +725,9 @@ class Options {
 				?>
 					<select id="retrieval_mode" name="<?php echo esc_html( sprintf( '%s[retrieval_mode]', self::SF_SHIPPING_OPTIONS ) ); ?>">
 						<option value="ADDONS"
-							<?php selected( 'ADDONS', $this->sf_shipping_options['retrieval_mode'] ? $this->sf_shipping_options['retrieval_mode'] : false ); ?>>Addons</option>
+							<?php selected( 'ADDONS', isset( $this->sf_feed_options['retrieval_mode'] ) ? $this->sf_shipping_options['retrieval_mode'] : false ); ?>>Addons</option>
 						<option value="METAS"
-							<?php selected( 'METAS', $this->sf_shipping_options['retrieval_mode'] ? $this->sf_shipping_options['retrieval_mode'] : false ); ?>>Métas</option>
+							<?php selected( 'METAS', isset( $this->sf_feed_options['retrieval_mode'] ) ? $this->sf_shipping_options['retrieval_mode'] : false ); ?>>Métas</option>
 					</select>
 					<p class="description"
 					   id="tagline-description">
@@ -890,7 +890,7 @@ class Options {
 						?>
 						<option
 								value="<?php echo esc_html( $frequency ); ?>"
-							<?php selected( $frequency, $this->sf_orders_options['import_frequency'] ? $this->sf_orders_options['import_frequency'] : false ); ?>
+							<?php selected( $frequency, isset( $this->sf_feed_options['import_frequency'] ) ? $this->sf_orders_options['import_frequency'] : false ); ?>
 						><?php echo esc_html( $name ); ?></option>
 						<?php
 					}
@@ -927,7 +927,7 @@ class Options {
 						?>
 						<option
 								value="<?php echo esc_html( $wc_order_statuse ); ?>"
-							<?php selected( $wc_order_statuse, $this->sf_orders_options['default_status'] ? $this->sf_orders_options['default_status'] : false ); ?>
+							<?php selected( $wc_order_statuse, isset( $this->sf_feed_options['default_status'] ) ? $this->sf_orders_options['default_status'] : false ); ?>
 						><?php echo esc_html( $name ); ?></option>
 						<?php
 					}
