@@ -34,7 +34,7 @@ class MarketingBord {
 	/**
 	 * Singleton instance can't be serialized.
 	 */
-	private function __wakeup() {
+	public function __wakeup() {
 	}
 
 	public function display_marketing_bord() {
