@@ -59,4 +59,27 @@ trait Marketplace {
 		);
 	}
 
+	/**
+	 * Check if the current SF order is from the Zalando marketplace
+	 *
+	 * @param $sf_order OrderResource
+	 *
+	 * @return bool
+	 * @author Stéphane Gillot
+	 */
+	private function is_zalando( $sf_order ) {
+
+		$name = $sf_order->getChannel()->getName();
+		$id   = $sf_order->getChannel()->getId();
+
+		if ( empty( $name ) || empty( $id ) ) {
+			return false;
+		}
+
+		return (
+			( 'ZALANDO' === strtoupper( substr( $name, 0, 7 ) ) ) &&
+			( substr( $name, 0, 7 ) . $id === $name )
+		);
+	}
+
 }
