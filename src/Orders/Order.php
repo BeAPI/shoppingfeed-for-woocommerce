@@ -50,8 +50,10 @@ class Order {
 	private $fees;
 
 	/** @var Metas */
-
 	private $metas;
+
+	/** @var string */
+	private $notes;
 
 	/**
 	 * Order constructor.
@@ -65,6 +67,7 @@ class Order {
 
 		$this->set_shipping_address();
 		$this->set_billing_address();
+		$this->set_notes();
 		$this->set_payment();
 		$this->set_shipping();
 		$this->set_products();
@@ -83,6 +86,9 @@ class Order {
 		//Addresses
 		$wc_order->set_address( $this->shipping_address, 'shipping' );
 		$wc_order->set_address( $this->billing_address );
+
+		//Notes
+		$wc_order->set_customer_note( $this->notes );
 
 		//Payment
 		try {
@@ -306,6 +312,10 @@ class Order {
 	 */
 	private function set_metas() {
 		$this->metas = new Metas( $this->sf_order, $this->shipping );
+	}
+
+	private function set_notes() {
+		$this->notes = $this->shipping_address['notes'];
 	}
 
 	/**

@@ -26,20 +26,20 @@ class Address {
 	}
 
 	public function get_formatted_address() {
-		return array(
-			'first_name'    => $this->get_first_name(),
-			'last_name'     => $this->get_last_name(),
-			'company'       => $this->get_company(),
-			'email'         => $this->get_email(),
-			'phone'         => $this->get_phone(),
-			'address_1'     => $this->get_address1(),
-			'address_2'     => $this->get_address2(),
-			'city'          => $this->get_city(),
-			'state'         => $this->get_state(),
-			'postcode'      => $this->get_postcode(),
-			'country'       => $this->get_country(),
-			'customer_note' => $this->get_customer_note(),
-		);
+		return [
+			'first_name' => $this->get_first_name(),
+			'last_name'  => $this->get_last_name(),
+			'company'    => $this->get_company(),
+			'email'      => $this->get_email(),
+			'phone'      => $this->get_phone(),
+			'address_1'  => $this->get_address1(),
+			'address_2'  => $this->get_address2(),
+			'city'       => $this->get_city(),
+			'state'      => $this->get_state(),
+			'postcode'   => $this->get_postcode(),
+			'country'    => $this->get_country(),
+			'notes'      => $this->get_notes(),
+		];
 	}
 
 	private function get_first_name() {
@@ -86,7 +86,7 @@ class Address {
 		return ! empty( $this->sf_address['country'] ) ? $this->sf_address['country'] : '';
 	}
 
-	private function get_customer_note() {
+	private function get_notes() {
 		return ! empty( $this->sf_address['other'] ) ? $this->sf_address['other'] : '';
 	}
 }
