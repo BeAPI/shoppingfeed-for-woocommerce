@@ -38,7 +38,6 @@ class Address {
 			'state'      => $this->get_state(),
 			'postcode'   => $this->get_postcode(),
 			'country'    => $this->get_country(),
-			'notes'      => $this->get_notes(),
 		];
 	}
 
@@ -84,9 +83,5 @@ class Address {
 
 	private function get_country() {
 		return ! empty( $this->sf_address['country'] ) ? $this->sf_address['country'] : '';
-	}
-
-	private function get_notes() {
-		return ! empty( $this->sf_address['other'] ) ? $this->sf_address['other'] : '';
 	}
 }
