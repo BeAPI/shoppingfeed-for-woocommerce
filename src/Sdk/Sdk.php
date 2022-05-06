@@ -5,6 +5,8 @@ namespace ShoppingFeed\ShoppingFeedWC\Sdk;
 // Exit on direct access
 defined( 'ABSPATH' ) || exit;
 
+use GuzzleHttp\Exception\ClientException;
+use ShoppingFeed\Sdk\Api\Session\SessionResource;
 use ShoppingFeed\Sdk\Client;
 use ShoppingFeed\Sdk\Credential;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
@@ -13,6 +15,38 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
  * @psalm-consistent-constructor
  */
 class Sdk {
+
+	/**
+	 * Get session from credentials.
+	 *
+	 * @param string $username
+	 * @param string $password
+	 *
+	 * @return SessionResource|\WP_Error
+	 */
+	public static function get_session_by_credentials( $username, $password ) {
+
+		try {
+			$credentials = new Credential\Password( $username, $password );
+			$options     = new Client\ClientOptions();
+			$options->addHeaders(
+				[
+					'Connection' => 'close',
+				]
+			);
+			$session = Client\Client::createSession( $credentials, $options );
+		} catch ( ClientException $e ) {
+			if ( $e->getResponse() && 401 === $e->getResponse()->getStatusCode() ) {
+				$session = new \WP_Error( 'sf_login_invalid_credentials', __( 'Credentials were not recognized by ShoppingFeed.', 'shopping-feed' ) );
+			} else {
+				$session = new \WP_Error( 'sf_login_error', __( 'A error occurred will trying to log in with the credentials.', 'shopping-feed' ) );
+			}
+		} catch ( \Exception $e ) {
+			$session = new \WP_Error( 'sf_request_error', __( 'A error occurred.', 'shopping-feed' ) );
+		}
+
+		return $session;
+	}
 
 	/**
 	 * @param int $account_id
