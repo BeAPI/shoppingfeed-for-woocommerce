@@ -431,7 +431,6 @@ class WoocommerceActions {
 			$new_account_options[] = array(
 				'sf_store_id' => $account_id,
 				'username'    => ! empty( $account_options['username'] ) ? $account_options['username'] : '',
-				'password'    => ! empty( $account_options['password'] ) ? $account_options['password'] : '',
 				'token'       => $account_options['token'],
 			);
 			ShoppingFeedHelper::set_sf_account_options( $new_account_options );
