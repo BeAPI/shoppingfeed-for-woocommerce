@@ -59,7 +59,7 @@ class Sdk {
 
 
 	/**
-	 * Return account deault shop
+	 * Return account default shop
 	 *
 	 * @param array $sf_account
 	 *
@@ -67,13 +67,7 @@ class Sdk {
 	 * @psalm-suppress all
 	 */
 	public static function get_sf_shop( $sf_account ) {
-		if (
-			empty( $sf_account['token'] ) && (
-				empty( $sf_account['username'] ) ||
-				empty( $sf_account['password'] )
-			)
-		) {
-			//TODO: add more informations about concerned sf account
+		if ( empty( $sf_account['token'] ) ) {
 			ShoppingFeedHelper::get_logger()->error(
 				sprintf(
 					__( 'No Credentials found to connect', 'shopping-feed' )
@@ -86,11 +80,7 @@ class Sdk {
 			return false;
 		}
 
-		$credentials = new Credential\Password( $sf_account['username'], $sf_account['password'] );
-
-		if ( ! empty( $sf_account['token'] ) ) {
-			$credentials = new Credential\Token( $sf_account['token'] );
-		}
+		$credentials = new Credential\Token( $sf_account['token'] );
 
 		try {
 			$options = new Client\ClientOptions();
