@@ -46,13 +46,8 @@
   </rule>
   <config name="minimum_supported_wp_version" value="5.7"/>
 
-  <rule ref="WordPress.WP.I18n">
-    <properties>
-      <property name="text_domain" type="array">
-        <element value="shopping-feed"/>
-      </property>
-    </properties>
-  </rule>
+  <rule ref="WordPress.WP.I18n" />
+  <config name="text_domain" value="shopping-feed,default"/>
 
   <rule ref="PHPCompatibility"/>
   <config name="testVersion" value="7.1-"/>
