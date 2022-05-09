@@ -119,16 +119,6 @@ class Sdk {
 			return false;
 		}
 
-		//add storeId to account
-		$account_options = ShoppingFeedHelper::get_sf_account_options();
-		$index           = array_search( $sf_account['username'], array_column( $account_options, 'username' ), true );
-		if ( false === $index || empty( $account_options[ $index ] ) ) {
-			return false;
-		}
-		$account_options[ $index ]['sf_store_id'] = $main_shop->getId();
-		$account_options[ $index ]['token']       = $session->getToken();
-		ShoppingFeedHelper::set_sf_account_options( $account_options );
-
 		return $main_shop;
 	}
 
