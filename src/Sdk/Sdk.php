@@ -61,7 +61,13 @@ class Sdk {
 	/**
 	 * Return account default shop
 	 *
-	 * @param array $sf_account
+	 * @param array $sf_account {
+	 *      Account data.
+	 *
+	 *      @type string $username
+	 *      @type string $token
+	 *      @type string $sf_store_id
+	 * }
 	 *
 	 * @return false|\ShoppingFeed\Sdk\Api\Store\StoreResource
 	 * @psalm-suppress all
