@@ -35,7 +35,8 @@ class ChainedProducts {
 			return;
 		}
 
-		$wc_product = $item_product->get_product();
+		$wc_product            = $item_product->get_product();
+		$item_product_quantity = $item_product->get_quantity();
 
 		$chained_product_detail = $wc_chained_products->get_all_chained_product_details( $wc_product->get_id() );
 		$chained_product_ids    = is_array( $chained_product_detail ) ? array_keys( $chained_product_detail ) : array();
@@ -54,7 +55,7 @@ class ChainedProducts {
 			}
 
 			$priced_individually = ( ! empty( $chained_product_detail[ $chained_product_id ]['priced_individually'] ) ) ? $chained_product_detail[ $chained_product_id ]['priced_individually'] : 'no';
-			$quantity            = ( ! empty( $chained_product_detail[ $chained_product_id ]['unit'] ) ) ? $chained_product_detail[ $chained_product_id ]['unit'] : 1;
+			$quantity            = ( ! empty( $chained_product_detail[ $chained_product_id ]['unit'] ) ) ? (int) $chained_product_detail[ $chained_product_id ]['unit'] : 1;
 
 			$args = array(
 				'name'         => $wc_product_chained->get_name(),
@@ -64,7 +65,7 @@ class ChainedProducts {
 				'variation'    => $wc_product_chained->is_type( 'variation' ) ? $wc_product_chained->get_attributes() : array(),
 				'subtotal'     => 0,
 				'total'        => 0,
-				'quantity'     => $quantity,
+				'quantity'     => $quantity * $item_product_quantity,
 			);
 
 			$item = new \WC_Order_Item_Product();
