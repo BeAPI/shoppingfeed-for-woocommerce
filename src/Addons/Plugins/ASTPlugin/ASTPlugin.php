@@ -3,8 +3,6 @@
 namespace ShoppingFeed\ShoppingFeedWC\Addons\Plugins\ASTPlugin;
 
 // Exit on direct access
-use WC_Advanced_Shipment_Tracking_Actions;
-
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -15,9 +13,10 @@ defined( 'ABSPATH' ) || exit;
 class ASTPlugin {
 
 	public function __construct() {
-		if ( ! class_exists( '\WC_Advanced_Shipment_Tracking_Actions' ) ) {
+		if ( ! defined( 'SHIPMENT_TRACKING_PATH' ) ) {
 			return;
 		}
+
 		add_filter( 'shopping_feed_tracking_number', array( $this, 'get_tracking_number' ), 11, 2 );
 		add_filter( 'shopping_feed_tracking_link', array( $this, 'get_tracking_link' ), 11, 2 );
 	}
@@ -34,15 +33,26 @@ class ASTPlugin {
 		return empty( $tracking_info['tracking_number'] ) ? $tracking_number : $tracking_info['tracking_number'];
 	}
 
+	/**
+	 * Get AST tracking data for the order.
+	 *
+	 * @param \WC_Order $wc_order
+	 *
+	 * @return array
+	 */
 	public function get_ast_tracking_data( $wc_order ) {
-		if (
-		! $wc_order instanceof \WC_Order
-		) {
+		if ( ! $wc_order instanceof \WC_Order ) {
 			return array();
 		}
 
-		$ast           = WC_Advanced_Shipment_Tracking_Actions::get_instance();
-		$tracking_info = $ast->get_tracking_items( $wc_order->get_id(), true );
+		$tracking_info = array();
+		if ( function_exists( 'ast_get_tracking_items' ) ) { // AST >= 3.0 & AST Pro
+			$tracking_info = ast_get_tracking_items( $wc_order->get_id() );
+		} elseif ( class_exists( '\WC_Advanced_Shipment_Tracking_Actions' ) ) { // AST < 3.0
+			$ast           = \WC_Advanced_Shipment_Tracking_Actions::get_instance();
+			$tracking_info = $ast->get_tracking_items( $wc_order->get_id(), true );
+		}
+
 		$tracking_info = end( $tracking_info );
 
 		if ( ! is_array( $tracking_info ) ) {
