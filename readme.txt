@@ -56,6 +56,7 @@ Version 6.0.0 is a major version, there are several changes and improvements whi
 6.1.9 Fix wrong quantities for chained products
 6.1.10 Update AST addon to support the pro version
 6.1.11 Weight attribute is at the root of the product xml feed, 'other' field is map to the customer notes, Yoast categories are taken into account
+6.1.12 Fix missing admin tab
 
 == Description ==
 WordPress connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, Google, and 1000's of international marketplaces
