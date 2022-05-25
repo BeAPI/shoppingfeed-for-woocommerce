@@ -86,13 +86,27 @@ class Product {
 	 * @return bool|mixed|\WP_Term
 	 */
 	private function set_category() {
-		$terms = get_the_terms( $this->id, ShoppingFeedHelper::wc_category_taxonomy() );
 
-		if ( empty( $terms ) ) {
-			return false;
+		$return = '';
+		$term   = ShoppingFeedHelper::wc_category_taxonomy();
+
+		if ( class_exists( 'WPSEO_Primary_Term' ) ) {
+			// Show Primary category by Yoast if it is enabled & set
+			$wpseo_primary_term = new WPSEO_Primary_Term( $term, $this->id );
+			$primary_term       = get_term( $wpseo_primary_term->get_primary_term() );
+			if ( ! is_wp_error( $primary_term ) ) {
+				$return = $primary_term;
+			}
 		}
 
-		return reset( $terms );
+		if ( empty( $return ) ) {
+			$categories_list = get_the_terms( $this->id, $term );
+			if ( ! empty( $categories_list ) && ! is_wp_error( $categories_list ) ) {
+				$return = $categories_list[0];
+			}
+		}
+
+		return empty( $return ) ? false : $return;
 	}
 
 	/**
