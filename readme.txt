@@ -83,6 +83,13 @@ Sign up for free on ShoppingFeed : https://shopping-feed.com/
 - In Plugins > Installed Plugins > ShoppingFeed > settings, log in with your ShoppingFeed credentials
 - In Settings, check that ShoppingFeed is enabled and save changes
 
+## Tracking support
+
+For now, the only WooCommerce tracking plugins supported are :
+
+* Advanced Shipment Tracking : https://wordpress.org/plugins/woo-advanced-shipment-tr
+* Advanced Shipment Tracking PRO : https://www.zorem.com/product/woocommerce-advanced-shipment-tracking/
+
 ## Configuration
 
 To start using the plugin correctly, you need to configure it with your preferences (Feed, Shipping, Orders)
@@ -158,7 +165,7 @@ return array();
 __[more details here](https://github.com/shoppingflux/php-sdk/blob/master/docs/manual/resources/order.md)__
 
 ### Tracking number
-By default, we don’t support any custom plugin for wc order tracking number, you can set custom meta key to identify it, you can use the following snippet
+If you want to set a custom meta key to identify it, you can use the following snippet
 
 `
 add_filter( 'shopping_feed_tracking_number', 'your_custom_tracking_number_function' );
@@ -169,7 +176,7 @@ return ‘your_custom_order_meta_key’
 `
 
 ### Tracking url
-By default, we don’t support any custom plugin for wc order tracking url, you can set custom meta key to identify it, you can use the following snippet
+If you want to set a custom meta key to identify it, you can use the following snippet
 `
 add_filter( 'shopping_feed_tracking_link', 'your_custom_tracking_url_function' );
 /** @return string */
