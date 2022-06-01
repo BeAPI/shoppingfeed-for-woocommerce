@@ -87,12 +87,12 @@ class Product {
 	 */
 	private function set_category() {
 
-		$return = '';
-		$term   = ShoppingFeedHelper::wc_category_taxonomy();
+		$return        = '';
+		$taxonomy_name = ShoppingFeedHelper::wc_category_taxonomy();
 
-		if ( class_exists( 'WPSEO_Primary_Term' ) ) {
+		if ( class_exists( '\WPSEO_Primary_Term' ) ) {
 			// Show Primary category by Yoast if it is enabled & set
-			$wpseo_primary_term = new WPSEO_Primary_Term( $term, $this->id );
+			$wpseo_primary_term = new \WPSEO_Primary_Term( $taxonomy_name, $this->id );
 			$primary_term       = get_term( $wpseo_primary_term->get_primary_term() );
 			if ( ! is_wp_error( $primary_term ) ) {
 				$return = $primary_term;
@@ -100,7 +100,7 @@ class Product {
 		}
 
 		if ( empty( $return ) ) {
-			$categories_list = get_the_terms( $this->id, $term );
+			$categories_list = get_the_terms( $this->id, $taxonomy_name );
 			if ( ! empty( $categories_list ) && ! is_wp_error( $categories_list ) ) {
 				$return = $categories_list[0];
 			}
