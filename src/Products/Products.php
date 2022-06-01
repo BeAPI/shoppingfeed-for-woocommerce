@@ -38,7 +38,7 @@ class Products {
 	/**
 	 * Singleton instance can't be serialized.
 	 */
-	private function __wakeup() {
+	public function __wakeup() {
 	}
 
 	public function get_list_args() {

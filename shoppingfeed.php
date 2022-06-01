@@ -55,4 +55,4 @@ function init() {
 	\WP_CLI::add_command( 'shopping-feed feed-generation', '\\ShoppingFeed\ShoppingFeedWC\Cli\FeedGeneration' );
 }
 
-\add_action( 'plugins_loaded', __NAMESPACE__ . '\\init', 100 );
+\add_action( 'init', __NAMESPACE__ . '\\init', 100 );

@@ -43,7 +43,7 @@ class Platform {
 	/**
 	 * Singleton instance can't be serialized.
 	 */
-	private function __wakeup() {
+	public function __wakeup() {
 	}
 
 	private function __construct() {
