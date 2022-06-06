@@ -15,51 +15,101 @@
 > Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
 
 ### Changelog
-* 6.1.13 Fix PHP error with WPSEO premium
-* 6.1.12 Fix missing admin tab
-* 6.1.11 Weight attribute is at the root of the product xml feed, 'other' field is map to the customer notes, Yoast categories are taken into account
-* 6.1.10 Update AST addon to support the pro version
-* 6.1.9 Fix wrong quantities for chained products
-* 6.1.8 Add Zalando as an available marketplace
-* 6.1.7 Fix shipping options not saving
-* 6.1.6 Release main
-* 6.1.5 Performances improvement : Logger and HTTP connection
-* 6.1.4 Added filter for fees handling + refresh translations
-* 6.1.3 Fix composer dependencies
-* 6.1.0 Add the possibility to connect multiple ShoppingFeed accounts to one WC shop
-* 6.0.33 Fix priority issue with other plugins
-* 6.0.32 Add link to WC logs
-* 6.0.31 Do not send mails to other customers
-* 6.0.30 Do not force WC mail settings
-* 6.0.29 AST compact with Shopping-Feed Advanced helper
-* 6.0.28 Fix bad version
-* 6.0.27 Support WP 5.8
-* 6.0.26 Fix version number
-* 6.0.25 Tracking: Add option to choose Retrieval Mode
-* 6.0.24 Tracking: fix bad condition
-* 6.0.23 If the billing address phone is empty, get the shipping one to display phone on the BO
-* 6.0.22 Fix file case issue
-* 6.0.21 Set status as publish on product list
-* 6.0.20 add compat to the plugin ATS
-* 6.0.19 add compat to the plugin Chained Product
-* 6.0.18 add async generation for feed
-* 6.0.17 using generator for generating products list"
-* 6.0.16 sum quantity of all variations on parent
-* 6.0.15 add the possibility to choose the default statut for imported order
-* 6.0.14 add the possibility to export category tree in the feed
-* 6.0.13 add extra fields to feed
-* 6.0.12 fix static call
-* 6.0.11 enhance logging
-* 6.0.10 fix deploy issue
-* 6.0.9  send WC shipping method name once order shipped
-* 6.0.8: add missing commit
-* 6.0.7: add weight as attribute + fix phone value
-* 6.0.6: add ean support for variations
-* 6.0.5: correct attribute values
-* 6.0.4: fix permalink issue
-* 6.0.3: edit version number
-* 6.0.1: edit readme.txt
-* 6.0.0: this is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
+* 6.1.13
+  * Fix PHP error with WPSEO premium
+* 6.1.12
+  * Fix missing admin tab
+* 6.1.11
+  * Weight attribute is at the root of the product xml feed
+  * the 'other' field is map to the customer notes
+  * Yoast categories are taken into account
+* 6.1.10
+  * Update AST addon to support the pro version
+* 6.1.9
+  * Fix wrong quantities for chained products
+* 6.1.8
+  * Add Zalando as an available marketplace
+* 6.1.7
+  * Fix shipping options not saving
+* 6.1.6
+  * Release main
+* 6.1.5
+  * Performances improvement : Logger and HTTP connection
+* 6.1.4
+  * Added filter for fees handling
+  * refresh translations
+* 6.1.3
+  * Fix composer dependencies
+* 6.1.0
+  * Add the possibility to connect multiple ShoppingFeed accounts to one WC shop
+* 6.0.33
+  * Fix priority issue with other plugins
+* 6.0.32
+  * Add link to WC logs
+* 6.0.31
+  * Do not send mails to other customers
+* 6.0.30
+  * Do not force WC mail settings
+* 6.0.29
+  * AST compact with Shopping-Feed Advanced helper
+* 6.0.28
+  * Fix bad version
+* 6.0.27
+  * Support WP 5.8
+* 6.0.26
+  * Fix version number
+* 6.0.25
+  * Tracking: Add option to choose Retrieval Mode
+* 6.0.24
+  * Tracking: fix bad condition
+* 6.0.23
+  * If the billing address phone is empty, get the shipping one to display phone on the BO
+* 6.0.22
+  * Fix file case issue
+* 6.0.21
+  * Set status as publish on product list
+* 6.0.20
+  * add compat to the plugin ATS
+* 6.0.19
+  * add compat to the plugin Chained Product
+* 6.0.18
+  * add async generation for feed
+* 6.0.17
+  * using generator for generating products list"
+* 6.0.16
+  * sum quantity of all variations on parent
+* 6.0.15
+  * add the possibility to choose the default status for imported order
+* 6.0.14
+  * add the possibility to export category tree in the feed
+* 6.0.13
+  * add extra fields to feed
+* 6.0.12
+  * fix static call
+* 6.0.11
+  * enhance logging
+* 6.0.10
+  * fix deploy issue
+* 6.0.9
+  * send WC shipping method name once order shipped
+* 6.0.8
+  * add missing commit
+* 6.0.7
+  * add weight as attribute
+  * fix phone value
+* 6.0.6
+  * add ean support for variations
+* 6.0.5
+  * correct attribute values
+* 6.0.4
+  * fix permalink issue
+* 6.0.3
+  * edit version number
+* 6.0.1
+  * edit readme.txt
+* 6.0.0
+  * this is a major version, there are several changes and improvements which affect the architecture of the plugin
+  * You will have to re-configure the plugin, all the previous settings will be lost
 
 ### Description
 WordPress connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, Google, and 1000's of international marketplaces
