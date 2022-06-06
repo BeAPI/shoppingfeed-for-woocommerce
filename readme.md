@@ -34,7 +34,8 @@ Version 6.0.0 is a major version, there are several changes and improvements whi
 * 6.1.5
     * Performances improvement : Logger and HTTP connection
 * 6.1.4
-    * Added filter for fees handling + refresh translations
+    * Added filter for fees handling
+    * refresh translations
 * 6.1.3
     * Fix composer dependencies
 * 6.1.0
@@ -180,12 +181,12 @@ To export the feed, we use the plugin’s setting, if you want to add/use specif
 add_filter( 'shopping_feed_products_custom_args', 'your_custom_args_function' );
 /**
 * @return array
-*/
-function your_custom_args_function() {
-//array of args
-return array();
-}
-`
+  */
+  function your_custom_args_function() {
+  //array of args
+  return array();
+  }
+  `
 
 You can find all available args here
 __[WooCommerce documentation](https://github.com/woocommerce/woocommerce/wiki/wc_get_products-and-WC_Product_Query#parameters)__
