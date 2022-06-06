@@ -6,6 +6,7 @@ namespace ShoppingFeed\ShoppingFeedWC\Products;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
+use ShoppingFeed\ShoppingFeedWC\Admin;
 
 class Product {
 
@@ -87,10 +88,11 @@ class Product {
 	 */
 	private function set_category() {
 
-		$return        = '';
-		$taxonomy_name = ShoppingFeedHelper::wc_category_taxonomy();
+		$return           = '';
+		$taxonomy_name    = ShoppingFeedHelper::wc_category_taxonomy();
+		$sf_yoast_options = get_option( Admin\Options::SF_YOAST_OPTIONS );
 
-		if ( class_exists( '\WPSEO_Primary_Term' ) ) {
+		if ( class_exists( '\WPSEO_Primary_Term' ) && ! empty( $sf_yoast_options['use_principal_categories'] ) ) {
 			// Show Primary category by Yoast if it is enabled & set
 			$wpseo_primary_term = new \WPSEO_Primary_Term( $taxonomy_name, $this->id );
 			$primary_term       = get_term( $wpseo_primary_term->get_primary_term() );
