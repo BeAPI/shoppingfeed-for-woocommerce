@@ -159,9 +159,11 @@ XML;
 			]);
 		}
 
-		$yoast_options = get_option( Options::SF_YOAST_OPTIONS, [
-			'use_principal_categories' => '1',
-		] );
+		$yoast_options = get_option(
+			Options::SF_YOAST_OPTIONS, [
+				'use_principal_categories' => '1',
+			]
+		);
 
 		return wp_parse_args(
 			$yoast_options,
