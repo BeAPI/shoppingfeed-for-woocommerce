@@ -6,7 +6,6 @@ namespace ShoppingFeed\ShoppingFeedWC\Products;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
-use ShoppingFeed\ShoppingFeedWC\Admin;
 
 class Product {
 
