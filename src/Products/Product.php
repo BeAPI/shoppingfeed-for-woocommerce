@@ -90,9 +90,9 @@ class Product {
 
 		$return           = '';
 		$taxonomy_name    = ShoppingFeedHelper::wc_category_taxonomy();
-		$sf_yoast_options = get_option( Admin\Options::SF_YOAST_OPTIONS );
+		$sf_yoast_options = ShoppingFeedHelper::get_sf_yoast_options();
 
-		if ( class_exists( \WPSEO_Primary_Term::class ) && ! empty( $sf_yoast_options['use_principal_categories'] ) ) {
+		if ( class_exists( \WPSEO_Primary_Term::class ) && 1 === (int) $sf_yoast_options['use_principal_categories'] )  {
 			// Show Primary category by Yoast if it is enabled & set
 			$wpseo_primary_term = new \WPSEO_Primary_Term( $taxonomy_name, $this->id );
 			$primary_term       = get_term( $wpseo_primary_term->get_primary_term() );

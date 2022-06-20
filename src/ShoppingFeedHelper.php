@@ -152,27 +152,15 @@ XML;
 	 */
 	public static function get_sf_yoast_options() {
 
-		if ( false === get_option( Options::SF_YOAST_OPTIONS ) )
-		{
-			update_option( Options::SF_YOAST_OPTIONS, [
-				'use_principal_categories' => '1',
-			]);
-		}
-
-		$yoast_options = get_option(
-			Options::SF_YOAST_OPTIONS, [
-				'use_principal_categories' => '1',
-			]
-		);
+		$yoast_options = get_option( Options::SF_YOAST_OPTIONS, [] );
 
 		return wp_parse_args(
 			$yoast_options,
 			[
-				'use_principal_categories' => '0',
+				'use_principal_categories' => '1',
 			]
 		);
 	}
-
 
 	/**
 	 * Set SF Configuration for Account

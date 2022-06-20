@@ -124,7 +124,10 @@ class Options {
 				// Yoast page
 				register_setting(
 					'sf_yoast_page_fields',
-					self::SF_YOAST_OPTIONS
+					self::SF_YOAST_OPTIONS,
+					[
+						'sanitize_callback' => [ $this, 'default_yoast_option_value' ],
+					],
 				);
 			}
 		);
@@ -150,6 +153,24 @@ class Options {
 		$this->sf_orders_options = ShoppingFeedHelper::get_sf_orders_options();
 		//get yoast options
 		$this->sf_yoast_options = ShoppingFeedHelper::get_sf_yoast_options();
+	}
+
+	/**
+	 * Force save a default value to register 0 if the checkbox is unchecked
+	 *
+	 * @param $value
+	 *
+	 * @return array|object
+	 * @author Stéphane Gillot
+	 */
+	public function default_yoast_option_value($value){
+
+		return wp_parse_args(
+			$value,
+			[
+				'use_principal_categories' => '0',
+			]
+		);
 	}
 
 	/**
@@ -275,6 +296,7 @@ class Options {
 			'sf_yoast_page_fields',
 			__( 'Use Primary categories ?', 'shopping-feed' ),
 			function () {
+				var_dump($this->sf_yoast_options['use_principal_categories']); ?>
 				?>
 				<!-- Here we are comparing stored value with 1. Stored value is 1 if user checks the checkbox otherwise empty string. -->
 				<input type="checkbox"
