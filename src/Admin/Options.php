@@ -127,7 +127,7 @@ class Options {
 					self::SF_YOAST_OPTIONS,
 					[
 						'sanitize_callback' => [ $this, 'default_yoast_option_value' ],
-					],
+					]
 				);
 			}
 		);
@@ -163,7 +163,7 @@ class Options {
 	 * @return array|object
 	 * @author Stéphane Gillot
 	 */
-	public function default_yoast_option_value($value){
+	public function default_yoast_option_value( $value ) {
 
 		return wp_parse_args(
 			$value,
@@ -296,7 +296,6 @@ class Options {
 			'sf_yoast_page_fields',
 			__( 'Use Primary categories ?', 'shopping-feed' ),
 			function () {
-				var_dump($this->sf_yoast_options['use_principal_categories']); ?>
 				?>
 				<!-- Here we are comparing stored value with 1. Stored value is 1 if user checks the checkbox otherwise empty string. -->
 				<input type="checkbox"
