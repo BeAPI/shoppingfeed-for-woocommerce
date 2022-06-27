@@ -1,8 +1,8 @@
 ## ShoppingFeed
 Contributors: ShoppingFeed, BeAPI
 Tags: shoppingfeed, marketplace, woocommerce, woocommerce shoppingfeed, create woocommerce products shoppingfeed, products feed, generate shoppingfeed, amazon, Jet, Walmart, many marketplace, import orders
-Stable tag: 6.1.13
-Version: 6.1.13
+Stable tag: 6.1.14
+Version: 6.1.14
 Requires PHP: 5.6
 Requires at least: 5.2
 Tested up to: 5.8.0
@@ -13,6 +13,10 @@ WC tested up to: 5.5.2
 Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
 
 == Changelog ==
+* 6.1.14
+  * Add support for Woocommerce Shipment Tracking Pro
+  * Fix usage of Yoast option
+  * Update readme
 * 6.1.13
   * Fix PHP error with WPSEO premium
 * 6.1.12
@@ -133,12 +137,13 @@ Sign up for free on ShoppingFeed : https://shopping-feed.com/
 - In Plugins > Installed Plugins > ShoppingFeed > settings, log in with your ShoppingFeed credentials
 - In Settings, check that ShoppingFeed is enabled and save changes
 
-## Tracking support
+## Shipment tracking support
 
-For now, the only WooCommerce tracking plugins supported are :
+For now, the only shipment tracking plugins supported are :
 
 * Advanced Shipment Tracking : https://wordpress.org/plugins/woo-advanced-shipment-tracking/
 * Advanced Shipment Tracking PRO : https://www.zorem.com/product/woocommerce-advanced-shipment-tracking/
+* Woocommerce Shipment Tracking Pro : https://www.pluginhive.com/product/woocommerce-shipment-tracking-pro/
 
 ## Configuration
 
