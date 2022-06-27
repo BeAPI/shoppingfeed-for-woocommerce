@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Class ChainedProducts to manage the plugin chained products
  * @link https://woocommerce.com/products/chained-products/
- * @package ShoppingFeed\ShoppingFeedWC\Addons\ChainedProductsPlugin
+ * @package ShoppingFeed\ShoppingFeedWC\Addons\Plugins\ChainedProductsPlugin
  */
 class ChainedProducts {
 

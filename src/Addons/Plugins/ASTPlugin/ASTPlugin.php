@@ -8,7 +8,7 @@ defined( 'ABSPATH' ) || exit;
 /**
  * Class ASTPlugin to manage the plugin advanced shipment tracking
  * @link https://wordpress.org/plugins/woo-advanced-shipment-tracking/
- * @package ShoppingFeed\ShoppingFeedWC\Addons\ASTPlugin
+ * @package ShoppingFeed\ShoppingFeedWC\Addons\Plugins\ASTPlugin
  */
 class ASTPlugin {
 
