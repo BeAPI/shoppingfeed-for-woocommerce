@@ -1,18 +1,20 @@
 ## ShoppingFeed
-Contributors: ShoppingFeed, BeAPI
-Tags: shoppingfeed, marketplace, woocommerce, woocommerce shoppingfeed, create woocommerce products shoppingfeed, products feed, generate shoppingfeed, amazon, Jet, Walmart, many marketplace, import orders
-Stable tag: 6.1.13
-Version: 6.1.13
-Requires PHP: 5.6
-Requires at least: 5.2
-Tested up to: 5.8.0
-WC requires at least: 3.8
-WC tested up to: 5.5.2
 
-== Upgrade Notice ==
-Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
+* Contributors: ShoppingFeed, BeAPI
+* Tags: shoppingfeed, marketplace, woocommerce, woocommerce shoppingfeed, create woocommerce products shoppingfeed, products feed, generate shoppingfeed, amazon, Jet, Walmart, many marketplace, import orders
+* Stable tag: 6.1.13
+* Version: 6.1.13
+* Requires PHP: 5.6
+* Requires at least: 5.2
+* Tested up to: 5.8.0
+* WC requires at least: 3.8
+* WC tested up to: 5.5.2
 
-== Changelog ==
+### Upgrade Notice
+
+> Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
+
+### Changelog
 * 6.1.13
   * Fix PHP error with WPSEO premium
 * 6.1.12
@@ -109,7 +111,7 @@ Version 6.0.0 is a major version, there are several changes and improvements whi
   * this is a major version, there are several changes and improvements which affect the architecture of the plugin
   * You will have to re-configure the plugin, all the previous settings will be lost
 
-== Description ==
+### Description
 WordPress connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, Google, and 1000's of international marketplaces
 
 ## Requirements
@@ -261,7 +263,7 @@ add_filter( 'shopping_feed_variation_images', 'your_custom_variation_images_func
 function your_custom_tracking_url_function($images, $wc_product) {
     $images[] = 'https://domain.com/image1.jpg';
     $images[] = 'https://domain.com/image2.jpg';
-
+    
     return $images;
 }
 ```
