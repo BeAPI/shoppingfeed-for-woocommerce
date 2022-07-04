@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit;
 use ShoppingFeed\ShoppingFeedWC\Actions\Actions;
 use ShoppingFeed\ShoppingFeedWC\Addons\Addons;
 use ShoppingFeed\ShoppingFeedWC\Admin\Metabox;
+use ShoppingFeed\ShoppingFeedWC\Admin\MigrationOptions;
 use ShoppingFeed\ShoppingFeedWC\Admin\Notices;
 use ShoppingFeed\ShoppingFeedWC\Admin\Options;
 use ShoppingFeed\ShoppingFeedWC\Admin\WoocommerceActions;
@@ -78,6 +79,11 @@ class ShoppingFeed {
 	private $metabox;
 
 	/**
+	 * @var MigrationOptions
+	 */
+	private $migration_options;
+
+	/**
 	 * @var ShoppingFeed
 	 */
 	private static $instance;
@@ -120,6 +126,8 @@ class ShoppingFeed {
 
 		//Check Upgrade
 		if ( ! $this->check_upgrade() ) {
+            $this->migration_options = new MigrationOptions();
+
 			return;
 		}
 

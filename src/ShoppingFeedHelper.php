@@ -5,6 +5,7 @@ namespace ShoppingFeed\ShoppingFeedWC;
 // Exit on direct access
 defined( 'ABSPATH' ) || exit;
 
+use ShoppingFeed\ShoppingFeedWC\Admin\MigrationOptions;
 use ShoppingFeed\ShoppingFeedWC\Admin\Options;
 use ShoppingFeed\ShoppingFeedWC\Url\Rewrite;
 use WC_Logger;
@@ -161,6 +162,14 @@ XML;
 			]
 		);
 	}
+
+	/**
+	 * Return SF Migration options
+	 * @return array
+	 */
+	public static function get_sf_migration_options() {
+		return get_option( MigrationOptions::SF_MIGRATION_OPTIONS, [] );
+}
 
 	/**
 	 * Set SF Configuration for Account
