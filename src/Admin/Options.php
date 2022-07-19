@@ -40,6 +40,11 @@ class Options {
 	 */
 	const SF_ORDERS_SETTINGS_PAGE = 'sf_orders_settings_page';
 
+	/**
+	 * Orders settings page
+	 */
+	const SF_MIGRATION_SETTINGS_PAGE = 'sf_migration_settings_page';
+
 	//Account options
 	const SF_ACCOUNT_OPTIONS = 'sf_account_options';
 	const SF_FEED_OPTIONS = 'sf_feed_options';
@@ -50,6 +55,10 @@ class Options {
 
 	//Shipping options
 	const SF_CARRIERS = 'SF_CARRIERS';
+
+    // Migration options
+	const SF_MIGRATION_OPTIONS = 'SF_MIGRATION';
+
 	/** @var array $sf_account_options */
 	private $sf_account_options;
 
@@ -64,6 +73,10 @@ class Options {
 	private $sf_feed_options;
 	/** @var array $sf_shipping_options */
 	private $sf_shipping_options;
+
+	// Migration options
+	/** @var array $sf_migration_options */
+	private $sf_migration_options;
 
 	//SF Carriers
 	/** @var array $sf_orders_options */
@@ -129,6 +142,15 @@ class Options {
 						'sanitize_callback' => [ $this, 'default_yoast_option_value' ],
 					]
 				);
+
+				// Yoast page
+				register_setting(
+					'sf_migration_page_fields',
+					self::SF_MIGRATION_OPTIONS,
+					[
+						'sanitize_callback' => [ $this, 'default_migration_option_value' ],
+					]
+				);
 			}
 		);
 
@@ -153,6 +175,8 @@ class Options {
 		$this->sf_orders_options = ShoppingFeedHelper::get_sf_orders_options();
 		//get yoast options
 		$this->sf_yoast_options = ShoppingFeedHelper::get_sf_yoast_options();
+        // Get migration options
+		$this->sf_migration_options = ShoppingFeedHelper::get_sf_migration_options();
 	}
 
 	/**
@@ -204,6 +228,11 @@ class Options {
 				'tab'   => 'orders-settings',
 				'url'   => '?page=' . self::SF_SLUG . '&tab=orders-settings',
 				'title' => __( 'Orders', 'shopping-feed' ),
+			],
+			[
+				'tab'   => 'migration-settings',
+				'url'   => '?page=' . self::SF_SLUG . '&tab=migration-settings',
+				'title' => __( 'Migration', 'shopping-feed' ),
 			],
 		];
 
@@ -266,6 +295,9 @@ class Options {
 					case 'yoast-settings':
 						$this->init_yoast_setting_page();
 						break;
+                    case 'migration-settings':
+                        $this->init_migration_setting_page();
+                        break;
 					default:
 						break;
 				endswitch;
@@ -1112,5 +1144,40 @@ class Options {
 		</div>
 		<?php
 	}
+
+    private function init_migration_setting_page() {
+        $this->load_assets();
+
+	    add_settings_section(
+		    'sf_migration_settings_actions',
+		    __( 'Migration', 'shopping-feed' ),
+		    function () {
+		    },
+		    self::SF_MIGRATION_SETTINGS_PAGE
+	    );
+
+	    add_settings_field(
+		    'migration_unlock',
+		    'Unlock migration',
+		    function () {
+			    printf( '<strong>Unlock migration</strong>' );
+		    },
+		    self::SF_MIGRATION_SETTINGS_PAGE,
+		    'sf_migration_settings_unlock_migration'
+	    );
+        ?>
+
+        <div class="wrap">
+			<?php settings_errors(); ?>
+			<form method="post" action="options.php">
+				<?php
+				settings_fields( 'sf_migration_page_fields' );
+				do_settings_sections( self::SF_MIGRATION_SETTINGS_PAGE );
+				submit_button( __( 'Save changes', 'shopping-feed' ), 'sf__button' );
+				?>
+			</form>
+		</div>
+        <?php
+    }
 }
 
