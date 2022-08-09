@@ -1,8 +1,8 @@
 ## ShoppingFeed
 Contributors: ShoppingFeed, BeAPI
 Tags: shoppingfeed, marketplace, woocommerce, woocommerce shoppingfeed, create woocommerce products shoppingfeed, products feed, generate shoppingfeed, amazon, Jet, Walmart, many marketplace, import orders
-Stable tag: 6.1.14
-Version: 6.1.14
+Stable tag: 6.1.15
+Version: 6.1.15
 Requires PHP: 5.6
 Requires at least: 5.2
 Tested up to: 5.8.0
@@ -13,6 +13,8 @@ WC tested up to: 5.5.2
 Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
 
 == Changelog ==
+* 6.1.15
+  * Weight of variations is back into attributes
 * 6.1.14
   * Add support for Woocommerce Shipment Tracking Pro
   * Fix usage of Yoast option
