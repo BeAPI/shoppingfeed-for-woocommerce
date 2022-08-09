@@ -156,7 +156,7 @@ With this snippets below can be added to your theme's functions.php file or your
 ### Categories
 By default, we support `product_cat` as taxonomy slug to identify product's categories, you can override it using this snippet :
 
-```php
+```
 add_filter( 'shopping_feed_custom_category_taxonomy', 'your_custom_category_function' );
 
 /** @return string */
@@ -168,7 +168,7 @@ function your_custom_category_function() {
 ### Brands
 By default, we don’t support any custom plugin for product's brand, you can set custom taxonomy slug to identify it by using this snippet :
 
-```php
+```
 add_filter( 'shopping_feed_custom_brand_taxonomy', 'your_custom_brand_function' );
 
 /** @return string */
@@ -180,7 +180,7 @@ function your_custom_brand_function() {
 ### EAN
 By default, we don’t support any custom plugin for product EAN, you can set custom taxonomy slug to identify it by using this snippet :
 
-```php
+```
 add_filter( 'shopping_feed_custom_ean', 'your_custom_ean_function' );
 
 /** @return string */
@@ -192,7 +192,7 @@ function your_custom_ean_function() {
 ### Feed’s products list args
 To export the feed, we use the plugin’s setting, if you want to add/use specific args, you can use the following snippet
 
-```php
+```
 add_filter( 'shopping_feed_products_custom_args', 'your_custom_args_function' );
 
 /** @return array */
@@ -208,7 +208,7 @@ __[WooCommerce documentation](https://github.com/woocommerce/woocommerce/wiki/wc
 ### Orders to import (statuses)
 By default, we import orders with ‘waiting_shipment’ status, if you want to import more statuses or a specific one, you can use the following snippet
 
-```php
+```
 add_filter( 'shopping_feed_orders_to_import', 'your_custom_statuses_function' );
 
 /** @return array */
@@ -225,7 +225,7 @@ __[more details here](https://github.com/shoppingflux/php-sdk/blob/master/docs/m
 ### Tracking number
 If you want to set a custom meta key to identify it, you can use the following snippet
 
-```php
+```
 add_filter( 'shopping_feed_tracking_number', 'your_custom_tracking_number_function' );
 
 /** @return string */
@@ -236,7 +236,8 @@ function your_custom_tracking_number_function() {
 
 ### Tracking url
 If you want to set a custom meta key to identify it, you can use the following snippet
-```php
+
+```
 add_filter( 'shopping_feed_tracking_link', 'your_custom_tracking_url_function' );
 
 /** @return string */
@@ -247,7 +248,8 @@ function your_custom_tracking_url_function() {
 
 ### Extra Fields
 If you want to add add extra fields to your XML Feed, you can use the following snippet
-```php
+
+```
 add_filter( 'shopping_feed_extra_fields', 'your_custom_fields_function', 10, 2 );
 
 /** @return array */
@@ -259,7 +261,8 @@ function your_custom_tracking_url_function($fields, $wc_product) {
 
 ### Variation Images
 By default, we don’t support any custom plugin for adding images to WC Product Variation, with this filter you can set the desired images to each variation, you can use the following snippet
-```php
+
+```
 add_filter( 'shopping_feed_variation_images', 'your_custom_variation_images_function', 10, 2 );
 
 /** @return array */
