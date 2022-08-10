@@ -28,29 +28,20 @@ class ASTPlugin {
 	 * @param \WC_Order|\WP_Error $wc_order
 	 */
 	public function get_tracking_number( $tracking_number, $wc_order ) {
-		$tracking_infos = $this->get_ast_tracking_data( $wc_order );
+		$tracking_info = $this->get_ast_tracking_data( $wc_order );
 
 		// Return default tracking number if AST data is empty
-		if ( ! is_array( $tracking_infos ) || empty( $tracking_infos ) ) {
+		if ( empty( $tracking_info ) ) {
 			return $tracking_number;
 		}
 
-		// Return first key of AST data if only one set of tracking data
-		if ( count( $tracking_infos ) === 1 ) {
-			$tracking_number_single = $tracking_infos[0]['tracking_number'];
+		$custom_tracking_numbers = wp_list_pluck( $tracking_info, 'tracking_number' );
 
-			return empty( $tracking_number_single ) ? $tracking_number : $tracking_number_single;
+		if ( empty( $custom_tracking_numbers ) ) {
+			return $tracking_number;
 		}
 
-		$tracking_numbers = [];
-
-		// Add every tracking number from AST data to array
-		foreach ( $tracking_infos as $info ) {
-			$tracking_numbers[] = $info['tracking_number'];
-		}
-
-		// Return a comma separated string of tracking numbers
-		return implode( ',', $tracking_numbers );
+		return implode( ',', $custom_tracking_numbers );
 	}
 
 	/**
@@ -89,9 +80,16 @@ class ASTPlugin {
 	public function get_tracking_link( $tracking_link, $wc_order ) {
 		$tracking_info = $this->get_ast_tracking_data( $wc_order );
 
-		// Can me a multidimension array, take only first tracking link of data set
-		$tracking_info = reset( $tracking_info );
+		if ( empty( $tracking_info ) ) {
+			return $tracking_link;
+		}
 
-		return empty( $tracking_info['formatted_tracking_link'] ) ? $tracking_link : $tracking_info['formatted_tracking_link'];
+		$custom_tracking_links = wp_list_pluck( $tracking_info, 'formatted_tracking_link' );
+
+		if ( empty( $custom_tracking_links ) ) {
+			return $tracking_link;
+		}
+
+		return implode( ',', $custom_tracking_links );
 	}
 }
