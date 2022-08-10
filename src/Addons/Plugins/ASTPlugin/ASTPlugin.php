@@ -50,7 +50,7 @@ class ASTPlugin {
 		}
 
 		// Implode to comma separated string, depending on PHP version
-		if ( phpversion() >= '7.4.0' ) {
+		if ( version_compare( PHP_VERSION, '7.4.0', '>=' ) ) {
 			$tracking_numbers = implode(',',  $tracking_numbers );
 		} else {
 			$tracking_numbers = implode( $tracking_numbers, ',' );
