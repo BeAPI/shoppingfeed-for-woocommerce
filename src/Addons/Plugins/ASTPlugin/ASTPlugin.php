@@ -49,14 +49,8 @@ class ASTPlugin {
 			$tracking_numbers[] = $info['tracking_number'];
 		}
 
-		// Implode to comma separated string, depending on PHP version
-		if ( version_compare( PHP_VERSION, '7.4.0', '>=' ) ) {
-			$tracking_numbers = implode( ',', $tracking_numbers );
-		} else {
-			$tracking_numbers = implode( $tracking_numbers, ',' );
-		}
-
-		return $tracking_numbers;
+		// Return a comma separated string of tracking numbers
+		return implode( ',', $tracking_numbers );
 	}
 
 	/**
