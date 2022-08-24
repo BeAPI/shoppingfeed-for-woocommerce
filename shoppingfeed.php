@@ -7,7 +7,7 @@
  * Author URI:      https://www.shopping-feed.com/
  * Text Domain:     shopping-feed
  * Domain Path:     /languages
- * Version:         6.1.15
+ * Version:         6.1.16
  * Requires at least WP: 5.7
  * Requires at least WooCommerce: 5.1.0
  * Requires PHP:      5.6
