@@ -286,9 +286,9 @@ class Generator {
 
 	/**
 	 * Singleton instance can't be serialized.
-	 * 
+	 *
 	 * @throws Exception
-	 * 
+	 *
 	 */
 	public function __wakeup() {
 		throw new \Exception( 'Cannot serialize singleton' );
