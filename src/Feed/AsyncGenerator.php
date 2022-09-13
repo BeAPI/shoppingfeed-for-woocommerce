@@ -21,22 +21,17 @@ class AsyncGenerator extends Generator {
 			$total_pages = (int) round( $total_products / $part_size );
 		}
 
-		$option = array(
-			'total_pages' => $total_pages,
+		as_schedule_single_action(
+			false,
+			'sf_feed_generation_part',
+			array(
+				1,
+				$part_size,
+				$total_pages
+			),
+			'sf_feed_generation_process'
 		);
 
-		update_option( 'sf_feed_generation_process', $option );
-		for ( $page = 1; $page <= $total_pages; $page ++ ) {
-			as_schedule_single_action(
-				false,
-				'sf_feed_generation_part',
-				array(
-					$page,
-					$part_size,
-				),
-				'sf_feed_generation_process'
-			);
-		}
 	}
 
 	/**
@@ -44,8 +39,9 @@ class AsyncGenerator extends Generator {
 	 *
 	 * @param $page
 	 * @param $post_per_page
+	 * @param $total_pages
 	 */
-	public function generate_feed_part( $page, $post_per_page ) {
+	public function generate_feed_part( $page, $post_per_page, $total_pages ) {
 		$args     = array(
 			'page'  => $page,
 			'limit' => $post_per_page,
@@ -67,11 +63,24 @@ class AsyncGenerator extends Generator {
 			$option['currentPage'] = $page;
 			update_option( 'sf_feed_generation_process', $option );
 
-			if ( ! empty( $option['currentPage'] ) && $option['currentPage'] === $option['total_pages'] ) {
+			if ( ! empty( $option['currentPage'] ) && $option['currentPage'] === $total_pages ) {
 				as_schedule_single_action(
 					false,
 					'sf_feed_generation_combine_feed_parts',
 					array(),
+					'sf_feed_generation_process'
+				);
+			} else {
+				$page++;
+
+				as_schedule_single_action(
+					false,
+					'sf_feed_generation_part',
+					array(
+						$page,
+						$post_per_page,
+						$total_pages
+					),
 					'sf_feed_generation_process'
 				);
 			}
