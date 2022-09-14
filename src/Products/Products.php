@@ -49,7 +49,6 @@ class Products {
 			'orderby' => 'date',
 			'order'   => 'DESC',
 			'status'  => 'publish',
-			'return'  => 'ids',
 		);
 
 		/**

@@ -14,7 +14,7 @@ class AsyncGenerator extends Generator {
 	public function launch() {
 		$part_size = ShoppingFeedHelper::get_sf_part_size();
 
-		$products       = Products::get_instance()->get_products();
+		$products       = Products::get_instance()->get_products( [ 'return' => 'ids' ] );
 		$total_products = count( $products );
 		$total_pages    = 1;
 		if ( $part_size < $total_products ) {
@@ -59,11 +59,7 @@ class AsyncGenerator extends Generator {
 			$this->set_mappers();
 			$this->generator->write( $products_list );
 
-			$option                = get_option( 'sf_feed_generation_process' );
-			$option['currentPage'] = $page;
-			update_option( 'sf_feed_generation_process', $option );
-
-			if ( ! empty( $option['currentPage'] ) && $option['currentPage'] === $total_pages ) {
+			if ( ! empty( $page ) && $page === $total_pages ) {
 				as_schedule_single_action(
 					false,
 					'sf_feed_generation_combine_feed_parts',
