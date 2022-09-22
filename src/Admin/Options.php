@@ -860,6 +860,26 @@ class Options {
 			'sf_feed_settings_categories'
 		);
 
+		// Show 0 stock varitions in feed
+		add_settings_field(
+			'zero_stock_variations',
+			__( 'Show variations with stock 0', 'shopping-feed' ),
+			function () {
+				$zsv_checked = 'on' === $this->sf_feed_options['zero_stock_variations'] ? 'checked' : '';
+				?>
+                <label>
+                    <input
+                            type="checkbox" name="<?php echo esc_html( sprintf( '%s[zero_stock_variations]', self::SF_FEED_OPTIONS ) ); ?>"
+						<?php echo esc_attr( $zsv_checked ); ?>
+                    />
+                </label>
+
+				<?php
+			},
+			self::SF_FEED_SETTINGS_PAGE,
+			'sf_feed_settings_categories'
+		);
+
 		//Identifier Field
 		add_settings_field(
 			'category_display_mode',

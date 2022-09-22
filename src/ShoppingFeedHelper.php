@@ -252,6 +252,20 @@ XML;
 	}
 
 	/**
+	 * Return value for 0 stock variations in feed option
+	 * @return bool
+	 */
+	public static function get_sf_zero_stock_variations_value() {
+		$zero_stock_variations = self::get_sf_feed_options( 'zero_stock_variations' );
+
+		if ( 'on' === $zero_stock_variations ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Return display mode for category
 	 * @return string
 	 */
