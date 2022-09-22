@@ -379,7 +379,11 @@ class Product {
 	public function get_variations() {
 		if ( 'variable' === \WC_Product_Factory::get_product_type( $this->id ) ) {
 			$product               = new \WC_Product_Variable( $this->id );
-			$wc_product_variations = $product->get_available_variations();
+			if ( ShoppingFeedHelper::get_sf_zero_stock_variations_value() ) {
+				$wc_product_variations = $this->get_all_product_variations( $product );
+			} else {
+				$wc_product_variations = $product->get_available_variations();
+			}
 			if ( empty( $wc_product_variations ) ) {
 				return array();
 			}
@@ -443,6 +447,28 @@ class Product {
 		}
 
 		return apply_filters( 'shopping_feed_extra_variation_attributes', $attribute_names, $variation );
+	}
+
+	/**
+	 * @param \WC_Product_Variable $product
+	 *
+	 * @return array
+	 */
+	public function get_all_product_variations( \WC_Product_Variable $product ) {
+		if ( empty( $product ) ) {
+			return [];
+		}
+
+		$query = new \WP_Query(
+			[
+				'post_type'      => 'product_variation',
+				'post_status'    => 'publish',
+				'posts_per_page' => -1,
+				'post_parent'    => $product->get_id()
+			]
+		);
+
+		return is_array( $query->get_posts() ) ? $query->get_posts() : [ $query->get_posts() ];
 	}
 
 	/**
