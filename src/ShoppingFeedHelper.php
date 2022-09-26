@@ -562,6 +562,18 @@ XML;
 	 * @return string
 	 */
 	public static function get_sf_carrier_from_wc_shipping( $wc_order ) {
+		/**
+		 * Filter the value of the carrier for the order before it is retrieve.
+		 *
+		 * @param bool|string $pre    The value to return instead of the value computed from
+		 *                            the `sf_shipping` metadata.
+		 * @param \WC_Order $wc_order The order object for the carrier data.
+		 */
+		$pre = apply_filters( 'pre_sf_carrier_from_wc_shipping', false, $wc_order );
+		if ( false !== $pre ) {
+			return $pre;
+		}
+
 		$sf_shipping = json_decode( $wc_order->get_meta( 'sf_shipping' ), true );
 		if ( empty( $sf_shipping['sf_shipping'] ) ) {
 			return $wc_order->get_shipping_method();
