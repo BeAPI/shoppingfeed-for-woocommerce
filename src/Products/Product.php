@@ -376,40 +376,43 @@ class Product {
 	/**
 	 * @return array
 	 */
-	public function get_variations() {
-		if ( 'variable' === \WC_Product_Factory::get_product_type( $this->id ) ) {
-			$product               = new \WC_Product_Variable( $this->id );
-			if ( ShoppingFeedHelper::get_sf_zero_stock_variations_value() ) {
-				$wc_product_variations = $this->get_all_product_variations( $product );
-			} else {
-				$wc_product_variations = $product->get_available_variations();
-			}
-			if ( empty( $wc_product_variations ) ) {
-				return array();
-			}
-
-			$variations = array();
-			foreach ( $wc_product_variations as $wc_product_variation ) {
-				$wc_product_variation  = new \WC_Product_Variation( $wc_product_variation['variation_id'] );
-				$variation             = array();
-				$variation['id']       = $wc_product_variation->get_id();
-				$variation['sku']      = ( 'id' === $this->product_identifier ) ? $wc_product_variation->get_id() : $wc_product_variation->get_sku();
-				$variation['ean']      = $this->get_ean( $wc_product_variation );
-				$variation['quantity'] = ! is_null( $wc_product_variation->get_stock_quantity() ) ? $wc_product_variation->get_stock_quantity() : ShoppingFeedHelper::get_default_product_quantity();
-				$variation['price']    = ! is_null( $wc_product_variation->get_regular_price() ) ? $wc_product_variation->get_regular_price() : $wc_product_variation->get_price();
-				$variation['discount'] = $wc_product_variation->get_sale_price();
-				if ( ! empty( get_the_post_thumbnail_url( $wc_product_variation->get_id(), 'full' ) ) ) {
-					$variation['image_main'] = get_the_post_thumbnail_url( $wc_product_variation->get_id(), 'full' );
-				}
-
-				$variation['attributes'] = $this->get_variation_attributes( $wc_product_variation );
-				$variations []           = $variation;
-			}
-
-			return $variations;
+	public function get_variations( $for_feed = false ) {
+		if ( 'variable' !== \WC_Product_Factory::get_product_type( $this->id ) ) {
+			return array();
 		}
 
-		return array();
+		$product = new \WC_Product_Variable( $this->id );
+
+		// Check if we want all variations, even if their stock is 0
+		if ( $for_feed && ShoppingFeedHelper::get_sf_zero_stock_variations_value() ) {
+			$wc_product_variations = $product->get_children( false );
+		} else {
+			$wc_product_variations = $product->get_available_variations();
+		}
+
+		if ( empty( $wc_product_variations ) ) {
+			return array();
+		}
+
+		$variations = array();
+		foreach ( $wc_product_variations as $wc_product_variation ) {
+			$wc_product_variation  = new \WC_Product_Variation( $wc_product_variation['variation_id'] );
+			$variation             = array();
+			$variation['id']       = $wc_product_variation->get_id();
+			$variation['sku']      = ( 'id' === $this->product_identifier ) ? $wc_product_variation->get_id() : $wc_product_variation->get_sku();
+			$variation['ean']      = $this->get_ean( $wc_product_variation );
+			$variation['quantity'] = ! is_null( $wc_product_variation->get_stock_quantity() ) ? $wc_product_variation->get_stock_quantity() : ShoppingFeedHelper::get_default_product_quantity();
+			$variation['price']    = ! is_null( $wc_product_variation->get_regular_price() ) ? $wc_product_variation->get_regular_price() : $wc_product_variation->get_price();
+			$variation['discount'] = $wc_product_variation->get_sale_price();
+			if ( ! empty( get_the_post_thumbnail_url( $wc_product_variation->get_id(), 'full' ) ) ) {
+				$variation['image_main'] = get_the_post_thumbnail_url( $wc_product_variation->get_id(), 'full' );
+			}
+
+			$variation['attributes'] = $this->get_variation_attributes( $wc_product_variation );
+			$variations []           = $variation;
+		}
+
+		return $variations;
 	}
 
 	/**
