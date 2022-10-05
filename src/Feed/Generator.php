@@ -182,10 +182,10 @@ class Generator {
 				$sf_product = reset( $sf_product );
 				/** @var Product $sf_product */
 
-				if ( empty( $sf_product->get_variations() ) ) {
+				if ( empty( $sf_product->get_variations( true ) ) ) {
 					return;
 				}
-				foreach ( $sf_product->get_variations() as $sf_product_variation ) {
+				foreach ( $sf_product->get_variations( true ) as $sf_product_variation ) {
 					$variation = $product->createVariation();
 
 					$variation
