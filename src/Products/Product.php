@@ -6,6 +6,7 @@ namespace ShoppingFeed\ShoppingFeedWC\Products;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
+use WP_Query;
 
 class Product {
 
@@ -462,12 +463,12 @@ class Product {
 			return [];
 		}
 
-		$query = new \WP_Query(
+		$query = new WP_Query(
 			[
 				'post_type'      => 'product_variation',
 				'post_status'    => 'publish',
-				'posts_per_page' => -1,
-				'post_parent'    => $product->get_id()
+				'posts_per_page' => - 1,
+				'post_parent'    => $product->get_id(),
 			]
 		);
 

@@ -869,7 +869,8 @@ class Options {
 				?>
                 <label>
                     <input
-                            type="checkbox" name="<?php echo esc_html( sprintf( '%s[zero_stock_variations]', self::SF_FEED_OPTIONS ) ); ?>"
+                            type="checkbox"
+                            name="<?php echo esc_html( sprintf( '%s[zero_stock_variations]', self::SF_FEED_OPTIONS ) ); ?>"
 						<?php echo esc_attr( $zsv_checked ); ?>
                     />
                 </label>
