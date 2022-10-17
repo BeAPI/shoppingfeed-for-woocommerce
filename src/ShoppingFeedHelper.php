@@ -258,11 +258,7 @@ XML;
 	public static function get_sf_zero_stock_variations_value() {
 		$zero_stock_variations = self::get_sf_feed_options( 'zero_stock_variations' );
 
-		if ( 'on' === $zero_stock_variations ) {
-			return true;
-		}
-
-		return false;
+		return 'on' === $zero_stock_variations;
 	}
 
 	/**

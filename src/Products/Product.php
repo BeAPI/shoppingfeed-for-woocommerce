@@ -472,7 +472,7 @@ class Product {
 			]
 		);
 
-		return is_array( $query->get_posts() ) ? $query->get_posts() : [ $query->get_posts() ];
+		return $query->have_posts() ? $query->get_posts() : [ $query->get_posts() ];
 	}
 
 	/**
