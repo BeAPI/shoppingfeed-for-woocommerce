@@ -58,7 +58,7 @@ class WoocommerceActions {
 				'generate_feed_part',
 			],
 			10,
-			2
+			3
 		);
 
 		//Combine feed's parts
