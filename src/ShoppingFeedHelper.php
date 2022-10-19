@@ -331,7 +331,7 @@ XML;
 			return 200;
 		}
 
-		return $part_size;
+		return (int) $part_size;
 	}
 
 	/**
