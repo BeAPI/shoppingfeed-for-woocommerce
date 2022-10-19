@@ -12,8 +12,7 @@ class AsyncGenerator extends Generator {
 	 * Launch the feed generation process
 	 */
 	public function launch() {
-		$part_size = ShoppingFeedHelper::get_sf_part_size();
-
+		$part_size      = ShoppingFeedHelper::get_sf_part_size();
 		$products       = Products::get_instance()->get_products( [ 'return' => 'ids' ] );
 		$total_products = count( $products );
 		$total_pages    = 1;
@@ -27,7 +26,7 @@ class AsyncGenerator extends Generator {
 			array(
 				1,
 				$part_size,
-				$total_pages
+				$total_pages,
 			),
 			'sf_feed_generation_process'
 		);
@@ -37,14 +36,17 @@ class AsyncGenerator extends Generator {
 	/**
 	 * Generate feed part
 	 *
-	 * @param $page
-	 * @param $post_per_page
-	 * @param $total_pages
+	 * @param int $page
+	 * @param int $post_per_page
+	 * @param int $total_pages
+	 *
+	 * @return bool|\WP_Error
 	 */
 	public function generate_feed_part( $page, $post_per_page, $total_pages ) {
 		$args     = array(
-			'page'  => $page,
-			'limit' => $post_per_page,
+			'page'   => $page,
+			'limit'  => $post_per_page,
+			'return' => 'ids',
 		);
 		$products = Products::get_instance()->get_products( $args );
 		$path     = sprintf( '%s/%s', ShoppingFeedHelper::get_feed_parts_directory(), 'part_' . $page );
@@ -53,7 +55,7 @@ class AsyncGenerator extends Generator {
 
 		try {
 			$this->generator = new ProductGenerator();
-			$this->generator->setPlatform( $page, $page );
+			$this->generator->setPlatform( (string) $page, (string) $page );
 			$this->generator->setUri( sprintf( 'file://%s.xml', $path ) );
 			$this->set_filters();
 			$this->set_mappers();
@@ -75,7 +77,7 @@ class AsyncGenerator extends Generator {
 					array(
 						$page,
 						$post_per_page,
-						$total_pages
+						$total_pages,
 					),
 					'sf_feed_generation_process'
 				);
@@ -144,7 +146,8 @@ class AsyncGenerator extends Generator {
 		wp_delete_file( $dir . '/products_tmp.xml' );
 
 		$skelton = simplexml_load_string( ShoppingFeedHelper::get_feed_skeleton() );
-		$this->simplexml_import_xml( $skelton->metadata, $products, $before = true );
+		$this->simplexml_import_xml( $skelton->metadata, $products, true );
+		$skelton->metadata->platform   = sprintf( 'WooCommerce:%s', ShoppingFeedHelper::get_wc_version() );
 		$skelton->metadata->startedAt  = $last_started_at;
 		$skelton->metadata->finishedAt = $last_finished_at;
 		$skelton->metadata->invalid    = $xml_invalid;
