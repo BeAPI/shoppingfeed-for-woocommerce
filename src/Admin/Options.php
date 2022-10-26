@@ -865,13 +865,12 @@ class Options {
 			'zero_stock_variations',
 			__( 'Show variations with stock 0', 'shopping-feed' ),
 			function () {
-				$zsv_checked = 'on' === $this->sf_feed_options['zero_stock_variations'] ? 'checked' : '';
 				?>
                 <label>
                     <input
                         type="checkbox"
                         name="<?php echo esc_attr( sprintf( '%s[zero_stock_variations]', self::SF_FEED_OPTIONS ) ); ?>"
-                        <?php echo esc_html( $zsv_checked ); ?>
+                        <?php checked( $this->sf_feed_options['zero_stock_variations'], 'on' ); ?>
                     />
                 </label>
 
