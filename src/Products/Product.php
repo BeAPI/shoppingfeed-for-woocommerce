@@ -454,28 +454,6 @@ class Product {
 	}
 
 	/**
-	 * @param \WC_Product_Variable $product
-	 *
-	 * @return array
-	 */
-	public function get_all_product_variations( \WC_Product_Variable $product ) {
-		if ( empty( $product ) ) {
-			return [];
-		}
-
-		$query = new WP_Query(
-			[
-				'post_type'      => 'product_variation',
-				'post_status'    => 'publish',
-				'posts_per_page' => - 1,
-				'post_parent'    => $product->get_id(),
-			]
-		);
-
-		return $query->have_posts() ? $query->get_posts() : [ $query->get_posts() ];
-	}
-
-	/**
 	 * Get Extra fields
 	 * Field : ['name'=>'', 'value'=>'']
 	 */
