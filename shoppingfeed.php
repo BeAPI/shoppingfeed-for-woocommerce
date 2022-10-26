@@ -1,18 +1,20 @@
 <?php
 /**
- * Plugin Name:     ShoppingFeed
- * Plugin URI:      https://wordpress.org/plugins/shoppingfeed/
- * Description:     WordPress connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, Google, and 1000's of international marketplaces
- * Author:          Shopping-Feed
- * Author URI:      https://www.shopping-feed.com/
- * Text Domain:     shopping-feed
- * Domain Path:     /languages
- * Version:         6.1.17
- * Requires at least WP: 5.7
+ * Plugin Name:                   ShoppingFeed
+ * Plugin URI:                    https://wordpress.org/plugins/shoppingfeed/
+ * Description:                   WordPress connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, Google, and 1000's of international marketplaces
+ * Author:                        Shopping-Feed
+ * Author URI:                    https://www.shopping-feed.com/
+ * Text Domain:                   shopping-feed
+ * Domain Path:                   /languages
+ * Version:                       6.1.17
+ * Requires at least:             5.7
+ * Tested up to:                  6.0.3
  * Requires at least WooCommerce: 5.1.0
- * Requires PHP:      5.6
- * License:         GPLv3 or later
- * License URI:     https://www.gnu.org/licenses/gpl-3.0.html
+ * Tested up to WooCommerce:      7.0.0
+ * Requires PHP:                  7.0
+ * License:                       GPLv3 or later
+ * License URI:                   https://www.gnu.org/licenses/gpl-3.0.html
  */
 
 namespace ShoppingFeed\ShoppingFeedWC;
