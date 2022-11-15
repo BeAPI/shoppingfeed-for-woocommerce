@@ -409,7 +409,7 @@ class Product {
 	 * @return string
 	 */
 	public function get_ean( $wc_product = false ) {
-		$ean_meta_key = ShoppingFeedHelper::wc_product_ean();
+		$ean_meta_key = ShoppingFeedHelper::wc_product_ean( $wc_product );
 
 		if ( empty( $ean_meta_key ) ) {
 			return '';

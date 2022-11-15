@@ -616,10 +616,13 @@ XML;
 
 	/**
 	 * Add filter for product ean field meta key
+	 *
+	 * @param \WC_Product|false $wc_product
+	 *
 	 * @return string
 	 */
-	public static function wc_product_ean() {
-		return apply_filters( 'shopping_feed_custom_ean', '' );
+	public static function wc_product_ean( $wc_product = false ) {
+		return apply_filters( 'shopping_feed_custom_ean', '', $wc_product );
 	}
 
 	/**
