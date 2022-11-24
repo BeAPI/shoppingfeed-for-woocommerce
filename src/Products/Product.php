@@ -386,7 +386,7 @@ class Product {
 
 		// Check if we want all variations, even if their stock is 0
 		if ( $for_feed && ShoppingFeedHelper::get_sf_zero_stock_variations_value() ) {
-			$wc_product_variations = $product->get_children( false );
+			$wc_product_variations = $product->get_visible_children();
 		} else {
 			$wc_product_variations = $product->get_available_variations();
 		}
