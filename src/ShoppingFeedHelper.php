@@ -677,10 +677,14 @@ XML;
 
 	/**
 	 * Default quantity if product quantity is unset
+	 *
+	 * @param \WC_Product $product
+	 *
 	 * @return int
+	 * @author Stéphane Gillot
 	 */
-	public static function get_default_product_quantity() {
-		return 100;
+	public static function get_default_product_quantity( \WC_Product $product ) {
+		return $product->get_manage_stock() ? 0 : 100;
 	}
 
 	/**
