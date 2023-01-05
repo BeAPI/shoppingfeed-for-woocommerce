@@ -1,0 +1,243 @@
+[
+  {
+    "id": 999001,
+    "name": "Simple product - qty not zero - price not zero",
+    "type": "simple",
+    "regular_price": "10",
+    "stock_quantity": 10,
+    "description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.",
+    "short_description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
+    "categories": [
+      {
+        "id": 9
+      },
+      {
+        "id": 14
+      }
+    ],
+    "images": [
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_front.jpg"
+      },
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_back.jpg"
+      }
+    ]
+  },
+  {
+    "id": 999002,
+    "name": "Simple product - qty not zero - price zero",
+    "type": "simple",
+    "regular_price": "0",
+    "stock_quantity": 10,
+    "description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.",
+    "short_description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
+    "categories": [
+      {
+        "id": 1
+      }
+    ],
+    "images": [
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_front.jpg"
+      },
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_back.jpg"
+      }
+    ]
+  },
+  {
+    "id": 999003,
+    "name": "Simple product - qty zero - price not zero",
+    "type": "simple",
+    "regular_price": "10",
+    "stock_quantity": 0,
+    "description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.",
+    "short_description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
+    "categories": [
+      {
+        "id": 1
+      }
+    ],
+    "images": [
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_front.jpg"
+      },
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_back.jpg"
+      }
+    ]
+  },
+  {
+    "id": 999004,
+    "name": "Simple product - qty zero - price zero",
+    "type": "simple",
+    "regular_price": "0",
+    "stock_quantity": 0,
+    "description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.",
+    "short_description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
+    "categories": [
+      {
+        "id": 1
+      }
+    ],
+    "images": [
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_front.jpg"
+      },
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_back.jpg"
+      }
+    ]
+  },
+  {
+    "id": 999010,
+    "name": "Variable product (1) - qty not zero - price not zero",
+    "type": "variable",
+    "regular_price": "10",
+    "stock_quantity": 10,
+    "description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.",
+    "short_description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
+    "categories": [
+      {
+        "id": 1
+      }
+    ],
+    "images": [
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_front.jpg"
+      },
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_back.jpg"
+      }
+    ],
+    "variations": [
+      999101
+    ]
+  },
+  {
+    "id": 999011,
+    "name": "Variable product (1) - qty zero - price not zero",
+    "type": "variable",
+    "regular_price": "10",
+    "stock_quantity": 10,
+    "description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.",
+    "short_description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
+    "categories": [
+      {
+        "id": 1
+      }
+    ],
+    "images": [
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_front.jpg"
+      },
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_back.jpg"
+      }
+    ],
+    "variations": [
+      999101
+    ]
+  },
+  {
+    "id": 999012,
+    "name": "Variable product (1) - qty not zero - price zero",
+    "type": "variable",
+    "regular_price": "0",
+    "stock_quantity": 10,
+    "description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.",
+    "short_description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
+    "categories": [
+      {
+        "id": 1
+      }
+    ],
+    "images": [
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_front.jpg"
+      },
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_back.jpg"
+      }
+    ],
+    "variations": [
+      999101
+    ]
+  },
+  {
+    "id": 999013,
+    "name": "Variable product (1) - qty zero - price zero",
+    "type": "variable",
+    "regular_price": "0",
+    "stock_quantity": 0,
+    "description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.",
+    "short_description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
+    "categories": [
+      {
+        "id": 1
+      }
+    ],
+    "images": [
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_front.jpg"
+      },
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_back.jpg"
+      }
+    ],
+    "variations": [
+      999101
+    ]
+  },
+  {
+    "id": 999014,
+    "name": "Variable product (1) - qty not zero - price not zero",
+    "type": "variable",
+    "regular_price": "10",
+    "stock_quantity": 10,
+    "description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.",
+    "short_description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
+    "categories": [
+      {
+        "id": 1
+      }
+    ],
+    "images": [
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_front.jpg"
+      },
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_back.jpg"
+      }
+    ],
+    "variations": [
+      999102
+    ]
+  },
+  {
+    "id": 999015,
+    "name": "Variable product (1) - qty not zero - price zero",
+    "type": "variable",
+    "regular_price": "0",
+    "stock_quantity": 10,
+    "description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. Aenean ultricies mi vitae est. Mauris placerat eleifend leo.",
+    "short_description": "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
+    "categories": [
+      {
+        "id": 1
+      }
+    ],
+    "images": [
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_front.jpg"
+      },
+      {
+        "src": "http://demo.woothemes.com/woocommerce/wp-content/uploads/sites/56/2013/06/T_2_back.jpg"
+      }
+    ],
+    "variations": [
+      999102
+    ]
+  }
+]
