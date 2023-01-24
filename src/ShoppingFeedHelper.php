@@ -375,6 +375,21 @@ XML;
 	}
 
 	/**
+	 * Return SF fulfilled by marketplace order status.
+	 * @return string
+	 */
+	public static function get_sf_fulfilled_by_channel_order_status() {
+		$orders_options = self::get_sf_orders_options();
+		if ( ! is_array( $orders_options ) ) {
+			return 'wc-completed';
+		}
+
+		return ! empty( $orders_options['fulfilled_by_marketplace_order_status'] )
+			? $orders_options['fulfilled_by_marketplace_order_status']
+			: 'wc-completed';
+	}
+
+	/**
 	 * Return SF orders import
 	 * default: 15 MINUTES
 	 * @return int
