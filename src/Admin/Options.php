@@ -985,7 +985,7 @@ class Options {
 		$this->load_assets();
 
 		add_settings_section(
-			'sf_orders_settings_import_frequency',
+			'sf_orders_settings_import_options',
 			__( 'Import Options', 'shopping-feed' ),
 			function () {
 				//Init orders actions after update
@@ -999,7 +999,11 @@ class Options {
 		$frequencies         = [ 5, 10, 15, 30, 45, 60 ];
 		$frequencies_options = [];
 		foreach ( $frequencies as $frequency ) {
-			$frequencies_options[ $frequency * MINUTE_IN_SECONDS ] = sprintf( '%s %s', $frequency, __( 'min', 'shopping-feed' ) );
+			$frequencies_options[ $frequency * MINUTE_IN_SECONDS ] = sprintf(
+				'%s %s',
+				$frequency,
+				__( 'min', 'shopping-feed' )
+			);
 		}
 
 		add_settings_field(
@@ -1012,32 +1016,25 @@ class Options {
 					foreach ( $frequencies_options as $frequency => $name ) {
 						?>
 						<option
-								value="<?php echo esc_html( $frequency ); ?>"
-							<?php selected( $frequency, $this->sf_orders_options['import_frequency'] ? $this->sf_orders_options['import_frequency'] : false ); ?>
-						><?php echo esc_html( $name ); ?></option>
+							value="<?php echo esc_attr( $frequency ); ?>"
+							<?php selected( $frequency, isset( $this->sf_orders_options['import_frequency'] ) ? $this->sf_orders_options['import_frequency'] : false ); ?>>
+							<?php echo esc_html( $name ); ?>
+						</option>
 						<?php
 					}
 					?>
 				</select>
-				<p class="description"
-				   id="tagline-description"><?php echo esc_attr_e( 'Frequency to import orders from SF', 'shopping-feed' ); ?></p>
+				<p class="description" id="tagline-description">
+					<?php esc_html_e( 'Frequency to import orders from SF', 'shopping-feed' ); ?>
+				</p>
 				<?php
 			},
 			self::SF_ORDERS_SETTINGS_PAGE,
-			'sf_orders_settings_import_frequency'
+			'sf_orders_settings_import_options'
 		);
 
 		//statuses settings
 		$wc_order_statuses = wc_get_order_statuses();
-
-		//default status
-		add_settings_section(
-			'sf_orders_settings_default_status',
-			null,
-			function () {
-			},
-			self::SF_ORDERS_SETTINGS_PAGE
-		);
 
 		add_settings_field(
 			'Default Order Status',
@@ -1049,19 +1046,74 @@ class Options {
 					foreach ( $wc_order_statuses as $wc_order_statuse => $name ) {
 						?>
 						<option
-								value="<?php echo esc_html( $wc_order_statuse ); ?>"
-							<?php selected( $wc_order_statuse, $this->sf_orders_options['default_status'] ? $this->sf_orders_options['default_status'] : false ); ?>
-						><?php echo esc_html( $name ); ?></option>
+							value="<?php echo esc_html( $wc_order_statuse ); ?>"
+							<?php selected( $wc_order_statuse, isset( $this->sf_orders_options['default_status'] ) ? $this->sf_orders_options['default_status'] : false ); ?>>
+							<?php echo esc_html( $name ); ?>
+						</option>
 						<?php
 					}
 					?>
 				</select>
-				<p class="description"
-				   id="tagline-description"><?php echo esc_attr_e( 'Default Status for orders imported from from SF', 'shopping-feed' ); ?></p>
+				<p class="description" id="tagline-description">
+					<?php esc_html_e( 'Default Status for orders imported from from SF', 'shopping-feed' ); ?>
+				</p>
 				<?php
 			},
 			self::SF_ORDERS_SETTINGS_PAGE,
-			'sf_orders_settings_default_status'
+			'sf_orders_settings_import_options'
+		);
+
+		add_settings_field(
+			'import_orders_fulfilled_by_marketplace',
+			__( 'Orders fulfilled by marketplace', 'shopping-feed' ),
+			function () {
+				?>
+				<label for="import_order_fulfilled">
+					<input
+						type="checkbox"
+						id="import_order_fulfilled"
+						name="<?php echo esc_attr( sprintf( '%s[import_order_fulfilled_by_marketplace]', self::SF_ORDERS_OPTIONS ) ); ?>"
+						value="1"
+						<?php checked( '1', isset( $this->sf_orders_options['import_order_fulfilled_by_marketplace'] ) ? $this->sf_orders_options['import_order_fulfilled_by_marketplace'] : '0' ); ?>
+					>
+					<?php esc_html_e( 'Import orders fulfilled by marketplace', 'shopping-feed' ); ?>
+				</label>
+				<p class="description" id="tagline-description">
+					<?php esc_html_e( 'Import orders even if they are fulfilled by the marketplace.', 'shopping-feed' ); ?>
+				</p>
+				<?php
+			},
+			self::SF_ORDERS_SETTINGS_PAGE,
+			'sf_orders_settings_import_options'
+		);
+
+		add_settings_field(
+			'fulfilled_by_marketplace_order_status',
+			__( "Fulfilled by channel order's status", 'shopping-feed' ),
+			function () use ( $wc_order_statuses ) {
+				?>
+				<select
+					name="<?php echo esc_html( sprintf( '%s[fulfilled_by_marketplace_order_status]', self::SF_ORDERS_OPTIONS ) ); ?>"
+					<?php disabled( '0', isset( $this->sf_orders_options['import_order_fulfilled_by_marketplace'] ) ? $this->sf_orders_options['import_order_fulfilled_by_marketplace'] : '0' ); ?>>
+					<?php
+					foreach ( $wc_order_statuses as $wc_order_statuse => $name ) {
+						?>
+						<option
+							value="<?php echo esc_html( $wc_order_statuse ); ?>"
+							<?php selected( $wc_order_statuse, isset( $this->sf_orders_options['fulfilled_by_marketplace_order_status'] ) ? $this->sf_orders_options['fulfilled_by_marketplace_order_status'] : 'wc-completed' ); ?>>
+							<?php echo esc_html( $name ); ?>
+						</option>
+						<?php
+					}
+					?>
+				</select>
+				<p class="description" id="tagline-description">
+					<?php esc_html_e( 'Status used for orders fulfilled by marketplaces when they are imported.', 'shopping-feed' ); ?>
+				</p>
+				<?php
+			},
+			self::SF_ORDERS_SETTINGS_PAGE,
+			'sf_orders_settings_import_options'
 		);
 
 		//mapping
