@@ -12,23 +12,18 @@ class Amazon {
 	use Marketplace;
 
 	public function __construct() {
-		add_action( 'sf_add_metas', array( $this, 'add_metas' ) );
+		add_action( 'sf_add_metas', [ $this, 'add_metas' ] );
 	}
 
 	/**
 	 * @param $metas Metas
 	 */
 	public function add_metas( $metas ) {
-		if (
-			true !== $this->is_amazon( $metas->sf_order ) ||
-			'AFN' !== $metas->sf_order->getPaymentInformation()['method']
-		) {
-			return;
+		if ( $this->is_fulfilled_by_amazon( $metas->sf_order ) ) {
+			$metas->add_meta(
+				Metas::$dont_update_inventory,
+				true
+			);
 		}
-
-		$metas->add_meta(
-			Metas::$dont_update_inventory,
-			true
-		);
 	}
 }
