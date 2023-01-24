@@ -4,8 +4,8 @@ namespace ShoppingFeed\ShoppingFeedWC\Orders\Order;
 // Exit on direct access
 defined( 'ABSPATH' ) || exit;
 
-
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
+use ShoppingFeed\ShoppingFeedWC\Addons\Marketplace;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
 /**
@@ -13,6 +13,8 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
  * @package ShoppingFeed\Orders\Order
  */
 class Status {
+
+	use Marketplace;
 
 	/**
 	 * @var OrderResource $sf_order
@@ -39,6 +41,10 @@ class Status {
 
 		$this->set_name( ShoppingFeedHelper::get_sf_default_order_status() );
 		$this->set_note( sprintf( 'Order from : %s', $sf_order->getChannel()->getName() ) );
+
+		if ( $this->is_fulfilled_by_marketplace( $sf_order ) ) {
+			$this->set_name( ShoppingFeedHelper::get_sf_fulfilled_by_channel_order_status() );
+		}
 	}
 
 	private function set_name( $name ) {
