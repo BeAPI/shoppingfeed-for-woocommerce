@@ -270,16 +270,13 @@ class WoocommerceActions {
 			 * Check if we need to update the price or only the stock
 			 */
 			if ( ! $only_stock ) {
-				/**
-				 * Send api request to update the price
-				 */
-				$pricing_api->execute( $this->pricing_update );
+				as_schedule_single_action( false, 'sf_update_product_pricing', [ $pricing_api, $this->pricing_update ], 'sf_update_product' );
 			}
 
 			/**
 			 * Send api request to update the inventory
 			 */
-			$inventory_api->execute( $this->inventory_update );
+			as_schedule_single_action( false, 'sf_update_product_pricing', [ $inventory_api, $this->inventory_update ], 'sf_update_product' );
 		}
 	}
 
