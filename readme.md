@@ -271,10 +271,10 @@ function your_custom_tracking_url_function($fields, $wc_product) {
 ### Variation Images
 By default, we don’t support any custom plugin for adding images to WC Product Variation, with this filter you can set the desired images to each variation, you can use the following snippet
 ```php
-add_filter( 'shopping_feed_variation_images', 'your_custom_variation_images_function', 10, 2 );
+add_filter( 'shopping_feed_variation_images', 'your_custom_variation_images_function', 10, 3 );
 
 /** @return array */
-function your_custom_tracking_url_function($images, $wc_product) {
+function your_custom_tracking_url_function( array $images, WC_Product $wc_product, array $variations ) {
     $images[] = 'https://domain.com/image1.jpg';
     $images[] = 'https://domain.com/image2.jpg';
     

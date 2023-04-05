@@ -364,7 +364,13 @@ class Product {
 	 * @return array
 	 */
 	public function get_variation_images() {
-		return apply_filters( 'shopping_feed_variation_images', [], $this->product );
+		$variations = [];
+
+		foreach ( $this->product->get_children() as $variation ) {
+			$variations[] = wc_get_product( $variation );
+		}
+
+		return apply_filters( 'shopping_feed_variation_images', [], $this->product, $variations );
 	}
 
 	public function has_variations() {
