@@ -274,7 +274,7 @@ By default, we don’t support any custom plugin for adding images to WC Product
 add_filter( 'shopping_feed_variation_images', 'your_custom_variation_images_function', 10, 3 );
 
 /** @return array */
-function your_custom_tracking_url_function( array $images, WC_Product $wc_product, array $variations ) {
+function your_custom_tracking_url_function( array $images, WC_Product $wc_product, int $variation_id ) {
     $images[] = 'https://domain.com/image1.jpg';
     $images[] = 'https://domain.com/image2.jpg';
     
