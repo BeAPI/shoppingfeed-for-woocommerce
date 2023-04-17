@@ -361,10 +361,12 @@ class Product {
 	}
 
 	/**
+	 * @param int $variation_id
+	 *
 	 * @return array
 	 */
-	public function get_variation_images( $sf_product_variation_id ) {
-		return apply_filters( 'shopping_feed_variation_images', [], $this->product, $sf_product_variation_id );
+	public function get_variation_images( $variation_id = 0 ) {
+		return apply_filters( 'shopping_feed_variation_images', [], $this->product, $variation_id );
 	}
 
 	public function has_variations() {
