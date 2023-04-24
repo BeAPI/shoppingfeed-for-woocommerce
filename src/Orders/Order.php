@@ -93,7 +93,8 @@ class Order {
 
 		//Payment
 		try {
-			$wc_order->set_prices_include_tax( $this->payment->get_total() );
+			$price_includes_taxes = apply_filters( 'shopping_feed_price_includes_taxes', $this->payment->get_total() );
+			$wc_order->set_prices_include_tax( $price_includes_taxes );
 			$wc_order->set_payment_method( $this->payment->get_method() );
 		} catch ( \Exception $exception ) {
 			ShoppingFeedHelper::get_logger()->error(
@@ -369,5 +370,27 @@ class Order {
 	 */
 	public static function can_update_stock( $wc_order ) {
 		return empty( $wc_order->get_meta( Query::WC_META_SF_REFERENCE ) ) || empty( $wc_order->get_meta( Metas::$dont_update_inventory ) );
+	}
+
+	public static function get_total_without_taxes( $wc_order ) {
+		$wc_order = wc_get_order( $wc_order );
+		if ( ! $wc_order instanceof \WC_Order ) {
+			return 0;
+		}
+
+		$order_total_price = $wc_order->get_shipping_total();
+		$order_total_taxes = $wc_order->get_total_tax();
+
+		// If no total price, return 0
+		if ( ! isset( $order_total_price ) ) {
+			return 0;
+		}
+
+		// If no taxes, return default total
+		if ( ! isset( $order_total_taxes ) ) {
+			return $wc_order->get_shipping_total();
+		}
+
+		return $order_total_price - $order_total_taxes;
 	}
 }
