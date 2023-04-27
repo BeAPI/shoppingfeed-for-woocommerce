@@ -220,64 +220,8 @@ class WoocommerceActions {
 	 * @param bool $only_stock
 	 */
 	public function update_product( $product_id, $only_stock = false ) {
-		$sf_accounts = ShoppingFeedHelper::get_sf_account_options();
-		if ( empty( $sf_accounts ) ) {
-			ShoppingFeedHelper::get_logger()->error(
-				sprintf(
-					__( 'No Accounts founds', 'shopping-feed' )
-				),
-				array(
-					'source' => 'shopping-feed',
-				)
-			);
-
-			return;
-		}
-
-		foreach ( $sf_accounts as $sf_account ) {
-			$shop = Sdk::get_sf_shop( $sf_account );
-			if ( ! $shop instanceof StoreResource ) {
-				ShoppingFeedHelper::get_logger()->error(
-					sprintf(
-					/* translators: %s: Error message. */
-						__( 'Cannot retrieve shop from SDK for account : %s', 'shopping-feed' ),
-						$sf_account['username']
-					),
-					array(
-						'source' => 'shopping-feed',
-					)
-				);
-				continue;
-			}
-
-			$pricing_api   = $shop->getPricingApi();
-			$inventory_api = $shop->getInventoryApi();
-
-			$this->pricing_update   = new \ShoppingFeed\Sdk\Api\Catalog\PricingUpdate();
-			$this->inventory_update = new \ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate();
-
-			$product = new Product( $product_id );
-			if ( $product->has_variations() ) {
-				if ( ! $this->update_variation_product( $product ) ) {
-					continue;
-				}
-			} else {
-				if ( ! $this->update_normal_product( $product ) ) {
-					continue;
-				}
-			}
-			/**
-			 * Check if we need to update the price or only the stock
-			 */
-			if ( ! $only_stock ) {
-				as_schedule_single_action( false, 'sf_update_product_pricing', [ $pricing_api, $this->pricing_update ], 'sf_update_product' );
-			}
-
-			/**
-			 * Send api request to update the inventory
-			 */
-			as_schedule_single_action( false, 'sf_update_product_pricing', [ $inventory_api, $this->inventory_update ], 'sf_update_product' );
-		}
+		$async_api = new AsyncAPI();
+		as_schedule_single_action( false, 'sf_async_update_product', [ $this, $product_id, $only_stock ], 'sf_update_product' );
 	}
 
 	/**
