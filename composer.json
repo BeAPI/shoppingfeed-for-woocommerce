@@ -48,6 +48,7 @@
     "overtrue/phplint": "^2.0",
     "php-parallel-lint/php-parallel-lint": "^1.2",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
+    "coenjacobs/mozart":  "@stable",
     "wordpress/wordpress": "*@stable"
   },
   "scripts": {
