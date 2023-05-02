@@ -62,5 +62,20 @@
       "dealerdirect/phpcodesniffer-composer-installer": true,
       "phpro/grumphp-shim": true
     }
+  },
+  "extra": {
+    "mozart": {
+      "dep_namespace": "ShoppingFeed\\ShoppingFeedWC\\Dependencies\\",
+      "dep_directory": "/src/Dependencies/",
+      "classmap_directory": "/classes/dependencies/",
+      "classmap_prefix": "SF_Dep_",
+      "packages": [
+        "composer/installers",
+        "guzzlehttp/guzzle",
+        "symfony/polyfill-intl-idn",
+        "symfony/polyfill-intl-normalizer"
+      ],
+      "delete_vendor_directories": false
+    }
   }
 }
