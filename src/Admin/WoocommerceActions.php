@@ -131,6 +131,9 @@ class WoocommerceActions {
 			2
 		);
 
+		//Async Update Product
+		add_action( 'sf_async_update_product', [ $this, 'async_update_product' ], 10, 2 );
+
 		/**
 		 * Migrate old accounts to multi account format
 		 */
@@ -213,6 +216,82 @@ class WoocommerceActions {
 		$this->update_product( $product_id, true );
 	}
 
+	public function async_update_product( $product_id, $only_stock ) {
+		$sf_accounts = ShoppingFeedHelper::get_sf_account_options();
+		if ( empty( $sf_accounts ) ) {
+			ShoppingFeedHelper::get_logger()->error(
+				__( 'No Accounts founds', 'shopping-feed' ),
+				[
+					'source' => 'shopping-feed',
+				]
+			);
+
+			return;
+		}
+
+		foreach ( $sf_accounts as $sf_account ) {
+			$shop = Sdk::get_sf_shop( $sf_account );
+			if ( ! $shop instanceof StoreResource ) {
+				ShoppingFeedHelper::get_logger()->error(
+					sprintf(
+					/* translators: %s: Error message. */
+						__( 'Cannot retrieve shop from SDK for account : %s', 'shopping-feed' ),
+						$sf_account['username']
+					),
+					[
+						'source' => 'shopping-feed',
+					]
+				);
+				continue;
+			}
+
+			$pricing_api      = $shop->getPricingApi();
+			$inventory_api    = $shop->getInventoryApi();
+			$pricing_update   = new PricingUpdate();
+			$inventory_update = new InventoryUpdate();
+
+			$product = new Product( $product_id );
+			if ( $product->has_variations() ) {
+				if ( ! $this->update_variation_product( $product ) ) {
+					continue;
+				}
+			} else if ( ! $this->update_normal_product( $product ) ) {
+				continue;
+			}
+			/**
+			 * Check if we need to update the price or only the stock
+			 */
+			if ( ! $only_stock ) {
+				/**
+				 *  Send api request to update the price
+				 */
+				$pricing_api->execute( $pricing_update );
+
+				ShoppingFeedHelper::get_logger()->info(
+					// translators: %s: Product ID.
+					sprintf( __( 'Price of product id : %s was updated', 'shopping-feed' ), $product_id ),
+					[
+						'source' => 'shopping-feed',
+					]
+				);
+			}
+
+			/**
+			 * Send api request to update the inventory
+			 */
+			$inventory_api->execute( $inventory_update );
+
+			ShoppingFeedHelper::get_logger()->info(
+				// translators: %s: Product ID.
+				sprintf( __( 'Stock of product id : %s was updated', 'shopping-feed' ), $product_id ),
+				[
+					'source' => 'shopping-feed',
+				]
+			);
+
+		}
+	}
+
 	/**
 	 * Update product's price & inventory
 	 *
@@ -220,8 +299,7 @@ class WoocommerceActions {
 	 * @param bool $only_stock
 	 */
 	public function update_product( $product_id, $only_stock = false ) {
-		$async_api = new AsyncAPI();
-		as_schedule_single_action( false, 'sf_async_update_product', [ $this, $product_id, $only_stock ], 'sf_update_product' );
+		as_schedule_single_action( false, 'sf_async_update_product', [ $product_id, $only_stock ], 'sf_update_product' );
 	}
 
 	/**
