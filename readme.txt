@@ -281,7 +281,7 @@ add_filter( 'shopping_feed_variation_images', 'your_custom_variation_images_func
  *
  * @return array
  */
-function your_custom_tracking_url_function( $images, $wc_product, $variation_id ) {
+function your_custom_variation_images_function( $images, $wc_product, $variation_id ) {
     $images[] = 'https://domain.com/image1.jpg';
     $images[] = 'https://domain.com/image2.jpg';
 
