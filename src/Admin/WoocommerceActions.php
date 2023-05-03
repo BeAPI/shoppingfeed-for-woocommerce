@@ -245,10 +245,10 @@ class WoocommerceActions {
 				continue;
 			}
 
-			$pricing_api      = $shop->getPricingApi();
-			$inventory_api    = $shop->getInventoryApi();
-			$pricing_update   = new PricingUpdate();
-			$inventory_update = new InventoryUpdate();
+			$pricing_api            = $shop->getPricingApi();
+			$inventory_api          = $shop->getInventoryApi();
+			$this->pricing_update   = new PricingUpdate();
+			$this->inventory_update = new InventoryUpdate();
 
 			$product = new Product( $product_id );
 			if ( $product->has_variations() ) {
@@ -265,7 +265,7 @@ class WoocommerceActions {
 				/**
 				 *  Send api request to update the price
 				 */
-				$pricing_api->execute( $pricing_update );
+				$pricing_api->execute( $this->pricing_update );
 
 				ShoppingFeedHelper::get_logger()->info(
 					// translators: %s: Product ID.
@@ -279,7 +279,7 @@ class WoocommerceActions {
 			/**
 			 * Send api request to update the inventory
 			 */
-			$inventory_api->execute( $inventory_update );
+			$inventory_api->execute( $this->inventory_update );
 
 			ShoppingFeedHelper::get_logger()->info(
 				// translators: %s: Product ID.
