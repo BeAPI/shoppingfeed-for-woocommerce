@@ -13,6 +13,8 @@ WC tested up to: 5.5.2
 Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
 
 == Changelog ==
+* 6.1.19
+  * Update 'shopping_feed_variation_images' filter to include the WC variation ID.
 * 6.1.18
   * Update 'shopping_feed_custom_ean' filter to include the WC product.
 * 6.1.17
