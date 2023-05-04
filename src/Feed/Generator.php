@@ -206,7 +206,7 @@ class Generator {
 						$variation
 							->setMainImage( $sf_product_variation['image_main'] );
 					}
-					$variation_images = $sf_product->get_variation_images();
+					$variation_images = $sf_product->get_variation_images( $sf_product_variation['id'] );
 					if ( ! empty( $variation_images ) ) {
 						$variation->setAdditionalImages( $variation_images );
 					}

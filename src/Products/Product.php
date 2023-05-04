@@ -361,10 +361,12 @@ class Product {
 	}
 
 	/**
+	 * @param int $variation_id
+	 *
 	 * @return array
 	 */
-	public function get_variation_images() {
-		return apply_filters( 'shopping_feed_variation_images', [], $this->product );
+	public function get_variation_images( $variation_id = 0 ) {
+		return apply_filters( 'shopping_feed_variation_images', [], $this->product, $variation_id );
 	}
 
 	public function has_variations() {
@@ -386,6 +388,7 @@ class Product {
 			foreach ( $wc_product_variations as $wc_product_variation ) {
 				$wc_product_variation  = new \WC_Product_Variation( $wc_product_variation['variation_id'] );
 				$variation             = array();
+				$variation['id']       = $wc_product_variation->get_id();
 				$variation['sku']      = ( 'id' === $this->product_identifier ) ? $wc_product_variation->get_id() : $wc_product_variation->get_sku();
 				$variation['ean']      = $this->get_ean( $wc_product_variation );
 				$variation['quantity'] = ! is_null( $wc_product_variation->get_stock_quantity() ) ? $wc_product_variation->get_stock_quantity() : ShoppingFeedHelper::get_default_product_quantity();
