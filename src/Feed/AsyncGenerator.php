@@ -12,25 +12,16 @@ class AsyncGenerator extends Generator {
 	 * Launch the feed generation process
 	 */
 	public function launch() {
-		$part_size      = ShoppingFeedHelper::get_sf_part_size();
-		$products       = Products::get_instance()->get_products( [ 'return' => 'ids' ] );
-		$total_products = count( $products );
-		$total_pages    = 1;
-		if ( $part_size < $total_products ) {
-			$total_pages = (int) round( $total_products / $part_size );
-		}
-
+		$part_size = ShoppingFeedHelper::get_sf_part_size();
 		as_schedule_single_action(
-			false,
+			time() + 5,
 			'sf_feed_generation_part',
 			array(
 				1,
 				$part_size,
-				$total_pages,
 			),
 			'sf_feed_generation_process'
 		);
-
 	}
 
 	/**
@@ -38,21 +29,32 @@ class AsyncGenerator extends Generator {
 	 *
 	 * @param int $page
 	 * @param int $post_per_page
-	 * @param int $total_pages
 	 *
 	 * @return bool|\WP_Error
 	 */
-	public function generate_feed_part( $page, $post_per_page, $total_pages ) {
+	public function generate_feed_part( $page, $post_per_page ) {
 		$args     = array(
 			'page'   => $page,
 			'limit'  => $post_per_page,
 			'return' => 'ids',
 		);
 		$products = Products::get_instance()->get_products( $args );
-		$path     = sprintf( '%s/%s', ShoppingFeedHelper::get_feed_parts_directory(), 'part_' . $page );
 
+		// If the query doesn't return any products, schedule the combine action and stop the current action.
+		if ( empty( $products ) ) {
+			as_schedule_single_action(
+				time() + 5,
+				'sf_feed_generation_combine_feed_parts',
+				array(),
+				'sf_feed_generation_process'
+			);
+
+			return true;
+		}
+
+		// Process products returned by the query and reschedule the action for the next page.
+		$path          = sprintf( '%s/%s', ShoppingFeedHelper::get_feed_parts_directory(), 'part_' . $page );
 		$products_list = Products::get_instance()->format_products( $products );
-
 		try {
 			$this->generator = new ProductGenerator();
 			$this->generator->setPlatform( (string) $page, (string) $page );
@@ -61,27 +63,16 @@ class AsyncGenerator extends Generator {
 			$this->set_mappers();
 			$this->generator->write( $products_list );
 
-			if ( ! empty( $page ) && $page === $total_pages ) {
-				as_schedule_single_action(
-					false,
-					'sf_feed_generation_combine_feed_parts',
-					array(),
-					'sf_feed_generation_process'
-				);
-			} else {
-				$page++;
-
-				as_schedule_single_action(
-					false,
-					'sf_feed_generation_part',
-					array(
-						$page,
-						$post_per_page,
-						$total_pages,
-					),
-					'sf_feed_generation_process'
-				);
-			}
+			$page ++;
+			as_schedule_single_action(
+				time() + 5,
+				'sf_feed_generation_part',
+				array(
+					$page,
+					$post_per_page,
+				),
+				'sf_feed_generation_process'
+			);
 		} catch ( \Exception $exception ) {
 			return new \WP_Error( 'shopping_feed_generation_error', $exception->getMessage() );
 		}
