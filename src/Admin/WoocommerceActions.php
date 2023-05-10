@@ -80,7 +80,22 @@ class WoocommerceActions {
 		add_action(
 			'sf_generate_feed_action',
 			function () {
-				Generator::get_instance()->generate();
+				if ( ShoppingFeedHelper::is_process_running( 'sf_feed_generation_process' ) ) {
+					ShoppingFeedHelper::get_logger()->warning(
+						sprintf(
+							__( 'Feed generation already running', 'shopping-feed' )
+						),
+						array(
+							'source' => 'shopping-feed',
+						)
+					);
+
+					return true;
+				}
+
+				AsyncGenerator::get_instance()->launch();
+
+				return true;
 			}
 		);
 
