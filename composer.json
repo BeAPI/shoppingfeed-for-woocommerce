@@ -25,8 +25,8 @@
     }
   ],
   "require": {
-    "php": "^5.6.0|^7|^8.0",
-    "composer/installers": "~1.0",
+    "php": "^7.1|^8.0",
+    "composer/installers": "~1.0|~2.0",
     "guzzlehttp/guzzle": "^6.3",
     "shoppingfeed/php-sdk": "^0.3",
     "shoppingfeed/php-feed-generator": "^1.2.1",
@@ -38,7 +38,13 @@
       "ShoppingFeed\\ShoppingFeedWC\\": "src"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "ShoppingFeed\\ShoppingFeedWC\\Tests\\": "tests"
+    }
+  },
   "require-dev": {
+    "php": "^7.3|^8.0",
     "phpcompatibility/php-compatibility": "^9.3",
     "phpro/grumphp-shim": "^0.18.0",
     "roave/security-advisories": "dev-latest",
@@ -48,18 +54,39 @@
     "overtrue/phplint": "^2.0",
     "php-parallel-lint/php-parallel-lint": "^1.2",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
-    "wordpress/wordpress": "*@stable"
+    "php-stubs/woocommerce-stubs": "^7.7",
+    "lucatume/wp-browser": "^3.1",
+    "codeception/module-asserts": "^1.0",
+    "codeception/module-phpbrowser": "^1.0",
+    "codeception/module-webdriver": "^1.0",
+    "codeception/module-db": "^1.0",
+    "codeception/module-filesystem": "^1.0",
+    "codeception/module-cli": "^1.0",
+    "codeception/util-universalframework": "^1.0",
+    "roots/wordpress": "^6.2",
+    "wp-cli/wp-cli-bundle": "^2.7"
+  },
+  "extra": {
+    "installer-paths": {
+      "wordpress": ["roots/wordpress"]
+    }
   },
   "scripts": {
     "cs": "./vendor/bin/phpcs",
     "cbf": "./vendor/bin/phpcbf",
-    "psalm": "./vendor/bin/psalm"
+    "psalm": "./vendor/bin/psalm",
+    "tests": "./vendor/bin/codecept run --html",
+    "test-unit": "./vendor/bin/codecept run unit --html",
+    "test-wpunit": "./vendor/bin/codecept run wpunit --html",
+    "test-functional": "./vendor/bin/codecept run functional --html",
+    "test-acceptance": "./vendor/bin/codecept run acceptance --html"
   },
   "config": {
     "allow-plugins": {
       "composer/installers": true,
       "dealerdirect/phpcodesniffer-composer-installer": true,
-      "phpro/grumphp-shim": true
+      "phpro/grumphp-shim": true,
+      "roots/wordpress-core-installer": true
     }
   }
 }

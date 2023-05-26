@@ -1,4 +1,4 @@
-## ShoppingFeed
+# ShoppingFeed
 
 * Contributors: ShoppingFeed, BeAPI
 * Tags: shoppingfeed, marketplace, woocommerce, woocommerce shoppingfeed, create woocommerce products shoppingfeed, products feed, generate shoppingfeed, amazon, Jet, Walmart, many marketplace, import orders
@@ -10,11 +10,11 @@
 * WC requires at least: 3.8
 * WC tested up to: 5.5.2
 
-### Upgrade Notice
+## Upgrade Notice
 
 > Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
 
-### Changelog
+## Changelog
 * 6.1.19
   * Update 'shopping_feed_variation_images' filter to include the WC variation ID.
 * 6.1.18
@@ -126,7 +126,7 @@
   * this is a major version, there are several changes and improvements which affect the architecture of the plugin
   * You will have to re-configure the plugin, all the previous settings will be lost
 
-### Description
+## Description
 WordPress connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, Google, and 1000's of international marketplaces
 
 ## Requirements
@@ -136,14 +136,10 @@ WordPress connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, 
 - PHP cURL extension is activated
 
 ### WordPress :
-
 - Core version 5.2 or above
 - WooCommerce version 3.8 or above
 
-
-
 ## Installation
-
 Sign up for free on ShoppingFeed : https://shopping-feed.com/
 
 - Activate the plugin in Plugins > Installed Plugins
@@ -151,7 +147,6 @@ Sign up for free on ShoppingFeed : https://shopping-feed.com/
 - In Settings, check that ShoppingFeed is enabled and save changes
 
 ## Shipment tracking support
-
 For now, the only shipment tracking plugins supported are :
 
 * Advanced Shipment Tracking : https://wordpress.org/plugins/woo-advanced-shipment-tracking/
@@ -159,11 +154,9 @@ For now, the only shipment tracking plugins supported are :
 * Woocommerce Shipment Tracking Pro : https://www.pluginhive.com/product/woocommerce-shipment-tracking-pro/
 
 ## Configuration
-
 To start using the plugin correctly, you need to configure it with your preferences (Feed, Shipping, Orders)
 
 ## Available hooks
-
 With this snippets below can be added to your theme's functions.php file or your custom plugin file
 
 ### Categories
@@ -288,4 +281,51 @@ function your_custom_variation_images_function( $images, $wc_product, $variation
     
     return $images;
 }
+```
+
+## Development
+
+### Local environment
+
+Using [Lando](https://lando.dev/), you can start a local environment with all the required plugins and default dataset
+```
+lando start
+```
+
+The environment will be available at https://shoppingfeed-for-woocommerce.lndo.site
+- Login: `admin`
+- Password: `password`
+
+### Testing
+
+Tests are handle through [WPBrowser](https://wpbrowser.wptestkit.dev/) built around the [Codeception framework](https://codeception.com/). [Lando](https://lando.dev/) is used to have a fully working environment.
+
+**To run all tests suite :**
+```
+lando start
+lando tests
+```
+
+**To run the Unit tests suite :**
+```
+lando start
+lando test-unit
+```
+
+**To run the WPUnit tests suite :**
+```
+lando start
+lando test-wpunit
+```
+
+**To run the functional tests suite :**
+```
+lando start
+lando test-functional
+```
+
+**To run the acceptance tests suite :**
+```
+lando start
+lando test-acceptance
 ```
