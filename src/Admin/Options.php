@@ -1089,17 +1089,17 @@ class Options {
 
 		add_settings_field(
 			'fulfilled_by_marketplace_order_status',
-			__( "Fulfilled by channel order's status", 'shopping-feed' ),
+			__( "Fulfilled by marketplace order's status", 'shopping-feed' ),
 			function () use ( $wc_order_statuses ) {
 				?>
 				<select
-					name="<?php echo esc_html( sprintf( '%s[fulfilled_by_marketplace_order_status]', self::SF_ORDERS_OPTIONS ) ); ?>"
-					<?php disabled( '0', isset( $this->sf_orders_options['import_order_fulfilled_by_marketplace'] ) ? $this->sf_orders_options['import_order_fulfilled_by_marketplace'] : '0' ); ?>>
+						name="<?php echo esc_html( sprintf( '%s[fulfilled_by_marketplace_order_status]', self::SF_ORDERS_OPTIONS ) ); ?>"
+				>
 					<?php
 					foreach ( $wc_order_statuses as $wc_order_statuse => $name ) {
 						?>
 						<option
-							value="<?php echo esc_html( $wc_order_statuse ); ?>"
+								value="<?php echo esc_html( $wc_order_statuse ); ?>"
 							<?php selected( $wc_order_statuse, isset( $this->sf_orders_options['fulfilled_by_marketplace_order_status'] ) ? $this->sf_orders_options['fulfilled_by_marketplace_order_status'] : 'wc-completed' ); ?>>
 							<?php echo esc_html( $name ); ?>
 						</option>
