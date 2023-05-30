@@ -653,7 +653,14 @@ XML;
 	 * @return array
 	 */
 	public static function sf_order_statuses_to_import() {
-		return apply_filters( 'shopping_feed_orders_to_import', array( 'waiting_shipment' ) );
+		$default_statuses = [ 'waiting_shipment' ];
+		$orders_options = self::get_sf_orders_options();
+
+		if ( isset( $orders_options['import_order_fulfilled_by_marketplace'] ) && true === (bool) $orders_options['import_order_fulfilled_by_marketplace'] ) {
+			$default_statuses[] = 'shipped';
+		}
+
+		return apply_filters( 'shopping_feed_orders_to_import', $default_statuses );
 	}
 
 	/**
