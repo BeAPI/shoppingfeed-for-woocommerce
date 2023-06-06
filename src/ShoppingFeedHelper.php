@@ -656,6 +656,7 @@ XML;
 		$default_statuses = [ 'waiting_shipment' ];
 		$orders_options = self::get_sf_orders_options();
 
+		// Add shipped status if importing fulfilled by marketplace orders
 		if ( isset( $orders_options['import_order_fulfilled_by_marketplace'] ) && true === (bool) $orders_options['import_order_fulfilled_by_marketplace'] ) {
 			$default_statuses[] = 'shipped';
 		}
