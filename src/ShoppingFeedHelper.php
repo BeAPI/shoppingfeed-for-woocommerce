@@ -255,8 +255,8 @@ XML;
 	 * Return value for 0 stock variations in feed option
 	 * @return bool
 	 */
-	public static function get_sf_zero_stock_variations_value() {
-		return 'on' === self::get_sf_feed_options( 'zero_stock_variations' );
+	public static function get_sf_out_of_stock_variations_value() {
+		return 'on' === self::get_sf_feed_options( 'out_of_stock_variations' );
 	}
 
 	/**

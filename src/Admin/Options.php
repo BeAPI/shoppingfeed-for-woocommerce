@@ -862,17 +862,17 @@ class Options {
 
 		// Show 0 stock varitions in feed
 		add_settings_field(
-			'zero_stock_variations',
-			__( 'Show variations with stock 0', 'shopping-feed' ),
+			'out_of_stock_variations',
+			__( 'Include out of stock variations in the feed', 'shopping-feed' ),
 			function () {
 				?>
-                <label>
-                    <input
-                        type="checkbox"
-                        name="<?php echo esc_attr( sprintf( '%s[zero_stock_variations]', self::SF_FEED_OPTIONS ) ); ?>"
-                        <?php checked( $this->sf_feed_options['zero_stock_variations'], 'on' ); ?>
-                    />
-                </label>
+				<label>
+					<input
+						type="checkbox"
+						name="<?php echo esc_attr( sprintf( '%s[out_of_stock_variations]', self::SF_FEED_OPTIONS ) ); ?>"
+						<?php checked( $this->sf_feed_options['out_of_stock_variations'], 'on' ); ?>
+					/>
+				</label>
 
 				<?php
 			},
