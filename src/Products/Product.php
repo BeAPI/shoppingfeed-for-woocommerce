@@ -385,10 +385,16 @@ class Product {
 		$product = new \WC_Product_Variable( $this->id );
 
 		// Check if we want all variations, even if their stock is 0
-		if ( $for_feed && ShoppingFeedHelper::get_sf_zero_stock_variations_value() ) {
+		if ( $for_feed && ShoppingFeedHelper::get_sf_out_of_stock_variations_value() ) {
 			$wc_product_variations = $product->get_visible_children();
 		} else {
-			$wc_product_variations = $product->get_available_variations();
+			$available_variations = $product->get_available_variations();
+			$wc_product_variations = [];
+
+			// Create an array of only variations IDs
+			foreach ( $available_variations as $variation ) {
+				$wc_product_variations[] = $variation->get_id();
+			}
 		}
 
 		if ( empty( $wc_product_variations ) ) {
@@ -397,7 +403,7 @@ class Product {
 
 		$variations = array();
 		foreach ( $wc_product_variations as $wc_product_variation ) {
-			$wc_product_variation  = new \WC_Product_Variation( $wc_product_variation['variation_id'] );
+			$wc_product_variation  = new \WC_Product_Variation( $wc_product_variation );
 			$variation             = array();
 			$variation['id']       = $wc_product_variation->get_id();
 			$variation['sku']      = ( 'id' === $this->product_identifier ) ? $wc_product_variation->get_id() : $wc_product_variation->get_sku();
