@@ -656,9 +656,13 @@ XML;
 		$default_statuses = [ 'waiting_shipment' ];
 		$orders_options = self::get_sf_orders_options();
 
-		// Add shipped status if importing fulfilled by marketplace orders
+		/**
+		 * Add shipped status if importing fulfilled by marketplace orders
+		 * @see https://support.beapi.fr/issues/60658
+		 */
 		if ( isset( $orders_options['import_order_fulfilled_by_marketplace'] ) && true === (bool) $orders_options['import_order_fulfilled_by_marketplace'] ) {
-			$default_statuses[] = 'shipped';
+			$fullfilled_by_marketplace_statuses = [ 'shipped', 'refunded', 'cancelled' ];
+			$default_statuses = array_merge( $default_statuses, $fullfilled_by_marketplace_statuses );
 		}
 
 		return apply_filters( 'shopping_feed_orders_to_import', $default_statuses );
