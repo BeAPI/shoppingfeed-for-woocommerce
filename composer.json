@@ -20,18 +20,14 @@
   ],
   "repositories": [
     {
-     "type": "vcs",
+      "type": "vcs",
       "url": "https://github.com/WordPress/wordpress-develop"
     }
   ],
   "require": {
     "php": "^5.6.0|^7|^8.0",
     "composer/installers": "~1.0",
-    "guzzlehttp/guzzle": "^6.3",
-    "shoppingfeed/php-sdk": "^0.3",
-    "shoppingfeed/php-feed-generator": "^1.2.1",
-    "symfony/polyfill-intl-idn": "1.20.0",
-    "symfony/polyfill-intl-normalizer": "1.20.0"
+    "shoppingfeed/php-feed-generator": "^1.2.1"
   },
   "autoload": {
     "psr-4": {
@@ -48,18 +44,56 @@
     "overtrue/phplint": "^2.0",
     "php-parallel-lint/php-parallel-lint": "^1.2",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
-    "wordpress/wordpress": "*@stable"
+    "coenjacobs/mozart": "^0.7",
+    "wordpress/wordpress": "*@stable",
+    "guzzlehttp/guzzle": "^6.3",
+    "shoppingfeed/php-sdk": "^0.3",
+    "symfony/polyfill-intl-idn": "1.20.0",
+    "symfony/polyfill-intl-normalizer": "1.20.0"
   },
   "scripts": {
     "cs": "./vendor/bin/phpcs",
     "cbf": "./vendor/bin/phpcbf",
-    "psalm": "./vendor/bin/psalm"
+    "psalm": "./vendor/bin/psalm",
+    "mozart-compose": [
+      "vendor/bin/mozart compose",
+      "find ./src/Dependencies -type f -exec sed -i '' 's/use GuzzleHttp;/use ShoppingFeed\\\\ShoppingFeedWC\\\\Dependencies\\\\GuzzleHttp;/g' {} \\;",
+      "find ./src/Dependencies -type f -exec sed -i '' 's/use Psr\\\\Http\\\\/use ShoppingFeed\\\\ShoppingFeedWC\\\\Dependencies\\\\Psr\\\\Http\\\\/g' {} \\;",
+      "@composer dump-autoload -o"
+    ],
+    "post-install-cmd": [
+      "@composer mozart-compose"
+    ],
+    "post-update-cmd": [
+      "@composer mozart-compose"
+    ]
   },
   "config": {
     "allow-plugins": {
       "composer/installers": true,
       "dealerdirect/phpcodesniffer-composer-installer": true,
       "phpro/grumphp-shim": true
+    }
+  },
+  "extra": {
+    "mozart": {
+      "dep_namespace": "ShoppingFeed\\ShoppingFeedWC\\Dependencies\\",
+      "dep_directory": "/src/Dependencies/",
+      "classmap_directory": "/classes/dependencies/",
+      "classmap_prefix": "SF_Dep_",
+      "packages": [
+        "guzzlehttp/guzzle",
+        "shoppingfeed/php-sdk",
+        "symfony/polyfill-intl-idn",
+        "symfony/polyfill-intl-normalizer"
+      ],
+      "override_autoload": {
+        "shoppingfeed/php-sdk": {
+          "psr-4": {
+            "ShoppingFeed\\Sdk\\": "src/"
+          }
+        }
+      }
     }
   }
 }
