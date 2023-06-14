@@ -5,7 +5,7 @@ namespace ShoppingFeed\ShoppingFeedWC\Orders;
 // Exit on direct access
 defined( 'ABSPATH' ) || exit;
 
-use ShoppingFeed\Sdk\Api\Store\StoreResource;
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Store\StoreResource;
 use ShoppingFeed\ShoppingFeedWC\Sdk\Sdk;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 

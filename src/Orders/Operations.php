@@ -5,10 +5,10 @@ namespace ShoppingFeed\ShoppingFeedWC\Orders;
 defined( 'ABSPATH' ) || exit;
 
 use Exception;
-use ShoppingFeed\Sdk\Api\Order\OrderDomain;
-use ShoppingFeed\Sdk\Api\Order\OrderOperation;
-use ShoppingFeed\Sdk\Api\Order\OrderOperationResult;
-use ShoppingFeed\Sdk\Api\Store\StoreResource;
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Order\OrderDomain;
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Order\OrderOperation;
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Order\OrderOperationResult;
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Store\StoreResource;
 use ShoppingFeed\ShoppingFeedWC\Sdk\Sdk;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
