@@ -10,6 +10,8 @@
         <file name="shoppingfeed.php"/>
         <directory name="src" />
         <ignoreFiles>
+            <directory name="classes" />
+            <directory name="src/Dependencies/" />
             <directory name="vendor" />
             <directory name="languages" />
             <directory name="assets" />
