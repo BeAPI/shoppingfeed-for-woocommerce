@@ -13,6 +13,10 @@
             <directory name="vendor" />
             <directory name="languages" />
             <directory name="assets" />
+            <directory name="tests/_data" />
+            <directory name="tests/_output" />
+            <directory name="tests/_support" />
+            <directory name="wordpress" />
         </ignoreFiles>
     </projectFiles>
 

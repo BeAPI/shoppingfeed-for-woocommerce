@@ -4,9 +4,16 @@
   "description": "WordPress Plugin for ShoppingFeed / CSS assets management",
   "license": "GPL-3.0-or-later",
   "author": "ShoppingFeed",
+  "scripts": {
+    "start": "gulp sass:watch",
+    "build": "gulp sass"
+  },
   "devDependencies": {
     "gulp": "^4.0.2",
     "gulp-sass": "^4.1.0",
     "gulp-sourcemaps": "^2.6.5"
+  },
+  "volta": {
+    "node": "14.21.3"
   }
 }

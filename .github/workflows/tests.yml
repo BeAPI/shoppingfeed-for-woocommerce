@@ -1,0 +1,54 @@
+
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+# Cancels all previous workflow runs for pull requests that have not completed.
+concurrency:
+  # The concurrency group contains the workflow name and the branch name for pull requests
+  # or the commit hash for any other events.
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.head_ref || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v3
+
+      - name: "Install docker-ce"
+        run: |
+          sudo apt-get update
+          sudo apt-get install \
+               apt-transport-https \
+               ca-certificates \
+               curl \
+               gnupg-agent \
+               software-properties-common
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+          sudo add-apt-repository \
+               "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+               $(lsb_release -cs) \
+               stable"
+          sudo apt-get update
+          sudo apt-get install docker-ce docker-ce-cli containerd.io
+
+      - name: "Install Lando"
+        run: |
+          wget https://files.devwithlando.io/lando-stable.deb
+          sudo dpkg -i lando-stable.deb
+
+      - name: "Setup Env"
+        run: |
+          lando start
+
+      - name: "Run tests"
+        run: |
+          lando tests

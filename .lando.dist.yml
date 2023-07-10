@@ -1,0 +1,91 @@
+name: shoppingfeed-for-woocommerce
+recipe: wordpress
+config:
+  php: '7.3'
+  webroot: ./wordpress/
+env:
+  - .env.testing
+services:
+  appserver:
+    run:
+      - if [ ! -f /app/wordpress/wp-content ]; then echo "creating wp-content folder" && mkdir -p /app/wordpress/wp-content/plugins; else echo "wp-content folder already created" ; fi
+      - ln -s /app/ /app/wordpress/wp-content/plugins/shoppingfeed-for-woocommerce
+  database-test:
+    type: mysql:5.7
+    portforward: true
+    creds:
+      user: wordpress-test
+      password: wordpress-test
+      database: wordpress-test
+events:
+  # Runs composer install and a custom php script before your app starts
+  pre-start:
+    - appserver: cd $LANDO_MOUNT && composer install
+tooling:
+  setup:
+    service: appserver
+    description: 'Setup env'
+    cmd:
+      - echo "➡️ Reset DB ?"
+      - if [ -f /app/wordpress/wp-config.php ]; then echo "wp-config exists reset DB" && wp db reset --yes --path=/app/wordpress ; else echo "No wp-config.php, no reset" ; fi
+      - echo "➡️ Reset config"
+      - if [ -f /app/wordpress/wp-config.php ]; then echo "wp-config exists deleting it" && rm -f /app/wordpress/wp-config.php; else echo "No wp-config.php, no rm" ; fi
+      - echo "➡️ Create WPCONTENT"
+      - if [ ! -f /app/wordpress/wp-content ]; then echo "creating wp-content folder" && mkdir -p /app/wordpress/wp-content/plugins; else echo "wp-content folder already created" ; fi
+      - echo "➡️ Create config"
+      - wp config create --dbname=wordpress --dbuser=wordpress --dbpass=wordpress --dbhost=database --path=/app/wordpress
+      - echo "➡️ Install WP"
+      - wp core install --url="https://shoppingfeed-for-woocommerce.lndo.site" --title="Test" --admin_user=admin --admin_password=password --admin_email=wordpress@example.com --skip-email
+      - echo "➡️ Install Woocommerce"
+      - wp plugin install --activate woocommerce
+      - echo "➡️ Install Storefront"
+      - wp theme install storefront --activate
+      - echo "➡️ Install WordPress importer"
+      - wp plugin install wordpress-importer --activate
+      - echo "➡️ Install Woocommerce"
+      - wp option set woocommerce_store_address "Example Address Line 1"
+      - wp option set woocommerce_store_address_2 "Example Address Line 2"
+      - wp option set woocommerce_store_city "Example City"
+      - wp option set woocommerce_default_country "US:CA"
+      - wp option set woocommerce_store_postcode "94110"
+      - wp option set woocommerce_currency "EUR"
+      - wp option set woocommerce_product_type "both"
+      - wp option set woocommerce_allow_tracking "no"
+      - wp option set woocommerce_enable_checkout_login_reminder "yes"
+      - wp option set --format=json woocommerce_cod_settings '{"enabled":"yes"}'
+      - echo "➡️ Activate plugin"
+      - wp plugin activate shoppingfeed-for-woocommerce
+      - echo "➡️ WooCommerce shop pages"
+      - wp wc --user=admin tool run install_pages --allow-root
+      - echo "➡️ Importing WooCommerce sample products"
+      - wp import /app/wordpress/wp-content/plugins/woocommerce/sample-data/sample_products.xml --authors=skip
+  tests:
+    service: appserver
+    cmd:
+      - /bin/bash bin/setup.sh
+      - composer tests
+    description: Run all the tests
+  test-unit:
+    service: appserver
+    cmd:
+      - /bin/bash bin/setup.sh
+      - composer test-unit
+    description: Run the PHPunit tests
+  test-wpunit:
+    service: appserver
+    cmd:
+      - /bin/bash bin/setup.sh
+      - composer test-wpunit
+    description: Run the WPUnit tests
+  test-acceptance:
+    service: appserver
+    cmd:
+      - /bin/bash bin/setup.sh
+      - composer test-acceptance
+    description: Run the acceptance tests
+  test-functional:
+    service: appserver
+    cmd:
+      - /bin/bash bin/setup.sh
+      - composer test-functional
+    description: Run the functional tests
