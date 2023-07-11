@@ -44,9 +44,8 @@
     }
   },
   "require-dev": {
-    "php": "^7.3|^8.0",
     "phpcompatibility/php-compatibility": "^9.3",
-    "phpro/grumphp-shim": "^0.18.0",
+    "phpro/grumphp-shim": "^0.22",
     "roave/security-advisories": "dev-latest",
     "squizlabs/php_codesniffer": "^3.5",
     "vimeo/psalm": "^3.11",
