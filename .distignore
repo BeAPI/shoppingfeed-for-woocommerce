@@ -14,6 +14,7 @@ wordpress
 .env.testing
 .gitignore
 .lando.dist.yml
+.plugin-data
 codeception.dist.yml
 composer.json
 composer.lock
