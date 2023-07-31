@@ -121,6 +121,7 @@ class ShoppingFeed {
 		$this->actions = new WoocommerceActions();
 
 		//Check Upgrade
+		add_action( 'init', array(  $this, 'do_migration' ), 25 );
 		if ( ! $this->check_upgrade() ) {
 			return;
 		}
@@ -290,19 +291,6 @@ class ShoppingFeed {
 			return false;
 		}
 
-		//check if we need to do migration
-		if (
-			! empty( $_GET['sf_action'] ) &&
-			'sf_migrate_single' === $_GET['sf_action'] &&
-			isset( $_GET['_wpnonce'] ) &&
-			wp_verify_nonce( wp_unslash( $_GET['_wpnonce'] ), 'sf_migrate_single' ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-		) {
-			$id_action = as_enqueue_async_action( 'sf_migrate_single_action', array(), 'sf_migrate_single' );
-			update_option( SF_UPGRADE_RUNNING, $id_action );
-			wp_safe_redirect( admin_url( '/' ), 302 );
-			exit;
-		}
-
 		add_action(
 			'admin_notices',
 			function () {
@@ -331,4 +319,19 @@ class ShoppingFeed {
 
 		return false;
 	}
+
+    public function do_migration(): void {
+	    //check if we need to do migration
+	    if (
+		    ! empty( $_GET['sf_action'] ) &&
+		    'sf_migrate_single' === $_GET['sf_action'] &&
+		    isset( $_GET['_wpnonce'] ) &&
+		    wp_verify_nonce( wp_unslash( $_GET['_wpnonce'] ), 'sf_migrate_single' ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+	    ) {
+		    $id_action = as_enqueue_async_action( 'sf_migrate_single_action', array(), 'sf_migrate_single' );
+		    update_option( SF_UPGRADE_RUNNING, $id_action );
+		    wp_safe_redirect( admin_url( '/' ), 302 );
+		    exit;
+	    }
+    }
 }
