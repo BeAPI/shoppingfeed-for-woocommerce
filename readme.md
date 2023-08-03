@@ -4,11 +4,11 @@
 * Tags: shoppingfeed, marketplace, woocommerce, woocommerce shoppingfeed, create woocommerce products shoppingfeed, products feed, generate shoppingfeed, amazon, Jet, Walmart, many marketplace, import orders
 * Stable tag: 6.2.0
 * Version: 6.2.0
-* Requires PHP: 5.6
-* Requires at least: 5.2
-* Tested up to: 5.8.0
-* WC requires at least: 3.8
-* WC tested up to: 5.5.2
+* Requires PHP: 7.1
+* Requires at least: 5.7
+* Tested up to: 6.2
+* WC requires at least: 5.1.0
+* WC tested up to: 7.7
 
 ## Upgrade Notice
 
