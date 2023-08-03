@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  sf-php-sdk-dev:
+    image: php-sdk-dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/var/www
