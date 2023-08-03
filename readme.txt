@@ -1,8 +1,8 @@
 ## ShoppingFeed
 Contributors: ShoppingFeed, BeAPI
 Tags: shoppingfeed, marketplace, woocommerce, woocommerce shoppingfeed, create woocommerce products shoppingfeed, products feed, generate shoppingfeed, amazon, Jet, Walmart, many marketplace, import orders
-Stable tag: 6.1.19
-Version: 6.1.19
+Stable tag: 6.1.20
+Version: 6.1.20
 Requires PHP: 7.1
 Requires at least: 5.7
 Tested up to: 6.2
@@ -13,6 +13,9 @@ WC tested up to: 7.7
 Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
 
 == Changelog ==
+* 6.1.20
+  * Fix an issue with migration process failing to be scheduled with new version of Woocommerce.
+  * Update plugin requirements
 * 6.1.19
   * Update 'shopping_feed_variation_images' filter to include the WC variation ID.
 * 6.1.18
