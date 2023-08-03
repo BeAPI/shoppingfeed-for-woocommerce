@@ -1,7 +1,7 @@
 name: shoppingfeed-for-woocommerce
 recipe: wordpress
 config:
-  php: '7.1'
+  php: '7.3'
   webroot: ./wordpress/
 env:
   - .env.testing
