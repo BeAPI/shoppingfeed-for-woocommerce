@@ -331,7 +331,7 @@ XML;
 			return 200;
 		}
 
-		return $part_size;
+		return (int) $part_size;
 	}
 
 	/**
@@ -709,7 +709,7 @@ XML;
 		return $action_scheduler->query_actions(
 			array(
 				'group'  => $group,
-				'status' => $action_scheduler::STATUS_PENDING,
+				'status' => [ \ActionScheduler_Store::STATUS_PENDING, \ActionScheduler_Store::STATUS_RUNNING ],
 			)
 		);
 	}
