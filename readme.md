@@ -255,12 +255,12 @@ function your_custom_tracking_url_function() {
 ```
 
 ### Extra Fields
-If you want to add add extra fields to your XML Feed, you can use the following snippet
+If you want to add an extra fields to your XML Feed, you can use the following snippet
 ```php
 add_filter( 'shopping_feed_extra_fields', 'your_custom_fields_function', 10, 2 );
 
 /** @return array */
-function your_custom_tracking_url_function($fields, $wc_product) {
+function your_custom_fields_function($fields, $wc_product) {
     $fields[] = array('name'=>'my_field', 'value'=>'my_value');
     return $fields;
 }
