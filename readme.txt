@@ -1,8 +1,8 @@
 ## ShoppingFeed
 Contributors: ShoppingFeed, BeAPI
 Tags: shoppingfeed, marketplace, woocommerce, woocommerce shoppingfeed, create woocommerce products shoppingfeed, products feed, generate shoppingfeed, amazon, Jet, Walmart, many marketplace, import orders
-Stable tag: 6.1.20
-Version: 6.1.20
+Stable tag: 6.2.0
+Version: 6.2.0
 Requires PHP: 7.1
 Requires at least: 5.7
 Tested up to: 6.2
@@ -13,6 +13,8 @@ WC tested up to: 7.7
 Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
 
 == Changelog ==
+* 6.2.0
+  * Rework feed generation process to better handle shop with large amount of products.
 * 6.1.20
   * Fix an issue with migration process failing to be scheduled with new version of Woocommerce.
   * Update plugin requirements
@@ -133,13 +135,13 @@ WordPress connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, 
 ## Requirements
 
 ### Server :
-- PHP version 5.6 or above
+- PHP version 7.1 or above
 - PHP cURL extension is activated
 
 ### WordPress :
 
-- Core version 5.2 or above
-- WooCommerce version 3.8 or above
+- Core version 5.7 or above
+- WooCommerce version 5.1 or above
 
 ## Installation
 
