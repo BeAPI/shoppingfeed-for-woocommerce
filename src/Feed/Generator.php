@@ -22,7 +22,7 @@ class Generator {
 	 */
 	const SF_FEED_LAST_GENERATION_DATE = 'SF_FEED_LAST_GENERATION';
 	/**
-	 * @var Generator
+	 * @var static
 	 */
 	private static $instance;
 	/** @var Platform */
@@ -218,7 +218,7 @@ class Generator {
 	/**
 	 * Get the singleton instance.
 	 *
-	 * @return Generator
+	 * @return static
 	 */
 	public static function get_instance() {
 		if ( is_null( self::$instance ) ) {
