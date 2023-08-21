@@ -123,7 +123,7 @@ class Orders {
 	 *
 	 * @return bool
 	 */
-	private function can_import_order( $sf_order ) {
+	public function can_import_order( $sf_order ) {
 		// Allow user for force imports for orders fulfilled by the marketplaces.
 		$orders_options = ShoppingFeedHelper::get_sf_orders_options();
 		if ( isset( $orders_options['import_order_fulfilled_by_marketplace'] ) && true === (bool) $orders_options['import_order_fulfilled_by_marketplace'] ) {
