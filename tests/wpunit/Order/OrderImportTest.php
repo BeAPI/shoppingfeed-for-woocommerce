@@ -2,6 +2,7 @@
 
 namespace ShoppingFeed\ShoppingFeedWC\Tests\wpunit\Order;
 
+use Automattic\WooCommerce\Admin\API\Orders;
 use ShoppingFeed;
 use ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingFeed\Sdk\Hal\{HalClient, HalResource};
@@ -35,6 +36,27 @@ class OrderImportTest extends \Codeception\TestCase\WPTestCase {
 		$results  = wc_get_orders( [ Query::WC_META_SF_REFERENCE => $order_resource->getReference() ] );
 		$wc_order = reset( $results );
 		$this->assertEquals( $this->get_error_order_status(), $wc_order->get_status() );
+	}
+
+	public function test_order_fulfilled_by_channels_are_not_imported() {
+		$order_resource = $this->get_order_resource( 'fulfilled-by-channel' );
+		$orders = ShoppingFeed\ShoppingFeedWC\Orders\Orders::get_instance();
+		$this->assertNotTrue( $orders->can_import_order( $order_resource ) );
+	}
+
+	public function test_user_can_force_import_of_order_fulfilled_by_channels() {
+		add_filter(
+			'pre_option_sf_orders_options',
+			function ( $value ) {
+				return [
+					'import_order_fulfilled_by_marketplace' => true,
+				];
+			}
+		);
+
+		$order_resource = $this->get_order_resource( 'fulfilled-by-channel' );
+		$orders = ShoppingFeed\ShoppingFeedWC\Orders\Orders::get_instance();
+		$this->assertTrue( $orders->can_import_order( $order_resource ) );
 	}
 
 	private function get_order_resource( string $name ): OrderResource {

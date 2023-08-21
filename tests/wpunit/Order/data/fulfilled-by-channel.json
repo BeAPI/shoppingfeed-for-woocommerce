@@ -1,0 +1,99 @@
+{
+  "id": 18757782342,
+  "storeId": 44855,
+  "channelId": 111,
+  "reference": "TEST-645a409ea1e03",
+  "storeReference": "",
+  "isTest": true,
+  "acknowledgedAt": null,
+  "createdAt": "2023-05-09T14:46:22+02:00",
+  "updatedAt": "2023-05-09T14:46:22+02:00",
+  "status": "waiting_shipment",
+  "anonymized": false,
+  "payment": {
+    "shippingAmount": 20,
+    "productAmount": 42,
+    "totalAmount": 62,
+    "currency": "EUR",
+    "method": ""
+  },
+  "shipment": {
+    "carrier": "Colissimo",
+    "trackingNumber": "",
+    "trackingLink": ""
+  },
+  "additionalFields": {
+    "isTestOrder": "1"
+  },
+  "latestShipDate": null,
+  "errors": [],
+  "itemsReferencesAliases": {},
+  "fulfilledBy": "channel",
+  "items": [
+    {
+      "reference": "11",
+      "status": "",
+      "quantity": 1,
+      "price": 42,
+      "commission": null,
+      "taxAmount": 0,
+      "ecotaxAmount": 0,
+      "channelReference": "11",
+      "additionalFields": null,
+      "name": "Hoodie",
+      "image": "https://shopping-feed.beapi.science/app/uploads/2020/05/hoodie-2.jpg"
+    }
+  ],
+  "commission": null,
+  "shippingAddress": {
+    "firstName":"Pierre",
+    "lastName":"Martin",
+    "company":"Be API",
+    "street":"123 rue des petits champs",
+    "street2":"",
+    "other":"",
+    "postalCode":"75000",
+    "city":"Paris",
+    "country":"FR",
+    "phone":"0123456789",
+    "mobilePhone":"0612345789",
+    "email":"pm@example.com"
+  },
+  "billingAddress": {
+    "firstName":"Pierre",
+    "lastName":"Martin",
+    "company":"Be API",
+    "street":"123 rue des petits champs",
+    "street2":"",
+    "other":"",
+    "postalCode":"75000",
+    "city":"Paris",
+    "country":"FR",
+    "phone":"0123456789",
+    "mobilePhone":"0612345789",
+    "email":"pm@example.com"
+  },
+  "_links": {
+    "self": {
+      "href": "/v1/store/44855/order/18757782342"
+    },
+    "store": {
+      "href": "/v1/store/44855"
+    }
+  },
+  "_embedded": {
+    "channel": {
+      "id": 111,
+      "name": "CDiscount",
+      "_links": {
+        "self": {
+          "href": "/v1/channel/111"
+        },
+        "image": {
+          "href": "https://assets.shopping-feed.com/channel/logo/CDiscount.png"
+        }
+      }
+    },
+    "tag": []
+  }
+}
