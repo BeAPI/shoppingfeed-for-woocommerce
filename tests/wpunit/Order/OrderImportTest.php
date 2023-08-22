@@ -59,6 +59,29 @@ class OrderImportTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertTrue( $orders->can_import_order( $order_resource ) );
 	}
 
+	public function test_orders_fulfilled_by_channel_dont_decrease_stock_when_imported() {
+		add_filter(
+			'pre_option_sf_orders_options',
+			function ( $value ) {
+				return [
+					'import_order_fulfilled_by_marketplace' => true,
+				];
+			}
+		);
+
+		$product        = wc_get_product( 11 );
+		$original_stock = $product->get_stock_quantity();
+
+		$order_resource = $this->get_order_resource( 'fulfilled-by-channel' );
+		$sf_order       = new ShoppingFeed\ShoppingFeedWC\Orders\Order( $order_resource );
+		$sf_order->add();
+
+		$results  = wc_get_orders( [ Query::WC_META_SF_REFERENCE => $order_resource->getReference() ] );
+		$wc_order = reset( $results );
+		$this->assertTrue( (bool) $wc_order->get_meta( 'dont_update_inventory' ) );
+		$this->assertEquals( $product->get_stock_quantity(), $original_stock );
+	}
+
 	private function get_order_resource( string $name ): OrderResource {
 		$raw         = file_get_contents( __DIR__ . '/data/' . $name . '.json' );
 		$json        = json_decode( $raw, true );
