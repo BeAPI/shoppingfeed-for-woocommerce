@@ -71,7 +71,7 @@ class WoocommerceActions {
 		);
 
 		//Product Update
-		add_action( 'woocommerce_update_product', array( $this, 'update_price' ) );
+		add_action( 'woocommerce_updated_product_price', array( $this, 'update_price' ) );
 
 		//Stock Update
 		add_action( 'woocommerce_updated_product_stock', array( $this, 'update_stock' ) );
