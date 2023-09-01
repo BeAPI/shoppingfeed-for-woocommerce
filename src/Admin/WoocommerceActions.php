@@ -71,7 +71,7 @@ class WoocommerceActions {
 		);
 
 		//Product Update
-		add_action( 'woocommerce_update_product', array( $this, 'update_product' ) );
+		add_action( 'woocommerce_update_product', array( $this, 'update_price' ) );
 
 		//Stock Update
 		add_action( 'woocommerce_updated_product_stock', array( $this, 'update_stock' ) );
@@ -214,6 +214,15 @@ class WoocommerceActions {
 	 */
 	public function update_stock( $product_id ) {
 		$this->update_product( $product_id, true );
+	}
+
+	/**
+	 * Update product price
+	 *
+	 * @param $product_id
+	 */
+	public function update_price( $product_id ) {
+		$this->update_product( $product_id, false );
 	}
 
 	public function async_update_product( $product_id, $only_stock ) {
