@@ -375,6 +375,21 @@ XML;
 	}
 
 	/**
+	 * Return SF fulfilled by marketplace order status.
+	 * @return string
+	 */
+	public static function get_sf_fulfilled_by_channel_order_status() {
+		$orders_options = self::get_sf_orders_options();
+		if ( ! is_array( $orders_options ) ) {
+			return 'wc-completed';
+		}
+
+		return ! empty( $orders_options['fulfilled_by_marketplace_order_status'] )
+			? $orders_options['fulfilled_by_marketplace_order_status']
+			: 'wc-completed';
+	}
+
+	/**
 	 * Return SF orders import
 	 * default: 15 MINUTES
 	 * @return int
@@ -638,7 +653,19 @@ XML;
 	 * @return array
 	 */
 	public static function sf_order_statuses_to_import() {
-		return apply_filters( 'shopping_feed_orders_to_import', array( 'waiting_shipment' ) );
+		$default_statuses = [ 'waiting_shipment' ];
+		$orders_options = self::get_sf_orders_options();
+
+		/**
+		 * Add shipped status if importing fulfilled by marketplace orders
+		 * @see https://support.beapi.fr/issues/60658
+		 */
+		if ( isset( $orders_options['import_order_fulfilled_by_marketplace'] ) && true === (bool) $orders_options['import_order_fulfilled_by_marketplace'] ) {
+			$fullfilled_by_marketplace_statuses = [ 'shipped', 'refunded', 'cancelled' ];
+			$default_statuses = array_merge( $default_statuses, $fullfilled_by_marketplace_statuses );
+		}
+
+		return apply_filters( 'shopping_feed_orders_to_import', $default_statuses );
 	}
 
 	/**
