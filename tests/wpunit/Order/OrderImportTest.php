@@ -14,18 +14,25 @@ class OrderImportTest extends \Codeception\TestCase\WPTestCase {
 	 */
 	protected $tester;
 
+	private const IN_STOCK_PRODUCT_ID_USE_BY_ORDER_DATA = 12;
+
 	public function test_import_simple_order() {
+		$product_before = wc_get_product( self::IN_STOCK_PRODUCT_ID_USE_BY_ORDER_DATA );
+		$original_stock = $product_before->get_stock_quantity();
+
 		$order_resource = $this->get_order_resource( 'simple-order' );
 		$sf_order       = new ShoppingFeed\ShoppingFeedWC\Orders\Order( $order_resource );
 		$sf_order->add();
 
-		$results = wc_get_orders( [ Query::WC_META_SF_REFERENCE => $order_resource->getReference() ] );
+		$product_after = wc_get_product( self::IN_STOCK_PRODUCT_ID_USE_BY_ORDER_DATA );
+		$results       = wc_get_orders( [ Query::WC_META_SF_REFERENCE => $order_resource->getReference() ] );
 		$this->assertCount( 1, $results, 'Assert only one order exist with the reference' );
 
 		$wc_order = reset( $results );
 		$this->assertEquals( $this->get_default_order_status(), $wc_order->get_status(), 'Assert the order use the correct status' );
-		$this->assertEquals( 62, $wc_order->get_total(), 'Assert the order total match the value from ShoppingFeed' );
+		$this->assertEquals( 65, $wc_order->get_total(), 'Assert the order total match the value from ShoppingFeed' );
 		$this->assertEquals( 1, $wc_order->get_item_count(), 'Assert the order contain the same number of product from ShoppingFeed' );
+		$this->assertEquals( $original_stock - 1, $product_after->get_stock_quantity(), 'Assert stock for the product has been decreased' );
 	}
 
 	public function test_order_are_created_with_failed_status_if_original_order_contain_out_of_stock_products() {
@@ -40,7 +47,7 @@ class OrderImportTest extends \Codeception\TestCase\WPTestCase {
 
 	public function test_order_fulfilled_by_channels_are_not_imported() {
 		$order_resource = $this->get_order_resource( 'fulfilled-by-channel' );
-		$orders = ShoppingFeed\ShoppingFeedWC\Orders\Orders::get_instance();
+		$orders         = ShoppingFeed\ShoppingFeedWC\Orders\Orders::get_instance();
 		$this->assertNotTrue( $orders->can_import_order( $order_resource ) );
 	}
 
@@ -55,7 +62,7 @@ class OrderImportTest extends \Codeception\TestCase\WPTestCase {
 		);
 
 		$order_resource = $this->get_order_resource( 'fulfilled-by-channel' );
-		$orders = ShoppingFeed\ShoppingFeedWC\Orders\Orders::get_instance();
+		$orders         = ShoppingFeed\ShoppingFeedWC\Orders\Orders::get_instance();
 		$this->assertTrue( $orders->can_import_order( $order_resource ) );
 	}
 
@@ -69,17 +76,19 @@ class OrderImportTest extends \Codeception\TestCase\WPTestCase {
 			}
 		);
 
-		$product        = wc_get_product( 11 );
-		$original_stock = $product->get_stock_quantity();
+		$product_before = wc_get_product( self::IN_STOCK_PRODUCT_ID_USE_BY_ORDER_DATA );
+		$original_stock = $product_before->get_stock_quantity();
 
 		$order_resource = $this->get_order_resource( 'fulfilled-by-channel' );
 		$sf_order       = new ShoppingFeed\ShoppingFeedWC\Orders\Order( $order_resource );
 		$sf_order->add();
 
-		$results  = wc_get_orders( [ Query::WC_META_SF_REFERENCE => $order_resource->getReference() ] );
-		$wc_order = reset( $results );
-		$this->assertTrue( (bool) $wc_order->get_meta( 'dont_update_inventory' ) );
-		$this->assertEquals( $product->get_stock_quantity(), $original_stock );
+		$product_after = wc_get_product( self::IN_STOCK_PRODUCT_ID_USE_BY_ORDER_DATA );
+		$results       = wc_get_orders( [ Query::WC_META_SF_REFERENCE => $order_resource->getReference() ] );
+		$wc_order      = reset( $results );
+		$this->assertEquals( 'completed', $wc_order->get_status(), 'Orders fulfilled by channel are imported with the status "completed" by default.' );
+		$this->assertTrue( (bool) $wc_order->get_meta( 'dont_update_inventory' ), 'Orders fulfilled by channel have a custom meta when imported.' );
+		$this->assertEquals( $original_stock, $product_after->get_stock_quantity(), 'Orders fulfilled by channel don\'t change stock when imported.' );
 	}
 
 	private function get_order_resource( string $name ): OrderResource {
