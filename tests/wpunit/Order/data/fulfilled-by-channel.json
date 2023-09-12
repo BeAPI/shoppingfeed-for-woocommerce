@@ -12,8 +12,8 @@
   "anonymized": false,
   "payment": {
     "shippingAmount": 20,
-    "productAmount": 45,
-    "totalAmount": 65,
+    "productAmount": 42,
+    "totalAmount": 62,
     "currency": "EUR",
     "method": ""
   },
@@ -28,13 +28,13 @@
   "latestShipDate": null,
   "errors": [],
   "itemsReferencesAliases": {},
-  "fulfilledBy": "store",
+  "fulfilledBy": "channel",
   "items": [
     {
-      "reference": "12",
+      "reference": "11",
       "status": "",
       "quantity": 1,
-      "price": 45,
+      "price": 42,
       "commission": null,
       "taxAmount": 0,
       "ecotaxAmount": 0,
