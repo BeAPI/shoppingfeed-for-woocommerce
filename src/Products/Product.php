@@ -375,6 +375,10 @@ class Product {
 	}
 
 	/**
+	 * Get product's variations.
+	 *
+	 * @param bool $for_feed enable custom checks when loading variations to include in the products feed.
+	 *
 	 * @return array
 	 */
 	public function get_variations( $for_feed = false ) {
