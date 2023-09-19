@@ -54,10 +54,6 @@ function init() {
 
 	//Add CLI command for Feed Generation
 	\WP_CLI::add_command( 'shopping-feed feed-generation', '\\ShoppingFeed\ShoppingFeedWC\Cli\FeedGeneration' );
-
-	// Add CLI command for test products generation
-	\WP_CLI::add_command( 'shopping-feed test-products', '\\ShoppingFeed\ShoppingFeedWC\Cli\TestProductsGeneration' );
-	\WP_CLI::add_command( 'shopping-feed test-variations', '\\ShoppingFeed\ShoppingFeedWC\Cli\TestVariationsGeneration' );
 }
 
 \add_action( 'plugins_loaded', __NAMESPACE__ . '\\init', 100 );
