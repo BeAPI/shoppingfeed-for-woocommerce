@@ -388,13 +388,7 @@ class Product {
 		if ( $for_feed && ShoppingFeedHelper::get_sf_out_of_stock_variations_value() ) {
 			$wc_product_variations = $product->get_visible_children();
 		} else {
-			$available_variations = $product->get_available_variations();
-			$wc_product_variations = [];
-
-			// Create an array of only variations IDs
-			foreach ( $available_variations as $variation ) {
-				$wc_product_variations[] = $variation->get_id();
-			}
+			$wc_product_variations = wp_list_pluck( $product->get_available_variations(), 'variation_id' );
 		}
 
 		if ( empty( $wc_product_variations ) ) {
