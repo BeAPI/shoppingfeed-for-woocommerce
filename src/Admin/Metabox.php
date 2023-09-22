@@ -77,12 +77,12 @@ class Metabox {
 	/**
 	 * Render the metabox content.
 	 *
-	 * @param WP_Post|\WC_Order $post_or_order_object
+	 * @param \WP_Post|\WC_Order $post_or_order_object
 	 *
 	 * @author Stéphane Gillot
 	 */
 	public function render( $post_or_order_object ) {
-		$order = ( $post_or_order_object instanceof WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
+		$order = ( $post_or_order_object instanceof \WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
 		if ( false === $order ) {
 			return;
 		}
