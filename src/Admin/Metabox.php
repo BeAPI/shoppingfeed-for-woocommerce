@@ -29,9 +29,8 @@ class Metabox {
 	 * This metabox is only register if the current order has been creayed by ShoppingFeed.
 	 */
 	public function register_sf_metabox() {
-		global $post;
 
-		if ( wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ) {
+		if ( class_exists( 'Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController' ) && wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ) {
 			/**
 			 * If WC is using the new tables, returns the screen id or empty
 			 */
@@ -39,17 +38,25 @@ class Metabox {
 			if ( empty( $screen ) ) {
 				return;
 			}
-		} else {
-			/**
-			 * If not we use the legacy test
-			 */
-			$screen = get_current_screen();
-			if (   is_null( $screen ) || 'shop_order' !== $screen->post_type){
+			if ( ! isset( $_GET['id'], $_GET['page'] ) || ! is_numeric( $_GET['id'] ) || 'wc-orders' !== $_GET['page']
+			) {
 				return;
 			}
+			$post_id = (int) $_GET['id'];
+		} else {
+			/**
+			 * If not, we use the legacy test
+			 */
+			$screen = get_current_screen();
+			if ( is_null( $screen ) || 'shop_order' !== $screen->post_type ) {
+				return;
+			}
+			global $post;
+			$post_id = $post->ID;
 		}
 
-		$order = wc_get_order( $post );
+		$order = wc_get_order( $post_id );
+
 		if ( false === $order ) {
 			return;
 		}
