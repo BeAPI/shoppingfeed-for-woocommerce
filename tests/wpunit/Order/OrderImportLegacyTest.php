@@ -2,19 +2,28 @@
 
 namespace ShoppingFeed\ShoppingFeedWC\Tests\wpunit\Order;
 
-use Automattic\WooCommerce\Admin\API\Orders;
 use ShoppingFeed;
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
-use ShoppingFeed\Sdk\Hal\{HalClient, HalResource};
 use ShoppingFeed\ShoppingFeedWC\Query\Query;
 
-class OrderImportTest extends \Codeception\TestCase\WPTestCase {
+class OrderImportLegacyTest extends OrderImportTestCase {
 	/**
 	 * @var \WpunitTester
 	 */
 	protected $tester;
 
 	private const IN_STOCK_PRODUCT_ID_USE_BY_ORDER_DATA = 12;
+
+	public function setUp() {
+		parent::setUp();
+
+		add_filter( 'pre_option_woocommerce_custom_orders_table_enabled', [ __CLASS__, 'custom_orders_table' ] );
+	}
+
+	public function tearDown() {
+		remove_filter( 'pre_option_woocommerce_custom_orders_table_enabled', [ __CLASS__, 'custom_orders_table' ] );
+
+		parent::tearDown();
+	}
 
 	public function test_import_simple_order() {
 		$product_before = wc_get_product( self::IN_STOCK_PRODUCT_ID_USE_BY_ORDER_DATA );
@@ -91,29 +100,20 @@ class OrderImportTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertEquals( $original_stock, $product_after->get_stock_quantity(), 'Orders fulfilled by channel don\'t change stock when imported.' );
 	}
 
-	private function get_order_resource( string $name ): OrderResource {
-		$raw         = file_get_contents( __DIR__ . '/data/' . $name . '.json' );
-		$json        = json_decode( $raw, true );
-		$client      = $this->createMock( HalClient::class );
-		$halResource = $this
-			->getMockBuilder( HalResource::class )
-			->setConstructorArgs( [ $client, $json, $json['_links'], $json['_embedded'] ] )
-			->setMethods( [ 'getFirstResources' ] )
-			->getMock();
+	public function test_order_exist() {
+		$order_resource = $this->get_order_resource( 'simple-order' );
+		$sf_order       = new ShoppingFeed\ShoppingFeedWC\Orders\Order( $order_resource );
+		$sf_order->add();
 
-		return new OrderResource( $halResource );
+		$this->assertEquals( \WC_Order_Data_Store_CPT::class, \WC_Data_Store::load( 'order' )->get_current_class_name() );
+		$this->assertTrue( ShoppingFeed\ShoppingFeedWC\Orders\Order::exists( $order_resource ) );
+
+		$order_resource_bis = $this->get_order_resource( 'simple-order' );
+		$this->assertEquals( \WC_Order_Data_Store_CPT::class, \WC_Data_Store::load( 'order' )->get_current_class_name() );
+		$this->assertFalse( ShoppingFeed\ShoppingFeedWC\Orders\Order::exists( $order_resource_bis ) );
 	}
 
-	private function get_default_order_status(): string {
-		$status = \ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper::get_sf_default_order_status();
-		if ( str_starts_with( $status, 'wc-' ) ) {
-			$status = substr( $status, 3 );
-		}
-
-		return $status;
-	}
-
-	private function get_error_order_status(): string {
-		return 'failed';
+	public function custom_orders_table( $value ) {
+		return 'no';
 	}
 }
