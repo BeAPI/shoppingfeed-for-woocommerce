@@ -5,10 +5,9 @@ namespace ShoppingFeed\ShoppingFeedWC\Admin;
 // Exit on direct access
 defined( 'ABSPATH' ) || exit;
 
+use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
 use ShoppingFeed\ShoppingFeedWC\Orders\Order;
 use ShoppingFeed\ShoppingFeedWC\Query\Query;
-use WP_Post;
-use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
 
 /**
  * Class Metabox
@@ -104,7 +103,7 @@ class Metabox {
 				do_action( 'sf_show_metas', $order );
 				?>
 			</ul>
-		<?php
+			<?php
 		endif;
 	}
 }
