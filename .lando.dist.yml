@@ -1,7 +1,7 @@
 name: shoppingfeed-for-woocommerce
 recipe: wordpress
 config:
-  php: '7.3'
+  php: '7.4'
   webroot: ./wordpress/
 env:
   - .env.testing
@@ -37,7 +37,7 @@ tooling:
       - echo "➡️ Install WP"
       - wp core install --url="https://shoppingfeed-for-woocommerce.lndo.site" --title="Test" --admin_user=admin --admin_password=password --admin_email=wordpress@example.com --skip-email
       - echo "➡️ Install Woocommerce"
-      - wp plugin install --activate woocommerce
+      - wp plugin install woocommerce --version=8.2.0 --activate --force
       - echo "➡️ Install Storefront"
       - wp theme install storefront --activate
       - echo "➡️ Install WordPress importer"
