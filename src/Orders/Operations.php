@@ -205,7 +205,7 @@ class Operations {
 		if ( false === $ok ) {
 			//if we cant acknowledge order => add action after 15 min
 			as_schedule_single_action(
-				MINUTE_IN_SECONDS * 15,
+				time() + ( 15 * MINUTE_IN_SECONDS ),
 				'sf_acknowledge_remain_order',
 				array(
 					$order_id,
