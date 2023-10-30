@@ -1,4 +1,5 @@
 <?php
+
 namespace ShoppingFeed\ShoppingFeedWC\Products;
 
 // Exit on direct access
@@ -45,11 +46,16 @@ class Products {
 
 	public function get_list_args() {
 		$default_args = array(
-			'limit'   => - 1,
-			'orderby' => 'date',
-			'order'   => 'DESC',
-			'status'  => 'publish',
+			'limit'        => - 1,
+			'orderby'      => 'date',
+			'order'        => 'DESC',
+			'status'       => 'publish',
+			'stock_status' => '',
 		);
+
+		if ( false === ShoppingFeedHelper::show_out_of_stock_products_in_feed() ) {
+			$default_args['stock_status'] = 'instock';
+		}
 
 		/**
 		 * Export only the categories selected in BO
