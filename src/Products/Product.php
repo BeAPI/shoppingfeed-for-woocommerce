@@ -388,8 +388,8 @@ class Product {
 
 		$product = new \WC_Product_Variable( $this->id );
 
-		// Check if we want all variations, even if their stock is 0
-		if ( $for_feed && ShoppingFeedHelper::get_sf_out_of_stock_variations_value() ) {
+		// Choose whether to return in-stock or all variations.
+		if ( $for_feed && ShoppingFeedHelper::show_out_of_stock_products_in_feed() ) {
 			$wc_product_variations = $product->get_visible_children();
 		} else {
 			$wc_product_variations = wp_list_pluck( $product->get_available_variations(), 'variation_id' );
