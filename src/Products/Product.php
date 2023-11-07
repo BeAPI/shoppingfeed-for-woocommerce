@@ -386,35 +386,35 @@ class Product {
 			return array();
 		}
 
-		$product = new \WC_Product_Variable( $this->id );
+		$product                      = new \WC_Product_Variable( $this->id );
+		$show_out_of_stock_variations = $for_feed && ShoppingFeedHelper::show_out_of_stock_products_in_feed();
+		$variations                   = [];
+		foreach ( $product->get_children() as $variation_id ) {
+			$variation = wc_get_product( $variation_id );
 
-		// Choose whether to return in-stock or all variations.
-		if ( $for_feed && ShoppingFeedHelper::show_out_of_stock_products_in_feed() ) {
-			$wc_product_variations = $product->get_visible_children();
-		} else {
-			$wc_product_variations = wp_list_pluck( $product->get_available_variations(), 'variation_id' );
-		}
-
-		if ( empty( $wc_product_variations ) ) {
-			return array();
-		}
-
-		$variations = array();
-		foreach ( $wc_product_variations as $wc_product_variation ) {
-			$wc_product_variation  = new \WC_Product_Variation( $wc_product_variation );
-			$variation             = array();
-			$variation['id']       = $wc_product_variation->get_id();
-			$variation['sku']      = ( 'id' === $this->product_identifier ) ? $wc_product_variation->get_id() : $wc_product_variation->get_sku();
-			$variation['ean']      = $this->get_ean( $wc_product_variation );
-			$variation['quantity'] = ! is_null( $wc_product_variation->get_stock_quantity() ) ? $wc_product_variation->get_stock_quantity() : ShoppingFeedHelper::get_default_product_quantity();
-			$variation['price']    = ! is_null( $wc_product_variation->get_regular_price() ) ? $wc_product_variation->get_regular_price() : $wc_product_variation->get_price();
-			$variation['discount'] = $wc_product_variation->get_sale_price();
-			if ( ! empty( get_the_post_thumbnail_url( $wc_product_variation->get_id(), 'full' ) ) ) {
-				$variation['image_main'] = get_the_post_thumbnail_url( $wc_product_variation->get_id(), 'full' );
+			// Hide out of stock variations if '$show_out_of_stock_variations' is true.
+			if ( ! $variation || ! $variation->exists() || ( ! $show_out_of_stock_variations && ! $variation->is_in_stock() ) ) {
+				continue;
 			}
 
-			$variation['attributes'] = $this->get_variation_attributes( $wc_product_variation );
-			$variations []           = $variation;
+			// Filter 'woocommerce_hide_invisible_variations' to optionally hide invisible variations (disabled variations and variations with empty price).
+			if ( apply_filters( 'woocommerce_hide_invisible_variations', true, $variation->get_id(), $variation ) && ! $variation->variation_is_visible() ) {
+				continue;
+			}
+
+			$variation_data             = [];
+			$variation_data['id']       = $variation->get_id();
+			$variation_data['sku']      = ( 'id' === $this->product_identifier ) ? $variation->get_id() : $variation->get_sku();
+			$variation_data['ean']      = $this->get_ean( $variation );
+			$variation_data['quantity'] = ! is_null( $variation->get_stock_quantity() ) ? $variation->get_stock_quantity() : ShoppingFeedHelper::get_default_product_quantity();
+			$variation_data['price']    = ! is_null( $variation->get_regular_price() ) ? $variation->get_regular_price() : $variation->get_price();
+			$variation_data['discount'] = $variation->get_sale_price();
+			if ( ! empty( get_the_post_thumbnail_url( $variation->get_id(), 'full' ) ) ) {
+				$variation_data['image_main'] = get_the_post_thumbnail_url( $variation->get_id(), 'full' );
+			}
+
+			$variation_data['attributes'] = $this->get_variation_attributes( $variation );
+			$variations[]                 = $variation_data;
 		}
 
 		return $variations;
