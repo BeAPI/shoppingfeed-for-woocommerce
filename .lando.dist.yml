@@ -62,30 +62,30 @@ tooling:
   tests:
     service: appserver
     cmd:
-      - /bin/bash bin/setup.sh
+      #- /bin/bash bin/setup.sh
       - composer tests
     description: Run all the tests
   test-unit:
     service: appserver
     cmd:
-      - /bin/bash bin/setup.sh
+      #- /bin/bash bin/setup.sh
       - composer test-unit
     description: Run the PHPunit tests
   test-wpunit:
     service: appserver
     cmd:
-      - /bin/bash bin/setup.sh
+      #- /bin/bash bin/setup.sh
       - composer test-wpunit
     description: Run the WPUnit tests
   test-acceptance:
     service: appserver
     cmd:
-      - /bin/bash bin/setup.sh
+      #- /bin/bash bin/setup.sh
       - composer test-acceptance
     description: Run the acceptance tests
   test-functional:
     service: appserver
     cmd:
-      - /bin/bash bin/setup.sh
+      #- /bin/bash bin/setup.sh
       - composer test-functional
     description: Run the functional tests
