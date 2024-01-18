@@ -5,7 +5,6 @@ namespace ShoppingFeed\ShoppingFeedWC\Admin;
 // Exit on direct access
 defined( 'ABSPATH' ) || exit;
 
-use Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController;
 use ShoppingFeed\ShoppingFeedWC\Orders\Order;
 use ShoppingFeed\ShoppingFeedWC\Query\Query;
 
@@ -23,44 +22,26 @@ class Metabox {
 	}
 
 	/**
-	 * Register a custom metabox to display metadata for the current order.
+	 * Register a custom metabox to display ShoppingFeed metadata for the current order.
 	 *
-	 * This metabox is only register if the current order has been creayed by ShoppingFeed.
+	 * This metabox is only register if the current order has been created by ShoppingFeed.
 	 */
 	public function register_sf_metabox() {
+		global $theorder, $post;
 
-		if ( class_exists( 'Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController' ) && wc_get_container()->get( CustomOrdersTableController::class )->custom_orders_table_usage_is_enabled() ) {
-			/**
-			 * If WC is using the new tables, returns the screen id or empty
-			 */
-			$screen = wc_get_page_screen_id( 'shop-order' );
-			if ( empty( $screen ) ) {
-				return;
-			}
-			if ( ! isset( $_GET['id'], $_GET['page'] ) || ! is_numeric( $_GET['id'] ) || 'wc-orders' !== $_GET['page']
-			) {
-				return;
-			}
-			$post_id = (int) $_GET['id'];
-		} else {
-			/**
-			 * If not, we use the legacy test
-			 */
-			$screen = get_current_screen();
-			if ( is_null( $screen ) || 'shop_order' !== $screen->post_type ) {
-				return;
-			}
-			global $post;
-			$post_id = $post->ID;
-		}
-
-		$order = wc_get_order( $post_id );
-
-		if ( false === $order ) {
+		$screen = get_current_screen();
+		if ( null === $screen || 'shop_order' !== $screen->post_type ) {
 			return;
 		}
 
-		if ( ! Order::is_sf_order( $order ) ) {
+		$order = false;
+		if ( $theorder instanceof \WC_Order ) {
+			$order = $theorder;
+		} elseif ( $post ) {
+			$order = wc_get_order( $post->ID );
+		}
+
+		if ( ! $order || ! Order::is_sf_order( $order ) ) {
 			return;
 		}
 
