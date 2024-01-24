@@ -17,10 +17,6 @@ services:
       user: wordpress-test
       password: wordpress-test
       database: wordpress-test
-events:
-  # Runs composer install and a custom php script before your app starts
-  pre-start:
-    - appserver: cd $LANDO_MOUNT && composer install
 tooling:
   setup:
     service: appserver

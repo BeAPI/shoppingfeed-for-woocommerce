@@ -20,22 +20,19 @@
   ],
   "repositories": [
     {
-     "type": "vcs",
+      "type": "vcs",
       "url": "https://github.com/WordPress/wordpress-develop"
     }
   ],
   "require": {
     "php": "^7.1|^8.0",
     "composer/installers": "~1.0|~2.0",
-    "guzzlehttp/guzzle": "^6.3",
-    "shoppingfeed/php-sdk": "^0.3",
-    "shoppingfeed/php-feed-generator": "^1.2.1",
-    "symfony/polyfill-intl-idn": "1.20.0",
-    "symfony/polyfill-intl-normalizer": "1.20.0"
+    "shoppingfeed/php-feed-generator": "^1.2.1"
   },
   "autoload": {
     "psr-4": {
-      "ShoppingFeed\\ShoppingFeedWC\\": "src"
+      "ShoppingFeed\\ShoppingFeedWC\\": "src",
+      "ShoppingFeed\\ShoppingFeedWC\\Dependencies\\": "vendor_prefixed"
     }
   },
   "autoload-dev": {
@@ -45,7 +42,7 @@
   },
   "require-dev": {
     "phpcompatibility/php-compatibility": "^9.3",
-    "phpro/grumphp-shim": "^0.22",
+    "phpro/grumphp-shim": "^1.12.0",
     "roave/security-advisories": "dev-latest",
     "squizlabs/php_codesniffer": "^3.5",
     "vimeo/psalm": "^3.11",
@@ -63,11 +60,32 @@
     "codeception/module-cli": "^1.0",
     "codeception/util-universalframework": "^1.0",
     "roots/wordpress": "^6.2",
-    "wp-cli/wp-cli-bundle": "^2.7"
+    "wp-cli/wp-cli-bundle": "^2.7",
+    "coenjacobs/mozart": "^0.7.1",
+    "shoppingfeed/php-sdk": "^0.7.0"
   },
   "extra": {
     "installer-paths": {
-      "wordpress": ["roots/wordpress"]
+      "wordpress": [
+        "roots/wordpress"
+      ]
+    },
+    "mozart": {
+      "dep_namespace": "ShoppingFeed\\ShoppingFeedWC\\Dependencies\\",
+      "dep_directory": "/vendor_prefixed/",
+      "classmap_directory": "/classes_prefixed/",
+      "classmap_prefix": "SF_Dep_",
+      "packages": [
+        "guzzlehttp/guzzle",
+        "shoppingfeed/php-sdk"
+      ],
+      "override_autoload": {
+        "shoppingfeed/php-sdk": {
+          "psr-4": {
+            "ShoppingFeed\\Sdk\\": "src/"
+          }
+        }
+      }
     }
   },
   "scripts": {
@@ -78,9 +96,24 @@
     "test-unit": "./vendor/bin/codecept run unit --html",
     "test-wpunit": "./vendor/bin/codecept run wpunit --html",
     "test-functional": "./vendor/bin/codecept run functional --html",
-    "test-acceptance": "./vendor/bin/codecept run acceptance --html"
+    "test-acceptance": "./vendor/bin/codecept run acceptance --html",
+    "mozart-compose": [
+      "vendor/bin/mozart compose",
+      "find ./vendor_prefixed -type f -exec sed -i '' 's/use GuzzleHttp;/use ShoppingFeed\\\\ShoppingFeedWC\\\\Dependencies\\\\GuzzleHttp;/g' {} \\;",
+      "find ./vendor_prefixed -type f -exec sed -i '' 's/use Psr\\\\Http\\\\/use ShoppingFeed\\\\ShoppingFeedWC\\\\Dependencies\\\\Psr\\\\Http\\\\/g' {} \\;",
+      "@composer dump-autoload -o"
+    ],
+    "post-install-cmd": [
+      "@composer mozart-compose"
+    ],
+    "post-update-cmd": [
+      "@composer mozart-compose"
+    ]
   },
   "config": {
+    "platform": {
+      "php": "7.4.99"
+    },
     "allow-plugins": {
       "composer/installers": true,
       "dealerdirect/phpcodesniffer-composer-installer": true,

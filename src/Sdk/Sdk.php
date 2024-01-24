@@ -5,8 +5,9 @@ namespace ShoppingFeed\ShoppingFeedWC\Sdk;
 // Exit on direct access
 defined( 'ABSPATH' ) || exit;
 
-use ShoppingFeed\Sdk\Client;
-use ShoppingFeed\Sdk\Credential;
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Store\StoreResource;
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Client;
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Credential;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
 /**
@@ -29,7 +30,7 @@ class Sdk {
 	 *
 	 * @param array $sf_account
 	 *
-	 * @return false|\ShoppingFeed\Sdk\Api\Store\StoreResource
+	 * @return false|StoreResource
 	 * @psalm-suppress all
 	 */
 	public static function get_sf_shop( $sf_account ) {

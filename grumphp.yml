@@ -7,6 +7,8 @@ grumphp:
       whitelist_patterns: []
       triggered_by: ['php']
       regexp_type: G
+      ignore_patterns:
+        - '/^vendor_prefixed/'
     composer:
       no_check_all: true
       no_check_publish: true
@@ -15,12 +17,14 @@ grumphp:
       exclude: ['vendor']
       jobs: ~
       triggered_by: ['php']
+      ignore_patterns:
+        - '/^vendor_prefixed/'
     phpcs:
       standard: ['phpcs.xml']
       triggered_by: [php]
     psalm:
       config: psalm.xml
       triggered_by: ['php']
-      show_info: true
+      show_info: false
   testsuites: []
   extensions: []
