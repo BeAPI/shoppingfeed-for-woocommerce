@@ -4,24 +4,25 @@ grumphp:
     git_blacklist:
       keywords:
         - "var_dump("
-      whitelist_patterns: []
+      whitelist_patterns:
+        - /^shoppingfeed.php/
+        - /^src\/(.*)/
+        - /^tests\/(.*)/
       triggered_by: ['php']
       regexp_type: G
-      ignore_patterns:
-        - '/^vendor_prefixed/'
     composer:
       no_check_all: true
       no_check_publish: true
       no_local_repository: true
     phplint:
-      exclude: ['vendor']
+      exclude:
+        - "vendor"
+        - "vendor_prefixed"
       jobs: ~
       triggered_by: ['php']
-      ignore_patterns:
-        - '/^vendor_prefixed/'
     phpcs:
       standard: ['phpcs.xml']
-      triggered_by: [php]
+      triggered_by: ['php']
     psalm:
       config: psalm.xml
       triggered_by: ['php']
