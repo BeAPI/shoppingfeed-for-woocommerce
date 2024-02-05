@@ -11,6 +11,7 @@
         <directory name="src" />
         <ignoreFiles>
             <directory name="vendor" />
+            <directory name="vendor_prefixed" />
             <directory name="languages" />
             <directory name="assets" />
             <directory name="tests/_data" />
