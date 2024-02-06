@@ -4,7 +4,10 @@ grumphp:
     git_blacklist:
       keywords:
         - "var_dump("
-      whitelist_patterns: []
+      whitelist_patterns:
+        - /^shoppingfeed.php/
+        - /^src\/(.*)/
+        - /^tests\/(.*)/
       triggered_by: ['php']
       regexp_type: G
     composer:
@@ -12,15 +15,17 @@ grumphp:
       no_check_publish: true
       no_local_repository: true
     phplint:
-      exclude: ['vendor']
+      exclude:
+        - "vendor"
+        - "vendor_prefixed"
       jobs: ~
       triggered_by: ['php']
     phpcs:
       standard: ['phpcs.xml']
-      triggered_by: [php]
+      triggered_by: ['php']
     psalm:
       config: psalm.xml
       triggered_by: ['php']
-      show_info: true
+      show_info: false
   testsuites: []
   extensions: []

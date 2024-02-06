@@ -2,11 +2,11 @@
 
 namespace ShoppingFeed\ShoppingFeedWC\Tests\wpunit\Order;
 
-use Automattic\WooCommerce\Admin\API\Orders;
 use ShoppingFeed;
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
-use ShoppingFeed\Sdk\Hal\{HalClient, HalResource};
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Order\OrderResource;
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Hal\{HalClient, HalResource};
 use ShoppingFeed\ShoppingFeedWC\Query\Query;
+use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
 class OrderImportTest extends \Codeception\TestCase\WPTestCase {
 	/**
@@ -105,7 +105,7 @@ class OrderImportTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 	private function get_default_order_status(): string {
-		$status = \ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper::get_sf_default_order_status();
+		$status = ShoppingFeedHelper::get_sf_default_order_status();
 		if ( str_starts_with( $status, 'wc-' ) ) {
 			$status = substr( $status, 3 );
 		}

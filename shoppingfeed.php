@@ -9,9 +9,9 @@
  * Domain Path:          /languages
  * Version:              6.3.0
  * Requires at least:    5.7
- * Requires PHP:         7.1
+ * Requires PHP:         7.3
  * WC requires at least: 5.1.0
- * WC tested up to:      7.7
+ * WC tested up to:      8.5
  * License:              GPLv3 or later
  * License URI:          https://www.gnu.org/licenses/gpl-3.0.html
  */
