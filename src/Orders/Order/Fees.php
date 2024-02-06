@@ -2,9 +2,9 @@
 
 namespace ShoppingFeed\ShoppingFeedWC\Orders\Order;
 
-// Exit on direct access
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Order\OrderResource;
 
+// Exit on direct access
 defined( 'ABSPATH' ) || exit;
 
 /**

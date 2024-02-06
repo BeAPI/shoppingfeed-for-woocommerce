@@ -6,13 +6,11 @@ namespace ShoppingFeed\ShoppingFeedWC\Admin;
 defined( 'ABSPATH' ) || exit;
 
 use Exception;
-use ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate;
-use ShoppingFeed\Sdk\Api\Catalog\PricingUpdate;
-use ShoppingFeed\Sdk\Api\Store\StoreResource;
-use ShoppingFeed\Sdk\Client;
-use ShoppingFeed\Sdk\Credential;
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Catalog\{InventoryUpdate, PricingUpdate};
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Store\StoreResource;
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Client;
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Credential;
 use ShoppingFeed\ShoppingFeedWC\Feed\AsyncGenerator;
-use ShoppingFeed\ShoppingFeedWC\Feed\Generator;
 use ShoppingFeed\ShoppingFeedWC\Orders\Operations;
 use ShoppingFeed\ShoppingFeedWC\Orders\Order;
 use ShoppingFeed\ShoppingFeedWC\Orders\Orders;
@@ -253,8 +251,8 @@ class WoocommerceActions {
 			$pricing_api   = $shop->getPricingApi();
 			$inventory_api = $shop->getInventoryApi();
 
-			$this->pricing_update   = new \ShoppingFeed\Sdk\Api\Catalog\PricingUpdate();
-			$this->inventory_update = new \ShoppingFeed\Sdk\Api\Catalog\InventoryUpdate();
+			$this->pricing_update   = new PricingUpdate();
+			$this->inventory_update = new InventoryUpdate();
 
 			$product = new Product( $product_id );
 			if ( $product->has_variations() ) {

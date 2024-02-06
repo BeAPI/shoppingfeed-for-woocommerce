@@ -45,6 +45,17 @@ jobs:
           wget https://files.devwithlando.io/lando-stable.deb
           sudo dpkg -i lando-stable.deb
 
+      - name: "Install composer"
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: mbstring, intl #optional, setup extensions
+          tools: composer:v2.2
+
+      - name: "Install dev dependencies"
+        run: |
+          composer install --no-scripts
+
       - name: "Setup Env"
         run: |
           lando start

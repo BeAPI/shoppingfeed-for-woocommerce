@@ -51,9 +51,9 @@ jobs:
         name: "Build project PHP"
         uses: shivammathur/setup-php@v2
         with:
-          php-version: 7.1
+          php-version: 7.3
           tools: composer:v2.2
-      - run: composer install --prefer-dist --no-dev -o
+      - run: composer install --prefer-dist --no-dev -o --no-scripts
 
       - id: commit-and-push
         name: "Commit and push new TAG"

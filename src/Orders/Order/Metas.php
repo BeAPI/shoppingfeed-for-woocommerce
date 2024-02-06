@@ -2,7 +2,7 @@
 
 namespace ShoppingFeed\ShoppingFeedWC\Orders\Order;
 
-use ShoppingFeed\Sdk\Api\Order\OrderResource;
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingFeed\ShoppingFeedWC\Query\Query;
 
 /**
