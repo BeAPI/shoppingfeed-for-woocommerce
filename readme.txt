@@ -1,8 +1,8 @@
 ## ShoppingFeed
 Contributors: ShoppingFeed, BeAPI
 Tags: shoppingfeed, marketplace, woocommerce, woocommerce shoppingfeed, create woocommerce products shoppingfeed, products feed, generate shoppingfeed, amazon, Jet, Walmart, many marketplace, import orders
-Stable tag: 6.3.0
-Version: 6.3.0
+Stable tag: 6.4.0
+Version: 6.4.0
 Requires PHP: 7.3
 Requires at least: 5.7
 Tested up to: 6.4
@@ -13,6 +13,8 @@ WC tested up to: 8.5
 Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
 
 == Changelog ==
+* 6.4.0
+  * Misc : Prefix Guzzle library and related dependencies to avoid conflicts.
 * 6.3.0
   * Orders : Don't import orders fulfilled by the marketplaces by default, see details in the description.
   * WPCLI command : don't rerun the generation process when an error occurs.
