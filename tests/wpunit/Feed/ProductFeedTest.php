@@ -3,6 +3,7 @@
 namespace ShoppingFeed\ShoppingFeedWC\Tests\wpunit\Feed;
 
 use ShoppingFeed\ShoppingFeedWC\Products\Product;
+use ShoppingFeed\ShoppingFeedWC\Products\Products;
 
 class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	/**
@@ -119,5 +120,43 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 		);
 
 		$this->assertEquals( 'custom-ean', $sf_product->get_ean() );
+	}
+
+	/**
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Products::get_list_args
+	 */
+	public function test_get_products_for_feed_query_args() {
+		$products_query_args = Products::get_instance()->get_list_args();
+		$this->assertEqualSets(
+			array(
+				'limit'        => - 1,
+				'orderby'      => 'date',
+				'order'        => 'DESC',
+				'status'       => 'publish',
+				'stock_status' => 'instock',
+			),
+			$products_query_args
+		);
+
+		add_filter(
+			'pre_option_sf_feed_options',
+			function ( $value ) {
+				return [
+					'out_of_stock_products_in_feed' => 'on',
+				];
+			}
+		);
+
+		$products_query_args = Products::get_instance()->get_list_args();
+		$this->assertEqualSets(
+			array(
+				'limit'        => - 1,
+				'orderby'      => 'date',
+				'order'        => 'DESC',
+				'status'       => 'publish',
+				'stock_status' => [ 'instock', 'outofstock' ],
+			),
+			$products_query_args
+		);
 	}
 }
