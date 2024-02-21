@@ -139,7 +139,7 @@ class Generator {
 				}
 
 				if ( ! empty( $sf_product->get_weight() ) ) {
-					$product->setWeight( $sf_product->get_weight() );
+					$product->setWeight( (float) $sf_product->get_weight() );
 				}
 
 				if ( ! empty( $sf_product->get_category_name() ) ) {
