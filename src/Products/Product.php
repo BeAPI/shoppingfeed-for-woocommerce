@@ -52,8 +52,6 @@ class Product {
 		$this->brand              = $this->set_brand();
 		$this->category           = $this->set_category();
 		$this->weight             = $this->product->get_weight();
-
-		return $this;
 	}
 
 	/**
@@ -134,21 +132,22 @@ class Product {
 	 */
 	public function get_quantity() {
 		if ( $this->product instanceof \WC_Product_Variable ) {
-			$childrens = $this->product->get_children();
-			if ( empty( $childrens ) ) {
-				return 0;
+			$quantity = 0;
+			if ( $this->product->has_child() ) {
+				foreach ( $this->product->get_children() as $child ) {
+					$wc_product_variation = wc_get_product( $child );
+					if ( ! $wc_product_variation ) {
+						continue;
+					}
+
+					$quantity += $this->_get_quantity( $wc_product_variation );
+				}
 			}
 
-			$total_stock = 0;
-			foreach ( $childrens as $children ) {
-				$wc_product_variation = wc_get_product( $children );
-				$total_stock          += intval( ! is_null( $wc_product_variation->get_stock_quantity() ) ? $wc_product_variation->get_stock_quantity() : ShoppingFeedHelper::get_default_product_quantity() );
-			}
-
-			return $total_stock;
-		} else {
-			return ! is_null( $this->product->get_stock_quantity() ) ? $this->product->get_stock_quantity() : ShoppingFeedHelper::get_default_product_quantity();
+			return $quantity;
 		}
+
+		return $this->_get_quantity( $this->product );
 	}
 
 	/**
@@ -406,7 +405,7 @@ class Product {
 			$variation_data['id']       = $variation->get_id();
 			$variation_data['sku']      = ( 'id' === $this->product_identifier ) ? $variation->get_id() : $variation->get_sku();
 			$variation_data['ean']      = $this->get_ean( $variation );
-			$variation_data['quantity'] = ! is_null( $variation->get_stock_quantity() ) ? $variation->get_stock_quantity() : ShoppingFeedHelper::get_default_product_quantity();
+			$variation_data['quantity'] = $this->_get_quantity( $variation );
 			$variation_data['price']    = ! is_null( $variation->get_regular_price() ) ? $variation->get_regular_price() : $variation->get_price();
 			$variation_data['discount'] = $variation->get_sale_price();
 			if ( ! empty( get_the_post_thumbnail_url( $variation->get_id(), 'full' ) ) ) {
@@ -463,5 +462,21 @@ class Product {
 	 */
 	public function get_extra_fields() {
 		return apply_filters( 'shopping_feed_extra_fields', [], $this->product );
+	}
+
+	/**
+	 * Get product's stock quantity.
+	 *
+	 * @param \WC_Product $product
+	 *
+	 * @return int
+	 */
+	private function _get_quantity( $product ) {
+		$quantity = 0;
+		if ( $product->is_in_stock() ) {
+			$quantity = $product->managing_stock() ? $product->get_stock_quantity() : ShoppingFeedHelper::get_default_product_quantity();
+		}
+
+		return $quantity;
 	}
 }
