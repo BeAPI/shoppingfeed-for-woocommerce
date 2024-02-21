@@ -6,6 +6,8 @@ echo "➡️ Reset config"
 if [ -f /app/wordpress/wp-config.php ]; then echo "wp-config exists deleting it" && rm -f /app/wordpress/wp-config.php; else echo "No wp-config.php, no rm"; fi
 echo "➡️ Create config"
 wp config create --dbname=wordpress-test --dbuser=wordpress-test --dbpass=wordpress-test --dbhost=database-test --path=/app/wordpress
+echo "➡️ Save Woocommerce logs in database during tests"
+wp config set WC_LOG_HANDLER 'WC_Log_Handler_DB'
 echo "➡️ Install WP"
 wp core install --url="https://shoppingfeed-for-woocommerce.lndo.site" --title="Test" --admin_user=admin --admin_password=password --admin_email=wordpress@example.com --skip-email
 echo "➡️ Create WPCONTENT"
