@@ -81,8 +81,8 @@ class PhWoocommerceShipmentTrackingProPlugin {
 	 *
 	 * @return array
 	 */
-	private function get_tracking_data( $wc_order ) {
-		$tracking_data = get_post_meta( $wc_order->get_id(), 'wf_wc_shipment_result', true );
+	private function get_tracking_data( \WC_Order $wc_order ) {
+		$tracking_data = $wc_order->get_meta( 'wf_wc_shipment_result', true );
 		if ( ! is_array( $tracking_data ) || ! isset( $tracking_data['tracking_info'] ) ) {
 			return array();
 		}
