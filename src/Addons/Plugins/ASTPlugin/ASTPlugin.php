@@ -30,7 +30,18 @@ class ASTPlugin {
 	public function get_tracking_number( $tracking_number, $wc_order ) {
 		$tracking_info = $this->get_ast_tracking_data( $wc_order );
 
-		return empty( $tracking_info['tracking_number'] ) ? $tracking_number : $tracking_info['tracking_number'];
+		// Return default tracking number if AST data is empty
+		if ( empty( $tracking_info ) ) {
+			return $tracking_number;
+		}
+
+		$custom_tracking_numbers = wp_list_pluck( $tracking_info, 'tracking_number' );
+
+		if ( empty( $custom_tracking_numbers ) ) {
+			return $tracking_number;
+		}
+
+		return implode( ',', $custom_tracking_numbers );
 	}
 
 	/**
@@ -53,8 +64,6 @@ class ASTPlugin {
 			$tracking_info = $ast->get_tracking_items( $wc_order->get_id(), true );
 		}
 
-		$tracking_info = end( $tracking_info );
-
 		if ( ! is_array( $tracking_info ) ) {
 			return array();
 		}
@@ -71,6 +80,16 @@ class ASTPlugin {
 	public function get_tracking_link( $tracking_link, $wc_order ) {
 		$tracking_info = $this->get_ast_tracking_data( $wc_order );
 
-		return empty( $tracking_info['formatted_tracking_link'] ) ? $tracking_link : $tracking_info['formatted_tracking_link'];
+		if ( empty( $tracking_info ) ) {
+			return $tracking_link;
+		}
+
+		$custom_tracking_links = wp_list_pluck( $tracking_info, 'formatted_tracking_link' );
+
+		if ( empty( $custom_tracking_links ) ) {
+			return $tracking_link;
+		}
+
+		return implode( ',', $custom_tracking_links );
 	}
 }
