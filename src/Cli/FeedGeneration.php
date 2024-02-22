@@ -25,5 +25,6 @@ class FeedGeneration {
 				)
 			);
 		}
+		\WP_CLI::success( __( 'Product feed generation complete.', 'shopping-feed' ) );
 	}
 }

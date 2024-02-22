@@ -3,6 +3,8 @@
 namespace ShoppingFeed\ShoppingFeedWC\Tests\wpunit\Feed;
 
 use ShoppingFeed\ShoppingFeedWC\Products\Product;
+use ShoppingFeed\ShoppingFeedWC\Products\Products;
+use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
 class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	/**
@@ -119,5 +121,92 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 		);
 
 		$this->assertEquals( 'custom-ean', $sf_product->get_ean() );
+	}
+
+	/**
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Products::get_list_args
+	 */
+	public function test_get_products_for_feed_query_args() {
+		$products_query_args = Products::get_instance()->get_list_args();
+		$this->assertEqualSets(
+			array(
+				'limit'        => - 1,
+				'orderby'      => 'date',
+				'order'        => 'DESC',
+				'status'       => 'publish',
+				'stock_status' => 'instock',
+			),
+			$products_query_args
+		);
+
+		add_filter(
+			'pre_option_sf_feed_options',
+			function ( $value ) {
+				return [
+					'out_of_stock_products_in_feed' => 'on',
+				];
+			}
+		);
+
+		$products_query_args = Products::get_instance()->get_list_args();
+		$this->assertEqualSets(
+			array(
+				'limit'        => - 1,
+				'orderby'      => 'date',
+				'order'        => 'DESC',
+				'status'       => 'publish',
+				'stock_status' => [ 'instock', 'outofstock' ],
+			),
+			$products_query_args
+		);
+	}
+
+	/**
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_quantity
+	 */
+	public function test_get_product_quantity_instock() {
+		$wc_product = wc_get_product( 13 );
+		$wc_product->set_stock_status('instock');
+		$wc_product->save();
+		$p = new Product( wc_get_product( 13 ) );
+		$this->assertEquals( ShoppingFeedHelper::get_default_product_quantity(), $p->get_quantity() );
+	}
+
+	/**
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_quantity
+	 */
+	public function test_get_product_quantity_outofstock() {
+		$wc_product = wc_get_product( 13 );
+		$wc_product->set_stock_status('outofstock');
+		$wc_product->save();
+
+		$p = new Product( wc_get_product( 13 ) );
+		$this->assertEquals( 0, $p->get_quantity() );
+	}
+
+	/**
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_quantity
+	 */
+	public function test_get_product_quantity_instock_manage_stock() {
+		$wc_product = wc_get_product( 13 );
+		$wc_product->set_manage_stock( true );
+		$wc_product->set_stock_quantity( 17 );
+		$wc_product->save();
+
+		$p = new Product( wc_get_product( 13 ) );
+		$this->assertEquals( 17, $p->get_quantity() );
+	}
+
+	/**
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_quantity
+	 */
+	public function test_get_product_quantity_outofstock_manage_stock() {
+		$wc_product = wc_get_product( 13 );
+		$wc_product->set_manage_stock( true );
+		$wc_product->set_stock_quantity( 0 );
+		$wc_product->save();
+
+		$p = new Product( wc_get_product( 13 ) );
+		$this->assertEquals( 0, $p->get_quantity() );
 	}
 }
