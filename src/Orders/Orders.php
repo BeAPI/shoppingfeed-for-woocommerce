@@ -70,9 +70,12 @@ class Orders {
 			return false;
 		}
 
-		$order_api                 = $shop->getOrderApi();
-		$filters                   = array();
-		$filters['acknowledgment'] = 'unacknowledged';
+		$order_api = $shop->getOrderApi();
+		$filters   = array(
+			'acknowledgment' => 'unacknowledged',
+			'status'         => ShoppingFeedHelper::sf_order_statuses_to_import(),
+			'since'          => gmdate( 'c', strtotime( '14 days ago' ) ),
+		);
 
 		$filters['status'] = ShoppingFeedHelper::sf_order_statuses_to_import();
 
