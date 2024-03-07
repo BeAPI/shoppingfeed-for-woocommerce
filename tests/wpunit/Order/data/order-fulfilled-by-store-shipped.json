@@ -8,7 +8,7 @@
   "acknowledgedAt": null,
   "createdAt": "2023-05-09T14:46:22+02:00",
   "updatedAt": "2023-05-09T14:46:22+02:00",
-  "status": "waiting_shipment",
+  "status": "shipped",
   "anonymized": false,
   "payment": {
     "shippingAmount": 20,

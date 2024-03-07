@@ -5,6 +5,7 @@ namespace ShoppingFeed\ShoppingFeedWC\Orders;
 // Exit on direct access
 defined( 'ABSPATH' ) || exit;
 
+use Automattic\WooCommerce\Utilities\OrderUtil;
 use ShoppingFeed\ShoppingFeedWC\Addons\Marketplace;
 use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Order\OrderResource;
 use ShoppingFeed\ShoppingFeedWC\Orders\Order\Address;
@@ -85,8 +86,8 @@ class Order {
 		$wc_order = wc_create_order();
 
 		//Addresses
-		$wc_order->set_address( $this->shipping_address, 'shipping' );
-		$wc_order->set_address( $this->billing_address );
+		$wc_order->set_shipping_address( $this->shipping_address );
+		$wc_order->set_billing_address( $this->billing_address );
 
 		//Note
 		$wc_order->set_customer_note( $this->note->get_note() );
@@ -236,7 +237,19 @@ class Order {
 	 * @return bool
 	 */
 	public static function exists( $sf_order ) {
-		return ! empty( wc_get_orders( array( Query::WC_META_SF_REFERENCE => $sf_order->getReference() ) ) );
+		$args = [ Query::WC_META_SF_REFERENCE => $sf_order->getReference() ];
+		if ( class_exists( OrderUtil::class ) && OrderUtil::custom_orders_table_usage_is_enabled() ) {
+			$args = [
+				'meta_query' => [
+					[
+						'key'   => Query::WC_META_SF_REFERENCE,
+						'value' => $sf_order->getReference(),
+					],
+				],
+			];
+		}
+
+		return ! empty( wc_get_orders( $args ) );
 	}
 
 

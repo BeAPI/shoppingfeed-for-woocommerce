@@ -1,8 +1,8 @@
 {
-  "id": 18757782342,
+  "id": %order_id%,
   "storeId": 44855,
   "channelId": 111,
-  "reference": "TEST-645a409ea1e03",
+  "reference": "%order_reference%",
   "storeReference": "",
   "isTest": true,
   "acknowledgedAt": null,
@@ -75,7 +75,7 @@
   },
   "_links": {
     "self": {
-      "href": "/v1/store/44855/order/18757782342"
+      "href": "/v1/store/44855/order/%order_id%"
     },
     "store": {
       "href": "/v1/store/44855"
