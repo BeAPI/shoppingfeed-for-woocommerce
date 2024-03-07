@@ -8,8 +8,8 @@
   "acknowledgedAt": null,
   "createdAt": "2023-05-09T14:46:22+02:00",
   "updatedAt": "2023-05-09T14:46:22+02:00",
-  "status": "waiting_shipment",
-  "anonymized": false,
+  "status": "shipped",
+  "anonymized": true,
   "payment": {
     "shippingAmount": 20,
     "productAmount": 45,
@@ -18,9 +18,14 @@
     "method": ""
   },
   "shipment": {
-    "carrier": "Colissimo",
-    "trackingNumber": "",
-    "trackingLink": ""
+    "type": "full",
+    "carrier": "Shipping",
+    "trackingNumber": "#GDPR",
+    "trackingLink": "#GDPR",
+    "returnInfo": {
+      "carrier": "#GDPR",
+      "trackingNumber": "#GDPR"
+    }
   },
   "additionalFields": {
     "isTestOrder": "1"
@@ -46,32 +51,35 @@
   ],
   "commission": null,
   "shippingAddress": {
-    "firstName":"Pierre",
-    "lastName":"Martin",
-    "company":"Be API",
-    "street":"123 rue des petits champs",
-    "street2":"",
-    "other":"",
-    "postalCode":"75000",
-    "city":"Paris",
-    "country":"FR",
-    "phone":"0123456789",
-    "mobilePhone":"0612345789",
-    "email":"pm@example.com"
+    "firstName": "#GDPR",
+    "lastName": "#GDPR",
+    "company": "#GDPR",
+    "street": "#GDPR",
+    "street2": "#GDPR",
+    "other": "#GDPR",
+    "postalCode": "",
+    "city": "#GDPR",
+    "country": "",
+    "phone": "#GDPR",
+    "mobilePhone": "#GDPR",
+    "province": "#GDPR",
+    "email": "#GDPR",
+    "relayId": "#GDPR"
   },
   "billingAddress": {
-    "firstName":"Pierre",
-    "lastName":"Martin",
-    "company":"Be API",
-    "street":"123 rue des petits champs",
-    "street2":"",
-    "other":"",
-    "postalCode":"75000",
-    "city":"Paris",
-    "country":"FR",
-    "phone":"0123456789",
-    "mobilePhone":"0612345789",
-    "email":"pm@example.com"
+    "firstName": "#GDPR",
+    "lastName": "#GDPR",
+    "company": "#GDPR",
+    "street": "#GDPR",
+    "street2": "#GDPR",
+    "other": "#GDPR",
+    "postalCode": "",
+    "city": "#GDPR",
+    "country": "",
+    "phone": "#GDPR",
+    "mobilePhone": "#GDPR",
+    "province": "#GDPR",
+    "email": "#GDPR"
   },
   "_links": {
     "self": {

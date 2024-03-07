@@ -70,18 +70,22 @@ class Orders {
 			return false;
 		}
 
-		$order_api                 = $shop->getOrderApi();
-		$filters                   = array();
-		$filters['acknowledgment'] = 'unacknowledged';
+		$order_api = $shop->getOrderApi();
+		$filters   = array(
+			'acknowledgment' => 'unacknowledged',
+			'status'         => ShoppingFeedHelper::sf_order_statuses_to_import(),
+			'since'          => gmdate( 'c', strtotime( '14 days ago' ) ),
+		);
 
-		$filters['status'] = ShoppingFeedHelper::sf_order_statuses_to_import();
+		$orders_options               = ShoppingFeedHelper::get_sf_orders_options();
+		$include_fulfilled_by_channel = (bool) ( $orders_options['import_order_fulfilled_by_marketplace'] ?? false );
 
 		foreach ( $order_api->getAll( $filters ) as $sf_order ) {
 			if ( Order::exists( $sf_order ) ) {
 				ShoppingFeedHelper::get_logger()->notice(
 					sprintf(
 						/* translators: 1: Order reference. 2: Order id. */
-						__( 'Order already imported %1$1s (%2$2s)', 'shopping-feed' ),
+						__( 'Order already imported %1$s (%2$s)', 'shopping-feed' ),
 						$sf_order->getReference(),
 						$sf_order->getId()
 					),
@@ -92,13 +96,16 @@ class Orders {
 				continue;
 			}
 
-			if ( ! $this->can_import_order( $sf_order ) ) {
+			$import_order_check = $this->can_import_order( $sf_order, $include_fulfilled_by_channel );
+			if ( is_wp_error( $import_order_check ) ) {
+				/** @psalm-suppress PossiblyInvalidMethodCall */
 				ShoppingFeedHelper::get_logger()->notice(
 					sprintf(
-						/* translators: 1: Order reference. 2: Order id. */
-						__( 'Order fulfilled by channel %1$1s (%2$2s)', 'shopping-feed' ),
+						/* translators: 1: Order reference, 2: Order id, 3: error message. */
+						__( 'Order %1$s (%2$s) can\'t be imported : %3$s', 'shopping-feed' ),
 						$sf_order->getReference(),
-						$sf_order->getId()
+						$sf_order->getId(),
+						$import_order_check->get_error_message()
 					),
 					array(
 						'source' => 'shopping-feed',
@@ -120,16 +127,51 @@ class Orders {
 	 * Check if the order can be imported.
 	 *
 	 * @param OrderResource $sf_order
+	 * @param bool $import_orders_fufilled_by_channel
 	 *
-	 * @return bool
+	 * @return bool|\WP_Error true if the order can be imported or WP_Error with
+	 *                        the reason the order can't be imported otherwise.
 	 */
-	public function can_import_order( $sf_order ) {
-		// Allow user for force imports for orders fulfilled by the marketplaces.
-		$orders_options = ShoppingFeedHelper::get_sf_orders_options();
-		if ( isset( $orders_options['import_order_fulfilled_by_marketplace'] ) && true === (bool) $orders_options['import_order_fulfilled_by_marketplace'] ) {
+	public function can_import_order( $sf_order, $import_orders_fufilled_by_channel = false ) {
+		$sf_order_data = $sf_order->toArray();
+		$status = $sf_order_data['status'] ?? '';
+		$anonymized = (bool) ( $sf_order_data['anonymized'] ?? false );
+
+		// Always skip anonymized orders.
+		if ( $anonymized ) {
+			return new \WP_Error(
+				'shoppingfeed_order_import_anonymized_order',
+				__( 'Order data has been anonymized.', 'shopping-feed' )
+			);
+		}
+
+		$fulfilled_by_marketplace = $this->is_fulfilled_by_marketplace( $sf_order );
+
+		// If the order is fulfilled by the merchant
+		if ( ! $fulfilled_by_marketplace ) {
+			// Only import orders with the `waiting_shipment` status.
+			if ( 'waiting_shipment' !== $status ) {
+				return new \WP_Error(
+					'shoppingfeed_order_import_fulfilledby_store_incompatible_status',
+					sprintf(
+						/* translators: the order status */
+						__( 'Order fulfilled by store with status "%s" will not be imported.', 'shopping-feed' ),
+						$status
+					)
+				);
+			}
+
 			return true;
 		}
 
-		return false === $this->is_fulfilled_by_marketplace( $sf_order );
+		// Only imports orders fulfilled by channel if the flag is true.
+		if ( ! $import_orders_fufilled_by_channel ) {
+			return new \WP_Error(
+				'shoppingfeed_order_import_skip_fulfilledby_marketplace_orders',
+				__( 'Order if fulfilled by channel and will not be imported.', 'shopping-feed' )
+			);
+		}
+
+		return true;
 	}
 }

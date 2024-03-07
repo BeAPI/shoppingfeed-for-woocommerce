@@ -7,7 +7,6 @@ defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Orders\Order;
 use ShoppingFeed\ShoppingFeedWC\Query\Query;
-use WP_Post;
 
 /**
  * Class Metabox
@@ -23,23 +22,26 @@ class Metabox {
 	}
 
 	/**
-	 * Register a custom metabox to display metadata for the current order.
+	 * Register a custom metabox to display ShoppingFeed metadata for the current order.
 	 *
-	 * This metabox is only register if the current order has been creayed by ShoppingFeed.
+	 * This metabox is only register if the current order has been created by ShoppingFeed.
 	 */
 	public function register_sf_metabox() {
-		global $post;
+		global $theorder, $post;
+
 		$screen = get_current_screen();
-		if ( is_null( $screen ) || 'shop_order' !== $screen->post_type ) {
+		if ( null === $screen || 'shop_order' !== $screen->post_type ) {
 			return;
 		}
 
-		$order = wc_get_order( $post );
-		if ( false === $order ) {
-			return;
+		$order = false;
+		if ( $theorder instanceof \WC_Order ) {
+			$order = $theorder;
+		} elseif ( $post ) {
+			$order = wc_get_order( $post->ID );
 		}
 
-		if ( ! Order::is_sf_order( $order ) ) {
+		if ( ! $order || ! Order::is_sf_order( $order ) ) {
 			return;
 		}
 
@@ -47,7 +49,7 @@ class Metabox {
 			'sf-transaction-details',
 			__( 'ShoppingFeed details', 'shopping-feed' ),
 			array( $this, 'render' ),
-			'shop_order',
+			$screen,
 			'side'
 		);
 	}
@@ -55,10 +57,12 @@ class Metabox {
 	/**
 	 * Render the metabox content.
 	 *
-	 * @param WP_Post $post
+	 * @param \WP_Post|\WC_Order $post_or_order_object
+	 *
+	 * @author Stéphane Gillot
 	 */
-	public function render( $post ) {
-		$order = wc_get_order( $post );
+	public function render( $post_or_order_object ) {
+		$order = ( $post_or_order_object instanceof \WP_Post ) ? wc_get_order( $post_or_order_object->ID ) : $post_or_order_object;
 		if ( false === $order ) {
 			return;
 		}
@@ -76,9 +80,9 @@ class Metabox {
 				<li>
 					<span><?php esc_html_e( 'MarketPlace', 'shopping-feed' ); ?>:</span> <?php echo esc_html( $channel_name ); ?>
 				</li>
-			<?php
-			do_action( 'sf_show_metas', $order );
-			?>
+				<?php
+				do_action( 'sf_show_metas', $order );
+				?>
 			</ul>
 			<?php
 		endif;
