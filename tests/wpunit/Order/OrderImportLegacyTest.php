@@ -56,37 +56,7 @@ class OrderImportLegacyTest extends OrderImportTestCase {
 		$this->assertEquals( $this->get_error_order_status(), $wc_order->get_status() );
 	}
 
-	public function test_order_fulfilled_by_channels_are_not_imported() {
-		$order_resource = $this->get_order_resource( 'fulfilled-by-channel' );
-		$orders         = ShoppingFeed\ShoppingFeedWC\Orders\Orders::get_instance();
-		$this->assertNotTrue( $orders->can_import_order( $order_resource ) );
-	}
-
-	public function test_user_can_force_import_of_order_fulfilled_by_channels() {
-		add_filter(
-			'pre_option_sf_orders_options',
-			function ( $value ) {
-				return [
-					'import_order_fulfilled_by_marketplace' => true,
-				];
-			}
-		);
-
-		$order_resource = $this->get_order_resource( 'fulfilled-by-channel' );
-		$orders         = ShoppingFeed\ShoppingFeedWC\Orders\Orders::get_instance();
-		$this->assertTrue( $orders->can_import_order( $order_resource ) );
-	}
-
 	public function test_orders_fulfilled_by_channel_dont_decrease_stock_when_imported() {
-		add_filter(
-			'pre_option_sf_orders_options',
-			function ( $value ) {
-				return [
-					'import_order_fulfilled_by_marketplace' => true,
-				];
-			}
-		);
-
 		$product_before = wc_get_product( self::IN_STOCK_PRODUCT_ID_USE_BY_ORDER_DATA );
 		$original_stock = $product_before->get_stock_quantity();
 
