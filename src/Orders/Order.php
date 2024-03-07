@@ -86,8 +86,8 @@ class Order {
 		$wc_order = wc_create_order();
 
 		//Addresses
-		$wc_order->set_address( $this->shipping_address, 'shipping' );
-		$wc_order->set_address( $this->billing_address );
+		$wc_order->set_shipping_address( $this->shipping_address );
+		$wc_order->set_billing_address( $this->billing_address );
 
 		//Note
 		$wc_order->set_customer_note( $this->note->get_note() );

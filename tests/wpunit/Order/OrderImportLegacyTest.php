@@ -42,6 +42,8 @@ class OrderImportLegacyTest extends OrderImportTestCase {
 		$this->assertEquals( 65, $wc_order->get_total(), 'Assert the order total match the value from ShoppingFeed' );
 		$this->assertEquals( 1, $wc_order->get_item_count(), 'Assert the order contain the same number of product from ShoppingFeed' );
 		$this->assertEquals( $original_stock - 1, $product_after->get_stock_quantity(), 'Assert stock for the product has been decreased' );
+		$this->assertNotEmpty( $wc_order->get_billing_first_name(), 'Assert billing address is correctly set' );
+		$this->assertNotEmpty( $wc_order->get_shipping_first_name(), 'Assert shipping address is correctly set' );
 	}
 
 	public function test_order_are_created_with_failed_status_if_original_order_contain_out_of_stock_products() {
