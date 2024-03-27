@@ -248,7 +248,11 @@ class Options {
 					sprintf( 'sf_account_notice_%d', get_current_user_id() ),
 					[
 						'type'    => 'error',
-						'message' => __( 'An account for this username already exist.', 'shopping-feed' ),
+						'message' => sprintf(
+							// translators: %s the account name
+							__( 'The account "%s" is already connected.', 'shopping-feed' ),
+							$username
+						),
 					],
 					30
 				);
@@ -272,11 +276,29 @@ class Options {
 			exit();
 		}
 
+		$store = $session->getStores()->select( $username );
+		if ( null === $store ) {
+			set_transient(
+				sprintf( 'sf_account_notice_%d', get_current_user_id() ),
+				[
+					'type'    => 'error',
+					'message' => sprintf(
+						// translators: %s the account name
+						__( 'No store found for the account "%s"', 'shopping-feed' ),
+						$username,
+					),
+				],
+				30
+			);
+			wp_safe_redirect( ShoppingFeedHelper::get_setting_link() );
+			exit();
+		}
+
 		// Save new account.
 		$accounts[] = [
 			'username'    => $username,
 			'token'       => $session->getToken(),
-			'sf_store_id' => $session->getMainStore()->getId(),
+			'sf_store_id' => $store->getId(),
 		];
 		ShoppingFeedHelper::set_sf_account_options( $accounts );
 
@@ -288,7 +310,7 @@ class Options {
 			sprintf( 'sf_account_notice_%d', get_current_user_id() ),
 			[
 				'type'    => 'success',
-				'message' => __( 'Account added succesfully.', 'shopping-feed' ),
+				'message' => __( 'Account connected successfully.', 'shopping-feed' ),
 			],
 			30
 		);
@@ -345,7 +367,7 @@ class Options {
 			sprintf( 'sf_account_notice_%d', get_current_user_id() ),
 			[
 				'type'    => 'success',
-				'message' => __( 'Account deleted succesfully.', 'shopping-feed' ),
+				'message' => __( 'Account disconnected successfully.', 'shopping-feed' ),
 			],
 			30
 		);
@@ -533,7 +555,7 @@ class Options {
 									<thead>
 									<tr>
 										<th> <?php esc_html_e( 'Username', 'shopping-feed' ); ?> </th>
-										<th> <?php esc_html_e( 'Shop ID', 'shopping-feed' ); ?> </th>
+										<th> <?php esc_html_e( 'Store ID', 'shopping-feed' ); ?> </th>
 										<th></th>
 									</tr>
 									</thead>
@@ -560,21 +582,16 @@ class Options {
 													ShoppingFeedHelper::get_setting_link()
 												);
 												$delete_account_action = sprintf( 'delete_sf_account_%s', $account['username'] );
+												$delete_account_message = sprintf(
+													// translators: %s the account name
+													__( 'This will disconnect the ShoppingFeed account "%s" from Woocommerce. Are you sure ?', 'shopping-feed' ),
+													$account['username']
+												);
 											?>
 											<a class="button sf__button__secondary delete_link sf__button--delete"
 												href="<?php echo wp_nonce_url( $delete_account_url, $delete_account_action ); //phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wp_nonce_url already escape return value. ?>"
-												data-confirm="
-												<?php
-												echo esc_attr(
-													sprintf(
-														// translators: %s the account name
-														__( 'This will delete the account "%s" from Woocommerce. Are you sure ?', 'shopping-feed' ),
-														$account['username']
-													)
-												);
-												?>
-												">
-											<?php esc_html_e( 'Delete', 'shopping-feed' ); ?>
+												data-confirm="<?php echo esc_attr( $delete_account_message ); ?>">
+											<?php esc_html_e( 'Disconnect', 'shopping-feed' ); ?>
 											</a>
 										</td>
 									</tr>
@@ -596,7 +613,7 @@ class Options {
 						</div>
 						<hr/>
 					<?php endif; ?>
-					<h2><?php esc_html_e( 'Add a new ShoppingFeed account', 'shopping-feed' ); ?></h2>
+					<h2><?php esc_html_e( 'Add a ShoppingFeed account', 'shopping-feed' ); ?></h2>
 					<form method="post" action="<?php echo esc_url_raw( ShoppingFeedHelper::get_setting_link() ); ?>">
 						<table class="form-table sf__table">
 							<thead>
@@ -608,14 +625,10 @@ class Options {
 							<tbody>
 							<tr>
 								<td>
-									<input class="regular-text user" type="text"
-											name="sf_username"
-										   value="">
+									<input class="regular-text user" type="text" name="sf_username" value="">
 								</td>
 								<td>
-									<input class="regular-text pass" type="password"
-										   name="sf_password"
-										   value="">
+									<input class="regular-text pass" type="password" name="sf_password" value="">
 								</td>
 							</tr>
 							</tbody>

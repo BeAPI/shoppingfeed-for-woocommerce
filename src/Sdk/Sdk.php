@@ -60,7 +60,7 @@ class Sdk {
 
 
 	/**
-	 * Return account deault shop
+	 * Get store for the account.
 	 *
 	 * @param array $sf_account
 	 *
@@ -68,29 +68,21 @@ class Sdk {
 	 * @psalm-suppress all
 	 */
 	public static function get_sf_shop( $sf_account ) {
-		if (
-			empty( $sf_account['token'] ) && (
-				empty( $sf_account['username'] ) ||
-				empty( $sf_account['password'] )
-			)
-		) {
-			//TODO: add more informations about concerned sf account
+
+		if ( ! empty( $sf_account['token'] ) ) {
+			$credentials = new Credential\Token( $sf_account['token'] );
+		} elseif ( ! empty( $sf_account['username'] ) && ! empty( $sf_account['password'] ) ) {
+			// Legacy
+			$credentials = new Credential\Password( $sf_account['username'], $sf_account['password'] );
+		} else {
 			ShoppingFeedHelper::get_logger()->error(
-				sprintf(
-					__( 'No Credentials found to connect', 'shopping-feed' )
-				),
+				__( 'No Credentials found to connect', 'shopping-feed' ),
 				array(
 					'source' => 'shopping-feed',
 				)
 			);
 
 			return false;
-		}
-
-		$credentials = new Credential\Password( $sf_account['username'], $sf_account['password'] );
-
-		if ( ! empty( $sf_account['token'] ) ) {
-			$credentials = new Credential\Token( $sf_account['token'] );
 		}
 
 		try {
@@ -102,10 +94,14 @@ class Sdk {
 			);
 			$session = Client\Client::createSession( $credentials, $options );
 		} catch ( \Exception $exception ) {
+			$mode = $credentials instanceof Credential\Token ? 'token' : 'legacy';
+			$username = $sf_account['username'] ?? 'Unknown';
 			ShoppingFeedHelper::get_logger()->error(
 				sprintf(
-				/* translators: %s: Error message. */
-					__( 'Cant login with actual credentials => %s', 'shopping-feed' ),
+					// translators: 1: account name, 2: connection mode, 3: error message.
+					__( 'Fail to create a session for account "%1$s" using %2$s mode => %3$s', 'shopping-feed' ),
+					$mode,
+					$username,
 					$exception->getMessage()
 				),
 				array(
@@ -116,12 +112,14 @@ class Sdk {
 			return false;
 		}
 
-		$main_shop = $session->getMainStore();
-
+		$main_shop = $session->getStores()->select( $sf_account['username'] );
 		if ( empty( $main_shop ) ) {
 			ShoppingFeedHelper::get_logger()->error(
-			//TODO: add more informations about concerned sf account
-				__( 'No store found', 'shopping-feed' ),
+				sprintf(
+					// translators: %s the account name
+					__( 'No store found for account "%s"', 'shopping-feed' ),
+					$sf_account['username']
+				),
 				array(
 					'source' => 'shopping-feed',
 				)
