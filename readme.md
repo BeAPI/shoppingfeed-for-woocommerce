@@ -2,8 +2,8 @@
 
 * Contributors: ShoppingFeed, BeAPI
 * Tags: shoppingfeed, marketplace, woocommerce, woocommerce shoppingfeed, create woocommerce products shoppingfeed, products feed, generate shoppingfeed, amazon, Jet, Walmart, many marketplace, import orders
-* Stable tag: 6.5.0
-* Version: 6.5.0
+* Stable tag: 6.5.1
+* Version: 6.5.1
 * Requires PHP: 7.3
 * Requires at least: 5.7
 * Tested up to: 6.4
@@ -15,6 +15,8 @@
 > Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
 
 ## Changelog
+* 6.5.1
+  * Feed : add options to disable stock and price synchronization with ShoppingFeed when a product change.
 * 6.5.0
   * Misc : HPOS compatibility.
   * Orders : Update the filters used for retrieving orders from ShoppingFeed.

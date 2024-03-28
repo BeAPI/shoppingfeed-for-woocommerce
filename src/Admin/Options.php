@@ -9,6 +9,7 @@ use ShoppingFeed\ShoppingFeedWC\Actions\Actions;
 use ShoppingFeed\ShoppingFeedWC\Feed\Generator;
 use ShoppingFeed\ShoppingFeedWC\Orders\Operations;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
+use ShoppingFeed\ShoppingFeedWC\Admin;
 
 class Options {
 
@@ -801,6 +802,58 @@ class Options {
 			},
 			self::SF_FEED_SETTINGS_PAGE,
 			'sf_feed_settings'
+		);
+
+		add_settings_section(
+			'sf_feed_synchronization_settings',
+			__( 'Products synchronization', 'shopping-feed' ),
+			function () {
+			},
+			self::SF_FEED_SETTINGS_PAGE
+		);
+
+		add_settings_field(
+			'sf_feed_synchro_stock_setting',
+			__( 'Stock synchronization', 'shopping-feed' ),
+			function () {
+				?>
+				<select name="<?php echo esc_attr( sprintf( '%s[synchro_stock]', self::SF_FEED_OPTIONS ) ); ?>">
+					<option value="yes" <?php selected( 'yes', $this->sf_feed_options['synchro_stock'] ?? 'yes' ); ?>>
+						<?php esc_html_e( 'Yes', 'shopping-feed' ); ?>
+					</option>
+					<option value="no" <?php selected( 'no', $this->sf_feed_options['synchro_stock'] ?? 'yes' ); ?>>
+						<?php esc_html_e( 'No', 'shopping-feed' ); ?>
+					</option>
+				</select>
+				<p class="description" id="tagline-description">
+					<?php esc_html_e( 'Synchronize the stock with ShoppingFeed when there is a change in Woocommerce.', 'shopping-feed' ); ?>
+				</p>
+				<?php
+			},
+			self::SF_FEED_SETTINGS_PAGE,
+			'sf_feed_synchronization_settings'
+		);
+
+		add_settings_field(
+			'sf_feed_synchro_price_setting',
+			__( 'Price synchronization', 'shopping-feed' ),
+			function () {
+				?>
+				<select name="<?php echo esc_attr( sprintf( '%s[synchro_price]', self::SF_FEED_OPTIONS ) ); ?>">
+					<option value="yes" <?php selected( 'yes', $this->sf_feed_options['synchro_price'] ?? 'yes' ); ?>>
+						<?php esc_html_e( 'Yes', 'shopping-feed' ); ?>
+					</option>
+					<option value="no" <?php selected( 'no', $this->sf_feed_options['synchro_price'] ?? 'yes' ); ?>>
+						<?php esc_html_e( 'No', 'shopping-feed' ); ?>
+					</option>
+				</select>
+				<p class="description" id="tagline-description">
+					<?php esc_html_e( 'Synchronize the price with ShoppingFeed when there is a change in Woocommerce.', 'shopping-feed' ); ?>
+				</p>
+				<?php
+			},
+			self::SF_FEED_SETTINGS_PAGE,
+			'sf_feed_synchronization_settings'
 		);
 		?>
 		<div class="wrap">
