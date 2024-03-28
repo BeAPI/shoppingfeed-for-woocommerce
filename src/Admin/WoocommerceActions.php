@@ -218,15 +218,33 @@ class WoocommerceActions {
 	 * @param bool $only_stock
 	 */
 	public function update_product( $product_id, $only_stock = false ) {
+		$sf_feed_options = ShoppingFeedHelper::get_sf_feed_options();
+		$sync_stock = $sf_feed_options['synchro_stock'] ?? 'yes';
+		$sync_price = $sf_feed_options['synchro_price'] ?? 'yes';
+
+		/**
+		 * If both stock and price synchronization are disable, bail out.
+		 */
+		if ( 'no' === $sync_stock && 'no' === $sync_price ) {
+			return;
+		}
+
+		/**
+		 * If we are only syncing stock and the synchronization is disabled, bail out.
+		 */
+		if ( $only_stock && 'no' === $sync_stock ) {
+			return;
+		}
+
 		$sf_accounts = ShoppingFeedHelper::get_sf_account_options();
 		if ( empty( $sf_accounts ) ) {
 			ShoppingFeedHelper::get_logger()->error(
 				sprintf(
 					__( 'No Accounts founds', 'shopping-feed' )
 				),
-				array(
+				[
 					'source' => 'shopping-feed',
-				)
+				]
 			);
 
 			return;
@@ -241,9 +259,9 @@ class WoocommerceActions {
 						__( 'Cannot retrieve shop from SDK for account : %s', 'shopping-feed' ),
 						$sf_account['username']
 					),
-					array(
+					[
 						'source' => 'shopping-feed',
-					)
+					]
 				);
 				continue;
 			}
@@ -264,20 +282,20 @@ class WoocommerceActions {
 					continue;
 				}
 			}
+
 			/**
-			 * Check if we need to update the price or only the stock
+			 * Send api request to update the price if the flag `$only_stock` if false and the sync option is enabled.
 			 */
-			if ( ! $only_stock ) {
-				/**
-				 * Send api request to update the price
-				 */
+			if ( ! $only_stock && 'yes' === $sync_price ) {
 				$pricing_api->execute( $this->pricing_update );
 			}
 
 			/**
-			 * Send api request to update the inventory
+			 * Send api request to update the stock if the sync option is enabled.
 			 */
-			$inventory_api->execute( $this->inventory_update );
+			if ( 'yes' === $sync_stock ) {
+				$inventory_api->execute( $this->inventory_update );
+			}
 		}
 	}
 
