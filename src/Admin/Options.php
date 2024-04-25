@@ -203,6 +203,11 @@ class Options {
 			$this->process_delete_account();
 			exit;
 		}
+
+		if ( ! empty( $_POST['action'] ) && 'update_sf_account' === $_POST['action'] ) { //phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$this->process_update_accounts();
+			exit;
+		}
 	}
 
 	/**
@@ -359,6 +364,9 @@ class Options {
 		$accounts = array_values( $accounts ); // reset accounts array indexes
 		ShoppingFeedHelper::set_sf_account_options( $accounts );
 
+		// Clean account cache
+		Sdk::clean_account_cache( $account_to_delete );
+
 		// Refresh order sync tasks.
 		Actions::clean_get_orders();
 		Actions::register_get_orders();
@@ -368,6 +376,51 @@ class Options {
 			[
 				'type'    => 'success',
 				'message' => __( 'Account disconnected successfully.', 'shopping-feed' ),
+			],
+			30
+		);
+		wp_safe_redirect( add_query_arg( 'settings-updated', 'true', ShoppingFeedHelper::get_setting_link() ) );
+		exit();
+	}
+
+	/**
+	 * Handle store ids update.
+	 *
+	 * @return void
+	 */
+	private function process_update_accounts() {
+		// Security checks.
+		$nonce = isset( $_POST['_wpnonce'] ) ? wc_clean( wp_unslash( $_POST['_wpnonce'] ) ) : '';
+		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'update_sf_account' ) || ! current_user_can( 'manage_options' ) ) {
+			//phpcs:disable WordPress.WP.I18n.MissingArgDomain
+			wp_die(
+				esc_html__( 'The link you followed has expired.' ),
+				esc_html__( 'Something went wrong.' ),
+				403
+			);
+			//phpcs:enable WordPress.WP.I18n.MissingArgDomain
+			exit;
+		}
+
+		$accounts = ShoppingFeedHelper::get_sf_account_options();
+		foreach ( $accounts as &$account ) {
+			if ( isset( $_POST['store_id'][ $account['username'] ] ) ) {
+				$account['sf_store_id'] = wc_clean( wp_unslash( $_POST['store_id'][ $account['username'] ] ) );
+			}
+		}
+		unset( $account );
+
+		ShoppingFeedHelper::set_sf_account_options( $accounts );
+
+		// Refresh order sync tasks.
+		Actions::clean_get_orders();
+		Actions::register_get_orders();
+
+		set_transient(
+			sprintf( 'sf_account_notice_%d', get_current_user_id() ),
+			[
+				'type'    => 'success',
+				'message' => __( 'Accounts updated successfully.', 'shopping-feed' ),
 			],
 			30
 		);
@@ -549,6 +602,7 @@ class Options {
 				<div class="sf__column account__wrapper">
 					<?php if ( ! empty( $this->sf_account_options ) ) : ?>
 						<h2><?php esc_html_e( 'ShoppingFeed accounts', 'shopping-feed' ); ?></h2>
+						<form method="post" action="<?php echo esc_url_raw( ShoppingFeedHelper::get_setting_link() ); ?>">
 						<div class="blocks">
 							<div class="block_links">
 								<table class="form-table sf__table">
@@ -568,9 +622,14 @@ class Options {
 												   disabled>
 										</td>
 										<td>
-											<input class="regular-text store_id" type="text"
-												   value="<?php echo esc_attr( $account['sf_store_id'] ); ?>"
-												   disabled>
+											<select class="regular-text" name="<?php echo esc_attr( sprintf( 'store_id[%s]', $account['username'] ) ); ?>">
+												<?php foreach ( Sdk::get_account_stores_ids( $account ) as $store_id ) : ?>
+													<option value="<?php echo esc_attr( $store_id ); ?>"
+													<?php selected( $store_id, $account['sf_store_id'] ); ?>>
+													<?php echo esc_html( $store_id ); ?>
+													</option>
+												<?php endforeach; ?>
+											</select>
 										</td>
 										<td>
 											<?php
@@ -611,6 +670,12 @@ class Options {
 								</table>
 							</div>
 						</div>
+						<input type="hidden" name="action" value="update_sf_account">
+							<?php
+							wp_nonce_field( 'update_sf_account' );
+							submit_button( __( 'Update accounts', 'shopping-feed' ), 'sf__button' );
+							?>
+						</form>
 						<hr/>
 					<?php endif; ?>
 					<h2><?php esc_html_e( 'Add a ShoppingFeed account', 'shopping-feed' ); ?></h2>
