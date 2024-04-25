@@ -69,46 +69,8 @@ class Sdk {
 	 */
 	public static function get_sf_shop( $sf_account ) {
 
-		if ( ! empty( $sf_account['token'] ) ) {
-			$credentials = new Credential\Token( $sf_account['token'] );
-		} elseif ( ! empty( $sf_account['username'] ) && ! empty( $sf_account['password'] ) ) {
-			// Legacy
-			$credentials = new Credential\Password( $sf_account['username'], $sf_account['password'] );
-		} else {
-			ShoppingFeedHelper::get_logger()->error(
-				__( 'No Credentials found to connect', 'shopping-feed' ),
-				array(
-					'source' => 'shopping-feed',
-				)
-			);
-
-			return false;
-		}
-
-		try {
-			$options = new Client\ClientOptions();
-			$options->addHeaders(
-				[
-					'Connection' => 'close',
-				]
-			);
-			$session = Client\Client::createSession( $credentials, $options );
-		} catch ( \Exception $exception ) {
-			$mode = $credentials instanceof Credential\Token ? 'token' : 'legacy';
-			$username = $sf_account['username'] ?? 'Unknown';
-			ShoppingFeedHelper::get_logger()->error(
-				sprintf(
-					// translators: 1: account name, 2: connection mode, 3: error message.
-					__( 'Fail to create a session for account "%1$s" using %2$s mode => %3$s', 'shopping-feed' ),
-					$mode,
-					$username,
-					$exception->getMessage()
-				),
-				array(
-					'source' => 'shopping-feed',
-				)
-			);
-
+		$session = self::get_session( $sf_account );
+		if ( null === $session ) {
 			return false;
 		}
 
@@ -139,6 +101,102 @@ class Sdk {
 		ShoppingFeedHelper::set_sf_account_options( $account_options );
 
 		return $main_shop;
+	}
+
+	/**
+	 * Get all the stores ids available for an account.
+	 *
+	 * @param array $sf_account
+	 *
+	 * @return array
+	 */
+	public static function get_account_stores_ids( $sf_account ) {
+		$key = sprintf( 'sf_account_stores_%s', sanitize_title( $sf_account['username'] ) );
+		$cached_stores = get_transient( $key );
+		if ( is_array( $cached_stores ) ) {
+			return $cached_stores;
+		}
+
+		$session = self::get_session( $sf_account );
+		if ( null === $session ) {
+			return [];
+		}
+
+		$stores = [];
+		foreach ( $session->getStores()->getIterator() as $store ) {
+			$stores[] = $store->getId();
+		}
+
+		set_transient( $key, $stores, 12 * HOUR_IN_SECONDS );
+
+		return $stores;
+	}
+
+	/**
+	 * Get account session
+	 *
+	 * @param array $sf_account
+	 *
+	 * @return SessionResource|null
+	 */
+	public static function get_session( $sf_account ) {
+		if ( ! empty( $sf_account['token'] ) ) {
+			$credentials = new Credential\Token( $sf_account['token'] );
+		} elseif ( ! empty( $sf_account['username'] ) && ! empty( $sf_account['password'] ) ) {
+			// Legacy
+			$credentials = new Credential\Password( $sf_account['username'], $sf_account['password'] );
+		} else {
+			ShoppingFeedHelper::get_logger()->error(
+				__( 'No Credentials found to connect', 'shopping-feed' ),
+				array(
+					'source' => 'shopping-feed',
+				)
+			);
+
+			return null;
+		}
+
+		try {
+			$options = new Client\ClientOptions();
+			$options->addHeaders(
+				[
+					'Connection' => 'close',
+				]
+			);
+			$session = Client\Client::createSession( $credentials, $options );
+		} catch ( \Exception $exception ) {
+			$mode = $credentials instanceof Credential\Token ? 'token' : 'legacy';
+			$username = $sf_account['username'] ?? 'Unknown';
+			ShoppingFeedHelper::get_logger()->error(
+				sprintf(
+					// translators: 1: account name, 2: connection mode, 3: error message.
+					__( 'Fail to create a session for account "%1$s" using %2$s mode => %3$s', 'shopping-feed' ),
+					$mode,
+					$username,
+					$exception->getMessage()
+				),
+				array(
+					'source' => 'shopping-feed',
+				)
+			);
+
+			return null;
+		}
+
+		return $session;
+	}
+
+	/**
+	 * Clear account cache.
+	 *
+	 * @param string $sf_account_username
+	 *
+	 * @return void
+	 */
+	public static function clean_account_cache( $sf_account_username ) {
+		$sanitized_username = sanitize_title( $sf_account_username );
+
+		delete_transient( sprintf( 'sf_account_stores_%s', $sanitized_username ) );
 	}
 
 	/**
