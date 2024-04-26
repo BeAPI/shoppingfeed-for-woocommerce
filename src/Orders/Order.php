@@ -108,6 +108,8 @@ class Order {
 					'source' => 'shopping-feed',
 				)
 			);
+
+			return;
 		}
 
 		if ( ! empty( $this->shipping->get_shipping_rate() ) ) {
@@ -129,23 +131,23 @@ class Order {
 				ShoppingFeedHelper::get_logger()->error(
 					sprintf(
 					/* translators: %1$1s: Order id. %2$2s: Error message. */
-						__( 'Cant set shipping to order  %1$1s => %2$2s', 'shopping-feed' ),
-						$wc_order->get_id(),
+						__( 'Cant set shipping for the order with the reference %1$1s', 'shopping-feed' ),
+						$this->sf_order->getReference(),
 						$exception->getMessage()
 					),
 					array(
 						'source' => 'shopping-feed',
 					)
 				);
+
+				return;
 			}
 		}
 
-		$valid = true;
 		/**
 		 * If we cant match any product in the order
 		 */
 		if ( empty( $this->products ) ) {
-			$valid = false;
 			ShoppingFeedHelper::get_logger()->error(
 				sprintf(
 				/* translators: %1$1s: Order reference. %2$2s: Order id. */
@@ -157,26 +159,32 @@ class Order {
 					'source' => 'shopping-feed',
 				)
 			);
+
+			return;
 		} else {
 			foreach ( $this->products as $product ) {
+
 				$item = new \WC_Order_Item_Product();
 				$item->set_props( $product['args'] );
 				$item->set_order_id( $wc_order->get_id() );
-				/**
-				 * If we the product is out of stock we add a meta data to mark it and set the order as failed to notify the merchant
-				 */
+
+				/* Do not create an order  if at least one product is out of stock */
 				if ( $product['outofstock'] ) {
-					$valid = false;
-					$item->add_meta_data(
-						'OUT_OF_STOCK',
+					ShoppingFeedHelper::get_logger()->error(
 						sprintf(
-						/* translators: %1$1s: Product quantity. %2$2s: Quantity needed. */
-							__( 'Available: %1$1s - Need : %2$2s', 'shopping-feed' ),
-							$product['product_quantity'],
-							$product['quantity_needed']
-						)
+						/* translators: %1$1s: Order id. %2$2s: SF reference */
+							__( 'Product(s) are unavailable, cannot create the order %1$1s with the reference : %2$2s', 'shopping-feed' ),
+							$this->sf_order->getId(),
+							$this->sf_order->getReference(),
+						),
+						[
+							'source' => 'shopping-feed',
+						]
 					);
+
+					return;
 				}
+
 				$item->save();
 				$wc_order->add_item( $item );
 				do_action( 'sf_after_order_add_item', $item, $wc_order );
@@ -208,24 +216,14 @@ class Order {
 			}
 		}
 
-		/**
-		 * If one or more products are unavailable
-		 */
-		if ( $valid ) {
-			$wc_order->set_status( $this->status->get_name(), $this->status->get_note() );
-			$message = '';
-		} else {
-			$message = __( 'Products are unavailable', 'shopping-feed' );
-			$wc_order->set_status( 'wc-failed', $message );
-		}
-
+		$wc_order->set_status( $this->status->get_name(), $this->status->get_note() );
 		$wc_order->calculate_totals( false );
 		$wc_order->save();
 
 		do_action( 'sf_before_add_order', $wc_order );
 
 		//Acknowledge the order so we will not get it next time
-		Operations::acknowledge_order( $wc_order->get_id(), $message );
+		Operations::acknowledge_order( $wc_order->get_id(), '' );
 	}
 
 
