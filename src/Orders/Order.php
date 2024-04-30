@@ -82,6 +82,55 @@ class Order {
 	 * Add new order
 	 */
 	public function add() {
+
+		// Do not create and order with no products
+		if ( empty( $this->products ) ) {
+			$message = sprintf(
+			/* translators: %s: Order reference */
+				__( 'Cannot add order with no products : %s', 'shopping-feed' ),
+				$this->sf_order->getReference()
+			);
+
+			ShoppingFeedHelper::get_logger()->error(
+				$message,
+				[
+					'source' => 'shopping-feed',
+				]
+			);
+
+			Operations::acknowledge_error( $this->sf_order, $message );
+			return;
+		}
+
+		// Do not create and order if at least one product is out of stock
+		$missing_products_name = [];
+		foreach ( $this->products as $product ) {
+			if ( $product['outofstock'] ) {
+				$missing_products_name[] = $product['args']['name'] . '(' . $product['args']['product_id'] . ')';
+			}
+		}
+		if ( ! empty ( $missing_products_name ) ) {
+			$missing_products_name_to_string = implode( ', ', $missing_products_name );
+			$message                         = sprintf(
+			/* translators: %1$1s: Products */
+				__( 'Some product(s) are out of stock : %1$1s.', 'shopping-feed' ),
+				$missing_products_name_to_string,
+				$this->sf_order->getId(),
+				$this->sf_order->getReference(),
+			);
+
+			ShoppingFeedHelper::get_logger()->error(
+				$message,
+				[
+					'source' => 'shopping-feed',
+				]
+			);
+
+			Operations::acknowledge_error( $this->sf_order, $message );
+
+			return;
+		}
+
 		//Add new order
 		$wc_order = wc_create_order();
 
@@ -97,18 +146,21 @@ class Order {
 			$wc_order->set_prices_include_tax( $this->payment->get_total() );
 			$wc_order->set_payment_method( $this->payment->get_method() );
 		} catch ( \Exception $exception ) {
-			ShoppingFeedHelper::get_logger()->error(
-				sprintf(
-				/* translators: %1$1s: Order id. %2$2s: Error message. */
-					__( 'Cant set payment to order  %1$1s => %2$2s', 'shopping-feed' ),
-					$wc_order->get_id(),
-					$exception->getMessage()
-				),
-				array(
-					'source' => 'shopping-feed',
-				)
+			$message = sprintf(
+			/* translators: %1$1s: Order id. %2$2s: Error message. */
+				__( 'Cant set payment to order  %1$1s => %2$2s', 'shopping-feed' ),
+				$wc_order->get_id(),
+				$exception->getMessage()
 			);
 
+			ShoppingFeedHelper::get_logger()->error(
+				$message,
+				[
+					'source' => 'shopping-feed',
+				]
+			);
+
+			Operations::acknowledge_error( $this->sf_order, $message );
 			return;
 		}
 
@@ -128,67 +180,33 @@ class Order {
 				$wc_order->add_item( $item );
 				do_action( 'sf_after_order_add_shipping', $item, $wc_order );
 			} catch ( \Exception $exception ) {
-				ShoppingFeedHelper::get_logger()->error(
-					sprintf(
-					/* translators: %1$1s: Order id. %2$2s: Error message. */
-						__( 'Cant set shipping for the order with the reference %1$1s', 'shopping-feed' ),
-						$this->sf_order->getReference(),
-						$exception->getMessage()
-					),
-					array(
-						'source' => 'shopping-feed',
-					)
+				$message = sprintf(
+				/* translators: %1$1s: Order id. %2$2s: Error message. */
+					__( 'Cant set shipping for the order with the reference %1$1s', 'shopping-feed' ),
+					$this->sf_order->getReference(),
+					$exception->getMessage()
 				);
 
+				ShoppingFeedHelper::get_logger()->error(
+					$message,
+					[
+						'source' => 'shopping-feed',
+					]
+				);
+
+				Operations::acknowledge_error( $this->sf_order, $message );
 				return;
 			}
 		}
 
-		/**
-		 * If we cant match any product in the order
-		 */
-		if ( empty( $this->products ) ) {
-			ShoppingFeedHelper::get_logger()->error(
-				sprintf(
-				/* translators: %1$1s: Order reference. %2$2s: Order id. */
-					__( 'Cant add order with no products  %1$1s => %2$2s', 'shopping-feed' ),
-					$this->sf_order->getReference(),
-					$this->sf_order->getId()
-				),
-				array(
-					'source' => 'shopping-feed',
-				)
-			);
-
-			return;
-		} else {
-			foreach ( $this->products as $product ) {
-
-				$item = new \WC_Order_Item_Product();
-				$item->set_props( $product['args'] );
-				$item->set_order_id( $wc_order->get_id() );
-
-				/* Do not create an order  if at least one product is out of stock */
-				if ( $product['outofstock'] ) {
-					ShoppingFeedHelper::get_logger()->error(
-						sprintf(
-						/* translators: %1$1s: Order id. %2$2s: SF reference */
-							__( 'Product(s) are unavailable, cannot create the order %1$1s with the reference : %2$2s', 'shopping-feed' ),
-							$this->sf_order->getId(),
-							$this->sf_order->getReference(),
-						),
-						[
-							'source' => 'shopping-feed',
-						]
-					);
-
-					return;
-				}
-
-				$item->save();
-				$wc_order->add_item( $item );
-				do_action( 'sf_after_order_add_item', $item, $wc_order );
-			}
+		// $this->products is not empty and all the products are in stock
+		foreach ( $this->products as $product ) {
+			$item = new \WC_Order_Item_Product();
+			$item->set_props( $product['args'] );
+			$item->set_order_id( $wc_order->get_id() );
+			$item->save();
+			$wc_order->add_item( $item );
+			do_action( 'sf_after_order_add_item', $item, $wc_order );
 		}
 
 		/**

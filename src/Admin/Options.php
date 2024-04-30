@@ -9,6 +9,7 @@ use ShoppingFeed\ShoppingFeedWC\Actions\Actions;
 use ShoppingFeed\ShoppingFeedWC\Feed\Generator;
 use ShoppingFeed\ShoppingFeedWC\Orders\Operations;
 use ShoppingFeed\ShoppingFeedWC\Sdk\Sdk;
+use ShoppingFeed\ShoppingFeedWC\Orders\Orders;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 use ShoppingFeed\ShoppingFeedWC\Admin;
 
@@ -144,6 +145,11 @@ class Options {
 		);
 
 		/**
+		 * Retrieve data from the form and add an action to retrieve orders
+		 */
+		add_action('admin_init', [$this, 'get_orders_by_start_date'] );
+
+		/**
 		 * Clean and register new cron once account option updated
 		 */
 		add_action(
@@ -153,6 +159,7 @@ class Options {
 				Actions::register_get_orders();
 			}
 		);
+
 
 		//get account options
 		$this->sf_account_options = ShoppingFeedHelper::get_sf_account_options();
@@ -164,6 +171,37 @@ class Options {
 		$this->sf_orders_options = ShoppingFeedHelper::get_sf_orders_options();
 		//get yoast options
 		$this->sf_yoast_options = ShoppingFeedHelper::get_sf_yoast_options();
+	}
+
+	/**
+	 * Retrieves orders by start date.
+	 *
+	 * @return void
+	 */
+	public function get_orders_by_start_date() {
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		if ( ! isset( $_POST['get_orders_nonce_field'] ) || ! wp_verify_nonce( $_POST['get_orders_nonce_field'], 'get_orders_nonce' ) ) {
+			return;
+		}
+
+		$since       = ! empty( $_POST['get_orders_by_start_date'] ) ? gmdate( 'c', strtotime( wc_clean( wp_unslash( $_POST['get_orders_by_start_date'] ) ) ) ) : '';
+		$key         = isset( $_POST['sf_account_key'] ) ? sanitize_text_field( $_POST['sf_account_key'] ) : '';
+		$sf_accounts = ShoppingFeedHelper::get_sf_account_options();
+		$sf_account  = $sf_accounts[ (int) $key ];
+
+		as_schedule_single_action(
+			time() + 5,
+			'sf_get_orders_action_custom',
+			[
+				'sf_username' => $sf_account['username'],
+				'since'      => $since,
+			],
+			'sf_feed_orders'
+		);
 	}
 
 	/**
@@ -1497,6 +1535,47 @@ class Options {
 				do_settings_sections( self::SF_ORDERS_SETTINGS_PAGE );
 				submit_button( __( 'Save changes', 'shopping-feed' ), 'sf__button' );
 				?>
+			</form>
+			<?php
+			$sf_accounts = ShoppingFeedHelper::get_sf_account_options();
+			$max_date    = date( 'Y-m-d', strtotime( '-14 days' ) ); // Calculate the minimum date (14 days ago)
+
+			?>
+			<br>
+			<form method="post" action="<?php echo esc_url_raw( add_query_arg( [ 'tab' => 'orders-settings' ], ShoppingFeedHelper::get_setting_link() ) ); ?>">
+				<h2>Retrieve orders from a custom starting date</h2>
+				<table class="form-table" role="presentation">
+					<tbody>
+					<tr>
+						<th>Select an account and a starting date</th>
+						<td>
+							<?php wp_nonce_field( 'get_orders_nonce', 'get_orders_nonce_field' ); ?>
+							<div style="display: flex; align-items: center;">
+								<select name="sf_account">
+									<?php foreach ( $sf_accounts as $key => $sf_account ) {
+										echo sprintf( '<option value="%s">%s</option>', esc_attr( $key ), esc_html( $sf_account['username'] ) );
+									}
+									?>
+								</select>
+								<input type="date"
+									   id="get_orders_start_date"
+									   name="get_orders_by_start_date"
+									   value="<?php echo esc_attr( $max_date ); ?>"
+									   max="<?php echo esc_attr( $max_date ); ?>"
+									   style="margin-left: 10px;"
+								>
+							</div>
+						</td>
+					</tr>
+					</tbody>
+				</table>
+				<p class="submit">
+					<input type="submit"
+						   name="submit_date"
+						   id="submit_date"
+						   class="button sf__button"
+						   value="Retrieve ordrers">
+				</p>
 			</form>
 		</div>
 		<?php

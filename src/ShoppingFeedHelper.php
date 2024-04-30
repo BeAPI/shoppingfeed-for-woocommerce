@@ -187,6 +187,16 @@ XML;
 		return $account_options[ $index ];
 	}
 
+	public static function get_sf_account_credentials_by_username( $username ) {
+		$account_options = self::get_sf_account_options();
+		$index           = array_search( $username, array_column( $account_options, 'username' ), true );
+		if ( false === $index || empty( $account_options[ $index ] ) ) {
+			return array();
+		}
+
+		return $account_options[ $index ];
+	}
+
 	/**
 	 * Get SF account by username.
 	 *
