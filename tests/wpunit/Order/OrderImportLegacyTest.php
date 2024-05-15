@@ -46,14 +46,13 @@ class OrderImportLegacyTest extends OrderImportTestCase {
 		$this->assertNotEmpty( $wc_order->get_shipping_first_name(), 'Assert shipping address is correctly set' );
 	}
 
-	public function test_order_are_created_with_failed_status_if_original_order_contain_out_of_stock_products() {
+	public function test_orders_are_not_created_in_woocommerce_if_they_contain_out_of_stock_products() {
 		$order_resource = $this->get_order_resource( 'order-no-stock' );
 		$sf_order       = new ShoppingFeed\ShoppingFeedWC\Orders\Order( $order_resource );
 		$sf_order->add();
 
 		$results  = wc_get_orders( [ Query::WC_META_SF_REFERENCE => $order_resource->getReference() ] );
-		$wc_order = reset( $results );
-		$this->assertEquals( $this->get_error_order_status(), $wc_order->get_status() );
+		$this->assertEmpty( $results );
 	}
 
 	public function test_orders_fulfilled_by_channel_dont_decrease_stock_when_imported() {
