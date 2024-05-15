@@ -112,8 +112,8 @@ class Order {
 		if ( ! empty( $missing_products_name ) ) {
 			$missing_products_name_to_string = implode( ', ', $missing_products_name );
 			$message                         = sprintf(
-			/* translators: %1$1s: Products */
-				__( 'Some product(s) are out of stock : %1$1s.', 'shopping-feed' ),
+			/* translators: %s: Products */
+				__( 'Some product(s) are out of stock : %s.', 'shopping-feed' ),
 				$missing_products_name_to_string,
 				$this->sf_order->getId(),
 				$this->sf_order->getReference(),
@@ -181,8 +181,8 @@ class Order {
 				do_action( 'sf_after_order_add_shipping', $item, $wc_order );
 			} catch ( \Exception $exception ) {
 				$message = sprintf(
-				/* translators: %1$1s: Order id. %2$2s: Error message. */
-					__( 'Cant set shipping for the order with the reference %1$1s', 'shopping-feed' ),
+				/* translators: %s: Order id. */
+					__( 'Cant set shipping for the order with the reference %s', 'shopping-feed' ),
 					$this->sf_order->getReference(),
 					$exception->getMessage()
 				);
