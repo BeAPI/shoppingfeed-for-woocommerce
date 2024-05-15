@@ -69,7 +69,7 @@ class Generator {
 	private function set_generator() {
 		if ( ! isset( $this->generator ) ) {
 			$this->generator = new ProductGenerator();
-			$this->generator->setPlatform( $this->platform->get_name(), $this->platform->get_version() );
+			$this->generator->setPlatform( $this->platform->get_name(), $this->platform->get_version() . '-module:' . SF_VERSION );
 			$this->generator->setUri( $this->uri );
 		}
 	}
