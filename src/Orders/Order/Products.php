@@ -97,6 +97,7 @@ class Products {
 		return array(
 			'args'         => $args,
 			'is_available' => $wc_product->is_in_stock() && $wc_product->has_enough_stock( $sf_product_quantity ),
+			'sf_ref'       => $sf_product->getReference(),
 		);
 	}
 

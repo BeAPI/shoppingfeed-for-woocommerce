@@ -106,15 +106,15 @@ class Order {
 		$missing_products_name = [];
 		foreach ( $this->products as $product ) {
 			if ( ! $product['is_available'] ) {
-				$missing_products_name[] = $product['args']['name'] . '(' . $product['args']['product_id'] . ')';
+				$missing_products_name[] = sprintf( '%s (SKU: %s)', $product['args']['name'], $product['sf_ref'] );
 			}
 		}
+
 		if ( ! empty( $missing_products_name ) ) {
-			$missing_products_name_to_string = implode( ', ', $missing_products_name );
-			$message                         = sprintf(
+			$message = sprintf(
 			/* translators: %s: Products */
 				__( 'Some product(s) are out of stock : %s.', 'shopping-feed' ),
-				$missing_products_name_to_string,
+				implode( ', ', $missing_products_name ),
 				$this->sf_order->getId(),
 				$this->sf_order->getReference(),
 			);
