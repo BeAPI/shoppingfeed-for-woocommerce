@@ -105,11 +105,11 @@ class Order {
 		// Do not create and order if at least one product is out of stock
 		$missing_products_name = [];
 		foreach ( $this->products as $product ) {
-			if ( $product['outofstock'] ) {
+			if ( ! $product['is_available'] ) {
 				$missing_products_name[] = $product['args']['name'] . '(' . $product['args']['product_id'] . ')';
 			}
 		}
-		if ( ! empty ( $missing_products_name ) ) {
+		if ( ! empty( $missing_products_name ) ) {
 			$missing_products_name_to_string = implode( ', ', $missing_products_name );
 			$message                         = sprintf(
 			/* translators: %1$1s: Products */
