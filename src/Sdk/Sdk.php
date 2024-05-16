@@ -74,7 +74,9 @@ class Sdk {
 			return false;
 		}
 
-		$main_shop = $session->getStores()->select( $sf_account['username'] );
+		// use the storeId saved in the account data if available and default to the username otherwise.
+		$store_id = ! empty( $sf_account['sf_store_id'] ) ? (int) $sf_account['sf_store_id'] : $sf_account['username'];
+		$main_shop = $session->getStores()->select( $store_id );
 		if ( empty( $main_shop ) ) {
 			ShoppingFeedHelper::get_logger()->error(
 				sprintf(
