@@ -405,7 +405,7 @@ class Options {
 		$accounts = ShoppingFeedHelper::get_sf_account_options();
 		foreach ( $accounts as &$account ) {
 			if ( isset( $_POST['store_id'][ $account['username'] ] ) ) {
-				$account['sf_store_id'] = wc_clean( wp_unslash( $_POST['store_id'][ $account['username'] ] ) );
+				$account['sf_store_id'] = (int) wc_clean( wp_unslash( $_POST['store_id'][ $account['username'] ] ) );
 			}
 		}
 		unset( $account );
