@@ -92,15 +92,24 @@ class Sdk {
 			return false;
 		}
 
-		//add storeId to account
-		$account_options = ShoppingFeedHelper::get_sf_account_options();
-		$index           = array_search( $sf_account['username'], array_column( $account_options, 'username' ), true );
-		if ( false === $index || empty( $account_options[ $index ] ) ) {
-			return false;
+		// add storeId and token to account data if missing
+		if ( ! isset( $sf_account['sf_store_id'] ) || ! isset( $sf_account['token'] ) ) {
+			$account_options = ShoppingFeedHelper::get_sf_account_options();
+			$index           = array_search( $sf_account['username'], array_column( $account_options, 'username' ), true );
+			if ( false === $index || empty( $account_options[ $index ] ) ) {
+				return false;
+			}
+
+			if ( ! isset( $sf_account['sf_store_id'] ) ) {
+				$account_options[ $index ]['sf_store_id'] = $main_shop->getId();
+			}
+
+			if ( ! isset( $sf_account['token'] ) ) {
+				$account_options[ $index ]['token'] = $session->getToken();
+			}
+
+			ShoppingFeedHelper::set_sf_account_options( $account_options );
 		}
-		$account_options[ $index ]['sf_store_id'] = $main_shop->getId();
-		$account_options[ $index ]['token']       = $session->getToken();
-		ShoppingFeedHelper::set_sf_account_options( $account_options );
 
 		return $main_shop;
 	}
