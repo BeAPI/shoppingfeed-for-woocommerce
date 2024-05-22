@@ -183,7 +183,7 @@ class Options {
 			return;
 		}
 
-		if ( ! isset( $_POST['get_orders_nonce_field'] ) || ! wp_verify_nonce( wp_unslash( $_POST['get_orders_nonce_field'] ), 'get_orders_nonce' ) ) {
+		if ( ! isset( $_POST['get_orders_nonce_field'] ) || ! wp_verify_nonce( wc_clean( wp_unslash( $_POST['get_orders_nonce_field'] ) ), 'get_orders_nonce' ) ) {
 			return;
 		}
 

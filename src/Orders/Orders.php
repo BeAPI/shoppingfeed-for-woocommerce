@@ -71,7 +71,7 @@ class Orders {
 		}
 
 		$order_api = $shop->getOrderApi();
-		$since =  ! empty($since) ? $since :  gmdate( 'c', strtotime( '14 days ago' ) );
+		$since = ! empty( $since ) ? $since : gmdate( 'c', strtotime( '14 days ago' ) );
 		$filters   = array(
 			'acknowledgment' => 'unacknowledged',
 			'status'         => ShoppingFeedHelper::sf_order_statuses_to_import(),

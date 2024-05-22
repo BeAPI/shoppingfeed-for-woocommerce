@@ -188,10 +188,10 @@ class Operations {
 	/**
 	 * Acknowledge order
 	 *
-	 * @param $order_id
-	 * @param $message
+	 * @param int $order_id
+	 * @param string $message
 	 */
-	public static function acknowledge_order( $order_id, $message ) {
+	public static function acknowledge_order( $order_id, $message = '' ) {
 		$ok = true;
 		try {
 			$operations = new self( $order_id );

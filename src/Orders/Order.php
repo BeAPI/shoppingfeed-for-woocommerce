@@ -83,52 +83,21 @@ class Order {
 	 */
 	public function add() {
 
-		// Do not create and order with no products
-		if ( empty( $this->products ) ) {
-			$message = sprintf(
-			/* translators: %s: Order reference */
-				__( 'Cannot add order with no products : %s', 'shopping-feed' ),
-				$this->sf_order->getReference()
-			);
+		// Only run order validation if the order is fulfilled by the merchant.
+		if ( ! $this->is_fulfilled_by_channel( $this->sf_order ) ) {
+			$error = $this->validate_order();
+			if ( is_wp_error( $error ) ) {
+				ShoppingFeedHelper::get_logger()->error(
+					$error->get_error_message(),
+					[
+						'source' => 'shopping-feed',
+					]
+				);
 
-			ShoppingFeedHelper::get_logger()->error(
-				$message,
-				[
-					'source' => 'shopping-feed',
-				]
-			);
+				Operations::acknowledge_error( $this->sf_order, $error->get_error_message() );
 
-			Operations::acknowledge_error( $this->sf_order, $message );
-			return;
-		}
-
-		// Do not create and order if at least one product is out of stock
-		$missing_products_name = [];
-		foreach ( $this->products as $product ) {
-			if ( ! $product['is_available'] ) {
-				$missing_products_name[] = sprintf( '%s (SKU: %s)', $product['args']['name'], $product['sf_ref'] );
+				return;
 			}
-		}
-
-		if ( ! empty( $missing_products_name ) ) {
-			$message = sprintf(
-			/* translators: %s: Products */
-				__( 'Some product(s) are out of stock : %s.', 'shopping-feed' ),
-				implode( ', ', $missing_products_name ),
-				$this->sf_order->getId(),
-				$this->sf_order->getReference(),
-			);
-
-			ShoppingFeedHelper::get_logger()->error(
-				$message,
-				[
-					'source' => 'shopping-feed',
-				]
-			);
-
-			Operations::acknowledge_error( $this->sf_order, $message );
-
-			return;
 		}
 
 		//Add new order
@@ -161,6 +130,7 @@ class Order {
 			);
 
 			Operations::acknowledge_error( $this->sf_order, $message );
+
 			return;
 		}
 
@@ -195,6 +165,7 @@ class Order {
 				);
 
 				Operations::acknowledge_error( $this->sf_order, $message );
+
 				return;
 			}
 		}
@@ -241,9 +212,50 @@ class Order {
 		do_action( 'sf_before_add_order', $wc_order );
 
 		//Acknowledge the order so we will not get it next time
-		Operations::acknowledge_order( $wc_order->get_id(), '' );
+		Operations::acknowledge_order( $wc_order->get_id() );
 	}
 
+	/**
+	 * Check if the order can be imported in Woocommerce.
+	 *
+	 * Ensure the order is not empty and there are enough stock for each product.
+	 *
+	 * @return null|\WP_Error
+	 */
+	private function validate_order() {
+		// Do not create and order with no products
+		if ( empty( $this->products ) ) {
+			$message = sprintf(
+			/* translators: %s: Order reference */
+				__( 'Cannot add order with no products : %s', 'shopping-feed' ),
+				$this->sf_order->getReference()
+			);
+
+			return new \WP_Error( 'sf-invalid-order', $message );
+		}
+
+		// Do not create and order if at least one product is out of stock
+		$missing_products_name = [];
+		foreach ( $this->products as $product ) {
+			if ( ! $product['is_available'] ) {
+				$missing_products_name[] = sprintf( '%s (SKU: %s)', $product['args']['name'], $product['sf_ref'] );
+			}
+		}
+
+		if ( ! empty( $missing_products_name ) ) {
+			$message = sprintf(
+			/* translators: %s: Products */
+				__( 'Some product(s) are out of stock : %s.', 'shopping-feed' ),
+				implode( ', ', $missing_products_name ),
+				$this->sf_order->getId(),
+				$this->sf_order->getReference(),
+			);
+
+			return new \WP_Error( 'sf-invalid-order', $message );
+		}
+
+		return null;
+	}
 
 	/**
 	 * Check if the order already exists in WP
