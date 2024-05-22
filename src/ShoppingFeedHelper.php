@@ -171,8 +171,10 @@ XML;
 	}
 
 	/**
-	 * @param $account_id
-	 * @psalm-suppress all
+	 * Get SF account by store id.
+	 *
+	 * @param int|string $account_id
+	 *
 	 * @return array
 	 */
 	public static function get_sf_account_credentials( $account_id ) {
@@ -184,6 +186,24 @@ XML;
 
 		return $account_options[ $index ];
 	}
+
+	/**
+	 * Get SF account by username.
+	 *
+	 * @param string $username
+	 *
+	 * @return array
+	 */
+	public static function get_sf_account_credentials_by_username( $username ) {
+		$account_options = self::get_sf_account_options();
+		$index           = array_search( $username, array_column( $account_options, 'username' ), true );
+		if ( false === $index || empty( $account_options[ $index ] ) ) {
+			return array();
+		}
+
+		return $account_options[ $index ];
+	}
+
 
 	/**
 	 * Return SF categories to export
@@ -229,6 +249,15 @@ XML;
 		}
 
 		return $product_identifier;
+	}
+
+	/**
+	 * Should out of stock products be included in the feed ?
+	 *
+	 * @return bool true if the products should be in the feed, false otherwise.
+	 */
+	public static function show_out_of_stock_products_in_feed() {
+		return 'on' === self::get_sf_feed_options( 'out_of_stock_products_in_feed' );
 	}
 
 	/**

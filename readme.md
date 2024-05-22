@@ -2,19 +2,30 @@
 
 * Contributors: ShoppingFeed, BeAPI
 * Tags: shoppingfeed, marketplace, woocommerce, woocommerce shoppingfeed, create woocommerce products shoppingfeed, products feed, generate shoppingfeed, amazon, Jet, Walmart, many marketplace, import orders
-* Stable tag: 6.5.1
-* Version: 6.5.1
+* Stable tag: 6.6.0
+* Version: 6.6.0
 * Requires PHP: 7.3
 * Requires at least: 5.7
-* Tested up to: 6.4
+* Tested up to: 6.5
 * WC requires at least: 5.1.0
-* WC tested up to: 8.5
+* WC tested up to: 8.8
 
 ## Upgrade Notice
 
 > Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
 
 ## Changelog
+* 6.6.0
+  * Feed : Fix cases where some out-of-stock products would appear in the feed.
+  * Feed : A new option to include out-of-stock products in the feed is available.
+  * Feed : Update quantity calculations to be more accurate in various cases
+  * Feed : Update feed metadata to include Woocommerce and plugin version.
+  * Orders : Don't create orders in Woocommerce if stock is not sufficient and sent a custom acknowledgment error.
+  * Orders : A new tools is available to import unacknowledged orders created more than two weeks ago.
+  * Account : Refresh the account settings.
+  * Account : A new option to change the default store is available.
+  * Shipping (AST) : Handle multiple tracking numbers.
+  * Misc : Fix remaining conflict in prefixed dependencies.
 * 6.5.1
   * Feed : add options to disable stock and price synchronization with ShoppingFeed when a product change.
 * 6.5.0

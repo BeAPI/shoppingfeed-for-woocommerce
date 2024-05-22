@@ -7,7 +7,8 @@ defined( 'ABSPATH' ) || exit;
 use Exception;
 use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Order\{OrderDomain,
 	OrderOperation,
-	OrderOperationResult};
+	OrderOperationResult,
+	OrderResource};
 use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Store\StoreResource;
 use ShoppingFeed\ShoppingFeedWC\Sdk\Sdk;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
@@ -187,10 +188,10 @@ class Operations {
 	/**
 	 * Acknowledge order
 	 *
-	 * @param $order_id
-	 * @param $message
+	 * @param int $order_id
+	 * @param string $message
 	 */
-	public static function acknowledge_order( $order_id, $message ) {
+	public static function acknowledge_order( $order_id, $message = '' ) {
 		$ok = true;
 		try {
 			$operations = new self( $order_id );
@@ -235,5 +236,39 @@ class Operations {
 			'cancel' => __( 'Canceled orders', 'shopping-feed' ),
 			'ship'   => __( 'Shipped orders', 'shopping-feed' ),
 		);
+	}
+
+	/**
+	 * acknowledge SF that an error occured while creating a WC order
+	 *
+	 * @param OrderResource $sf_order
+	 * @param $error
+	 *
+	 * @author Stéphane Gillot
+	 */
+	public static function acknowledge_error( OrderResource $sf_order, $error ) {
+		$shop = Sdk::get_sf_account_shop( $sf_order->toArray()['storeId'] );
+		if ( ! $shop ) {
+			ShoppingFeedHelper::get_logger()->notice(
+				__( 'Could not create the $shop while acknowledging errors', 'shopping-feed' )
+			);
+			return;
+		}
+
+		try {
+			$acknowledge_operation = new OrderOperation();
+			$acknowledge_operation->acknowledge(
+				$sf_order->getReference(),
+				$sf_order->getChannel()->getName(),
+				'',
+				'error',
+				$error
+			);
+			$shop->getOrderApi()->execute( $acknowledge_operation );
+		} catch ( \Exception $exception ) {
+			ShoppingFeedHelper::get_logger()->notice(
+				__( 'Could not acknowledge SF that an error occurred during the create order process', 'shopping-feed' )
+			);
+		}
 	}
 }

@@ -6,6 +6,7 @@ namespace ShoppingFeed\ShoppingFeedWC\Products;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
+use WP_Query;
 
 class Product {
 
@@ -51,8 +52,6 @@ class Product {
 		$this->brand              = $this->set_brand();
 		$this->category           = $this->set_category();
 		$this->weight             = $this->product->get_weight();
-
-		return $this;
 	}
 
 	/**
@@ -133,21 +132,22 @@ class Product {
 	 */
 	public function get_quantity() {
 		if ( $this->product instanceof \WC_Product_Variable ) {
-			$childrens = $this->product->get_children();
-			if ( empty( $childrens ) ) {
-				return 0;
+			$quantity = 0;
+			if ( $this->product->has_child() ) {
+				foreach ( $this->product->get_children() as $child ) {
+					$wc_product_variation = wc_get_product( $child );
+					if ( ! $wc_product_variation ) {
+						continue;
+					}
+
+					$quantity += $this->_get_quantity( $wc_product_variation );
+				}
 			}
 
-			$total_stock = 0;
-			foreach ( $childrens as $children ) {
-				$wc_product_variation = wc_get_product( $children );
-				$total_stock          += intval( ! is_null( $wc_product_variation->get_stock_quantity() ) ? $wc_product_variation->get_stock_quantity() : ShoppingFeedHelper::get_default_product_quantity() );
-			}
-
-			return $total_stock;
-		} else {
-			return ! is_null( $this->product->get_stock_quantity() ) ? $this->product->get_stock_quantity() : ShoppingFeedHelper::get_default_product_quantity();
+			return $quantity;
 		}
+
+		return $this->_get_quantity( $this->product );
 	}
 
 	/**
@@ -374,38 +374,49 @@ class Product {
 	}
 
 	/**
+	 * Get product's variations.
+	 *
+	 * @param bool $for_feed enable custom checks when loading variations to include in the products feed.
+	 *
 	 * @return array
 	 */
-	public function get_variations() {
-		if ( 'variable' === \WC_Product_Factory::get_product_type( $this->id ) ) {
-			$product               = new \WC_Product_Variable( $this->id );
-			$wc_product_variations = $product->get_available_variations();
-			if ( empty( $wc_product_variations ) ) {
-				return array();
-			}
-
-			$variations = array();
-			foreach ( $wc_product_variations as $wc_product_variation ) {
-				$wc_product_variation  = new \WC_Product_Variation( $wc_product_variation['variation_id'] );
-				$variation             = array();
-				$variation['id']       = $wc_product_variation->get_id();
-				$variation['sku']      = ( 'id' === $this->product_identifier ) ? $wc_product_variation->get_id() : $wc_product_variation->get_sku();
-				$variation['ean']      = $this->get_ean( $wc_product_variation );
-				$variation['quantity'] = ! is_null( $wc_product_variation->get_stock_quantity() ) ? $wc_product_variation->get_stock_quantity() : ShoppingFeedHelper::get_default_product_quantity();
-				$variation['price']    = ! is_null( $wc_product_variation->get_regular_price() ) ? $wc_product_variation->get_regular_price() : $wc_product_variation->get_price();
-				$variation['discount'] = $wc_product_variation->get_sale_price();
-				if ( ! empty( get_the_post_thumbnail_url( $wc_product_variation->get_id(), 'full' ) ) ) {
-					$variation['image_main'] = get_the_post_thumbnail_url( $wc_product_variation->get_id(), 'full' );
-				}
-
-				$variation['attributes'] = $this->get_variation_attributes( $wc_product_variation );
-				$variations []           = $variation;
-			}
-
-			return $variations;
+	public function get_variations( $for_feed = false ) {
+		if ( 'variable' !== \WC_Product_Factory::get_product_type( $this->id ) ) {
+			return array();
 		}
 
-		return array();
+		$product                      = new \WC_Product_Variable( $this->id );
+		$show_out_of_stock_variations = $for_feed && ShoppingFeedHelper::show_out_of_stock_products_in_feed();
+		$variations                   = [];
+		foreach ( $product->get_children() as $variation_id ) {
+			$variation = wc_get_product( $variation_id );
+
+			// Hide out of stock variations if '$show_out_of_stock_variations' is true.
+			if ( ! $variation || ! $variation->exists() || ( ! $show_out_of_stock_variations && ! $variation->is_in_stock() ) ) {
+				continue;
+			}
+
+			// Filter 'woocommerce_hide_invisible_variations' to optionally hide invisible variations (disabled variations and variations with empty price).
+			if ( apply_filters( 'woocommerce_hide_invisible_variations', true, $variation->get_id(), $variation ) && ! $variation->variation_is_visible() ) {
+				continue;
+			}
+
+			$variation_data             = [];
+			$variation_data['id']       = $variation->get_id();
+			$variation_data['sku']      = ( 'id' === $this->product_identifier ) ? $variation->get_id() : $variation->get_sku();
+			$variation_data['ean']      = $this->get_ean( $variation );
+			$variation_data['quantity'] = $this->_get_quantity( $variation );
+			$variation_data['price']    = ! is_null( $variation->get_regular_price() ) ? $variation->get_regular_price() : $variation->get_price();
+			$variation_data['discount'] = $variation->get_sale_price();
+			if ( ! empty( get_the_post_thumbnail_url( $variation->get_id(), 'full' ) ) ) {
+				$variation_data['image_main'] = get_the_post_thumbnail_url( $variation->get_id(), 'full' );
+			}
+
+			$variation_data['attributes'] = $this->get_variation_attributes( $variation );
+			$variations[]                 = $variation_data;
+		}
+
+		return $variations;
 	}
 
 	/**
@@ -451,5 +462,21 @@ class Product {
 	 */
 	public function get_extra_fields() {
 		return apply_filters( 'shopping_feed_extra_fields', [], $this->product );
+	}
+
+	/**
+	 * Get product's stock quantity.
+	 *
+	 * @param \WC_Product $product
+	 *
+	 * @return int
+	 */
+	private function _get_quantity( $product ) {
+		$quantity = 0;
+		if ( $product->is_in_stock() ) {
+			$quantity = $product->managing_stock() ? $product->get_stock_quantity() : ShoppingFeedHelper::get_default_product_quantity();
+		}
+
+		return $quantity;
 	}
 }

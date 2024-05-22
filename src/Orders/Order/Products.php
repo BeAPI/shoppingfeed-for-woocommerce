@@ -94,29 +94,11 @@ class Products {
 			'quantity'     => $sf_product_quantity,
 		);
 
-		$wc_product_quantity = $wc_product->get_stock_quantity() ? $wc_product->get_stock_quantity() : 0;
-
 		return array(
-			'args'             => $args,
-			'outofstock'       => ! $this->validate_product( $wc_product, $sf_product_quantity ),
-			'product_quantity' => $wc_product_quantity,
-			'quantity_needed'  => $sf_product_quantity - $wc_product_quantity,
+			'args'         => $args,
+			'is_available' => $wc_product->is_in_stock() && $wc_product->has_enough_stock( $sf_product_quantity ),
+			'sf_ref'       => $sf_product->getReference(),
 		);
-	}
-
-	/**
-	 * @param $wc_product WC_Product
-	 * @param $ordered_quantity int
-	 *
-	 * @return bool
-	 */
-	private function validate_product( $wc_product, $ordered_quantity ) {
-		//automatically validate product if backorders or allowed and managing stock is disabled
-		if ( $wc_product->backorders_allowed() || ! $wc_product->managing_stock() ) {
-			return true;
-		}
-
-		return $ordered_quantity <= $wc_product->get_stock_quantity();
 	}
 
 	/**

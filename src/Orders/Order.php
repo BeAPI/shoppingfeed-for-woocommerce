@@ -82,6 +82,24 @@ class Order {
 	 * Add new order
 	 */
 	public function add() {
+
+		// Only run order validation if the order is fulfilled by the merchant.
+		if ( ! $this->is_fulfilled_by_channel( $this->sf_order ) ) {
+			$error = $this->validate_order();
+			if ( is_wp_error( $error ) ) {
+				ShoppingFeedHelper::get_logger()->error(
+					$error->get_error_message(),
+					[
+						'source' => 'shopping-feed',
+					]
+				);
+
+				Operations::acknowledge_error( $this->sf_order, $error->get_error_message() );
+
+				return;
+			}
+		}
+
 		//Add new order
 		$wc_order = wc_create_order();
 
@@ -97,17 +115,23 @@ class Order {
 			$wc_order->set_prices_include_tax( $this->payment->get_total() );
 			$wc_order->set_payment_method( $this->payment->get_method() );
 		} catch ( \Exception $exception ) {
-			ShoppingFeedHelper::get_logger()->error(
-				sprintf(
-				/* translators: %1$1s: Order id. %2$2s: Error message. */
-					__( 'Cant set payment to order  %1$1s => %2$2s', 'shopping-feed' ),
-					$wc_order->get_id(),
-					$exception->getMessage()
-				),
-				array(
-					'source' => 'shopping-feed',
-				)
+			$message = sprintf(
+			/* translators: %1$1s: Order id. %2$2s: Error message. */
+				__( 'Cant set payment to order  %1$1s => %2$2s', 'shopping-feed' ),
+				$wc_order->get_id(),
+				$exception->getMessage()
 			);
+
+			ShoppingFeedHelper::get_logger()->error(
+				$message,
+				[
+					'source' => 'shopping-feed',
+				]
+			);
+
+			Operations::acknowledge_error( $this->sf_order, $message );
+
+			return;
 		}
 
 		if ( ! empty( $this->shipping->get_shipping_rate() ) ) {
@@ -126,61 +150,34 @@ class Order {
 				$wc_order->add_item( $item );
 				do_action( 'sf_after_order_add_shipping', $item, $wc_order );
 			} catch ( \Exception $exception ) {
-				ShoppingFeedHelper::get_logger()->error(
-					sprintf(
-					/* translators: %1$1s: Order id. %2$2s: Error message. */
-						__( 'Cant set shipping to order  %1$1s => %2$2s', 'shopping-feed' ),
-						$wc_order->get_id(),
-						$exception->getMessage()
-					),
-					array(
-						'source' => 'shopping-feed',
-					)
+				$message = sprintf(
+				/* translators: %s: Order id. */
+					__( 'Cant set shipping for the order with the reference %s', 'shopping-feed' ),
+					$this->sf_order->getReference(),
+					$exception->getMessage()
 				);
+
+				ShoppingFeedHelper::get_logger()->error(
+					$message,
+					[
+						'source' => 'shopping-feed',
+					]
+				);
+
+				Operations::acknowledge_error( $this->sf_order, $message );
+
+				return;
 			}
 		}
 
-		$valid = true;
-		/**
-		 * If we cant match any product in the order
-		 */
-		if ( empty( $this->products ) ) {
-			$valid = false;
-			ShoppingFeedHelper::get_logger()->error(
-				sprintf(
-				/* translators: %1$1s: Order reference. %2$2s: Order id. */
-					__( 'Cant add order with no products  %1$1s => %2$2s', 'shopping-feed' ),
-					$this->sf_order->getReference(),
-					$this->sf_order->getId()
-				),
-				array(
-					'source' => 'shopping-feed',
-				)
-			);
-		} else {
-			foreach ( $this->products as $product ) {
-				$item = new \WC_Order_Item_Product();
-				$item->set_props( $product['args'] );
-				$item->set_order_id( $wc_order->get_id() );
-				/**
-				 * If we the product is out of stock we add a meta data to mark it and set the order as failed to notify the merchant
-				 */
-				if ( $product['outofstock'] ) {
-					$valid = false;
-					$item->add_meta_data(
-						'OUT_OF_STOCK',
-						sprintf(
-						/* translators: %1$1s: Product quantity. %2$2s: Quantity needed. */
-							__( 'Available: %1$1s - Need : %2$2s', 'shopping-feed' ),
-							$product['product_quantity'],
-							$product['quantity_needed']
-						)
-					);
-				}
-				$item->save();
-				$wc_order->add_item( $item );
-				do_action( 'sf_after_order_add_item', $item, $wc_order );
-			}
+		// $this->products is not empty and all the products are in stock
+		foreach ( $this->products as $product ) {
+			$item = new \WC_Order_Item_Product();
+			$item->set_props( $product['args'] );
+			$item->set_order_id( $wc_order->get_id() );
+			$item->save();
+			$wc_order->add_item( $item );
+			do_action( 'sf_after_order_add_item', $item, $wc_order );
 		}
 
 		/**
@@ -208,26 +205,57 @@ class Order {
 			}
 		}
 
-		/**
-		 * If one or more products are unavailable
-		 */
-		if ( $valid ) {
-			$wc_order->set_status( $this->status->get_name(), $this->status->get_note() );
-			$message = '';
-		} else {
-			$message = __( 'Products are unavailable', 'shopping-feed' );
-			$wc_order->set_status( 'wc-failed', $message );
-		}
-
+		$wc_order->set_status( $this->status->get_name(), $this->status->get_note() );
 		$wc_order->calculate_totals( false );
 		$wc_order->save();
 
 		do_action( 'sf_before_add_order', $wc_order );
 
 		//Acknowledge the order so we will not get it next time
-		Operations::acknowledge_order( $wc_order->get_id(), $message );
+		Operations::acknowledge_order( $wc_order->get_id() );
 	}
 
+	/**
+	 * Check if the order can be imported in Woocommerce.
+	 *
+	 * Ensure the order is not empty and there are enough stock for each product.
+	 *
+	 * @return null|\WP_Error
+	 */
+	private function validate_order() {
+		// Do not create and order with no products
+		if ( empty( $this->products ) ) {
+			$message = sprintf(
+			/* translators: %s: Order reference */
+				__( 'Cannot add order with no products : %s', 'shopping-feed' ),
+				$this->sf_order->getReference()
+			);
+
+			return new \WP_Error( 'sf-invalid-order', $message );
+		}
+
+		// Do not create and order if at least one product is out of stock
+		$missing_products_name = [];
+		foreach ( $this->products as $product ) {
+			if ( ! $product['is_available'] ) {
+				$missing_products_name[] = sprintf( '%s (SKU: %s)', $product['args']['name'], $product['sf_ref'] );
+			}
+		}
+
+		if ( ! empty( $missing_products_name ) ) {
+			$message = sprintf(
+			/* translators: %s: Products */
+				__( 'Some product(s) are out of stock : %s.', 'shopping-feed' ),
+				implode( ', ', $missing_products_name ),
+				$this->sf_order->getId(),
+				$this->sf_order->getReference(),
+			);
+
+			return new \WP_Error( 'sf-invalid-order', $message );
+		}
+
+		return null;
+	}
 
 	/**
 	 * Check if the order already exists in WP
