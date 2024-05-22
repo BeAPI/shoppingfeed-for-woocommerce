@@ -146,7 +146,7 @@ class AsyncGenerator extends Generator {
 
 		$skelton = simplexml_load_string( ShoppingFeedHelper::get_feed_skeleton() );
 		$this->simplexml_import_xml( $skelton->metadata, $products, true );
-		$skelton->metadata->platform   = sprintf( 'WooCommerce:%s', ShoppingFeedHelper::get_wc_version() );
+		$skelton->metadata->platform = sprintf( 'WooCommerce:%s-module:%s', ShoppingFeedHelper::get_wc_version(), SF_VERSION );
 		$skelton->metadata->startedAt  = $last_started_at;
 		$skelton->metadata->finishedAt = $last_finished_at;
 		$skelton->metadata->invalid    = $xml_invalid;

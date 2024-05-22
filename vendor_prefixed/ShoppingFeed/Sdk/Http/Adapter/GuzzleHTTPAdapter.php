@@ -140,7 +140,7 @@ class GuzzleHTTPAdapter implements Http\Adapter\AdapterInterface
     private function checkDependency()
     {
         if (! interface_exists(GuzzleHttp\ClientInterface::class)
-            || (defined('\GuzzleHttp\ClientInterface::VERSION')
+            || (defined('\ShoppingFeed\ShoppingFeedWC\Dependencies\GuzzleHttp\ClientInterface::VERSION')
             && version_compare(GuzzleHttp\ClientInterface::VERSION, '7', '>='))
         ) {
             throw new Http\Exception\MissingDependencyException(

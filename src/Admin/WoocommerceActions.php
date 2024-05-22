@@ -117,6 +117,19 @@ class WoocommerceActions {
 					}
 				);
 			}
+
+			add_action(
+				'sf_get_orders_action_custom',
+				function ( $sf_username, $since ) {
+					$sf_account = ShoppingFeedHelper::get_sf_account_credentials_by_username( $sf_username );
+					if ( empty( $sf_account ) ) {
+						return new \WP_Error( 'sf-invalid-account', 'no account fot the username.' );
+					}
+					Orders::get_instance()->get_orders( $sf_account, $since );
+				},
+				10,
+				2
+			);
 		}
 
 		//Acknowledge Remain Order
