@@ -53,7 +53,7 @@ class Orders {
 	/**
 	 * Get Orders from SF
 	 */
-	public function get_orders( $sf_account ) {
+	public function get_orders( $sf_account, $since = '' ) {
 		$shop = Sdk::get_sf_shop( $sf_account );
 
 		if ( ! $shop instanceof StoreResource ) {
@@ -71,10 +71,11 @@ class Orders {
 		}
 
 		$order_api = $shop->getOrderApi();
+		$since = ! empty( $since ) ? $since : gmdate( 'c', strtotime( '14 days ago' ) );
 		$filters   = array(
 			'acknowledgment' => 'unacknowledged',
 			'status'         => ShoppingFeedHelper::sf_order_statuses_to_import(),
-			'since'          => gmdate( 'c', strtotime( '14 days ago' ) ),
+			'since'          => $since,
 		);
 
 		$orders_options               = ShoppingFeedHelper::get_sf_orders_options();
