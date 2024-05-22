@@ -59,7 +59,7 @@ class Orders {
 		if ( ! $shop instanceof StoreResource ) {
 			ShoppingFeedHelper::get_logger()->error(
 				sprintf(
-				/* translators: %s: Error message. */
+					/* translators: %s: Error message. */
 					__( 'Cannot retrieve shop from SDK for account : %s', 'shopping-feed' ),
 					$sf_account['username']
 				),
