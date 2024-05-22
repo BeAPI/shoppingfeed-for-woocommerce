@@ -139,14 +139,15 @@ class Generator {
 				}
 
 				if ( ! empty( $sf_product->get_weight() ) ) {
-					$product->setWeight( $sf_product->get_weight() );
+					$product->setWeight( (float) $sf_product->get_weight() );
 				}
 
 				if ( ! empty( $sf_product->get_category_name() ) ) {
 					$product->setCategory( $sf_product->get_category_name(), $sf_product->get_category_link() );
 				}
 
-				if ( ! empty( $sf_product->get_attributes() ) ) {
+				// For variable products, don't include attributes. They will be available in the variations.
+				if ( ! $sf_product->has_variations() && ! empty( $sf_product->get_attributes() ) ) {
 					$product->setAttributes( $sf_product->get_attributes() );
 				}
 
@@ -182,10 +183,12 @@ class Generator {
 				$sf_product = reset( $sf_product );
 				/** @var Product $sf_product */
 
-				if ( empty( $sf_product->get_variations() ) ) {
+				$sf_product_variations = $sf_product->get_variations( true );
+
+				if ( empty( $sf_product_variations ) ) {
 					return;
 				}
-				foreach ( $sf_product->get_variations() as $sf_product_variation ) {
+				foreach ( $sf_product_variations as $sf_product_variation ) {
 					$variation = $product->createVariation();
 
 					$variation

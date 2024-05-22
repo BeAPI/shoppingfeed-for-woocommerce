@@ -860,6 +860,26 @@ class Options {
 			'sf_feed_settings_categories'
 		);
 
+		// Show out of stock products in feed
+		add_settings_field(
+			'out_of_stock_products_in_feed',
+			__( 'Include out of stock products in the feed', 'shopping-feed' ),
+			function () {
+				?>
+				<label>
+					<input
+						type="checkbox"
+						name="<?php echo esc_attr( sprintf( '%s[out_of_stock_products_in_feed]', self::SF_FEED_OPTIONS ) ); ?>"
+						<?php checked( $this->sf_feed_options['out_of_stock_products_in_feed'], 'on' ); ?>
+					/>
+				</label>
+
+				<?php
+			},
+			self::SF_FEED_SETTINGS_PAGE,
+			'sf_feed_settings_categories'
+		);
+
 		//Identifier Field
 		add_settings_field(
 			'category_display_mode',

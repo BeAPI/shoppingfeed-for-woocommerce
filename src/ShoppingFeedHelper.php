@@ -252,6 +252,15 @@ XML;
 	}
 
 	/**
+	 * Should out of stock products be included in the feed ?
+	 *
+	 * @return bool true if the products should be in the feed, false otherwise.
+	 */
+	public static function show_out_of_stock_products_in_feed() {
+		return 'on' === self::get_sf_feed_options( 'out_of_stock_products_in_feed' );
+	}
+
+	/**
 	 * Return display mode for category
 	 * @return string
 	 */
