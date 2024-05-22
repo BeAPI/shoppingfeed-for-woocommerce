@@ -1,39 +1,29 @@
-# Windows image file caches
-Thumbs.db
-ehthumbs.db
-
-# Folder config file
-Desktop.ini
-
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
-
-# Mac
-.DS_Store
-
-# Sublime
-*.sublime-project
-*.sublime-workspace
-
-# PhpStorm
+.git
 .idea
-
-# Eclipse
-*.pydevproject
-.project
-.metadata
-build/
-tmp/
-
-# Grunt
+.github
+bin
 node_modules
-
-# Vendor
-vendor
-
-# Temporary files
-*~
-
-# Project
-wordpress/
-app
+tests
+wordpress
+.distignore
+.dockerignore
+.DS_Store
+.editorconfig
+.env
+.env.testing
+.gitignore
+.lando.dist.yml
+.plugin-data
+codeception.dist.yml
+composer.json
+composer.lock
+grumphp.yml
+gulpfile.js
+LICENCE
+old-bitbucket-pipelines.yml
+package.json
+package-lock.json
+phpcs.xml
+psalm.xml
+readme.md
+wp-cli.yml
