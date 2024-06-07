@@ -85,6 +85,28 @@ class OrderImportLegacyTest extends OrderImportTestCase {
 		$this->assertFalse( ShoppingFeed\ShoppingFeedWC\Orders\Order::exists( $order_resource_bis ) );
 	}
 
+	public function test_code_nif_is_imported () : void {
+		$order_resource = $this->get_order_resource( 'order-sf-nif' );
+		$sf_order       = new ShoppingFeed\ShoppingFeedWC\Orders\Order( $order_resource );
+		$sf_order->add();
+
+		$results  = wc_get_orders( [ Query::WC_META_SF_REFERENCE => $order_resource->getReference() ] );
+		$wc_order = reset( $results );
+
+		$this->assertEquals('210474114', $wc_order->get_meta( 'sf_nif' ));
+	}
+
+	public function test_code_sn_nif_meta_exists(): void {
+		$order_resource = $this->get_order_resource( 'simple-order' );
+		$sf_order       = new ShoppingFeed\ShoppingFeedWC\Orders\Order( $order_resource );
+		$sf_order->add();
+
+		$results  = wc_get_orders( [ Query::WC_META_SF_REFERENCE => $order_resource->getReference() ] );
+		$wc_order = reset( $results );
+
+		$this->assertEmpty( $wc_order->get_meta( 'sf_nif' ) );
+	}
+
 	public function custom_orders_table( $value ) {
 		return 'no';
 	}
