@@ -6,6 +6,13 @@ on:
   push:
     branches:
       - develop
+    # Only run if PHP-related files changed.
+    paths:
+      - '.github/workflows/tests.yml'
+      - '**.php'
+      - 'codeception.dist.yml'
+      - 'composer.json'
+      - 'composer.lock'
 
 # Cancels all previous workflow runs for pull requests that have not completed.
 concurrency:
