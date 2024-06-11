@@ -109,6 +109,7 @@ class WoocommerceActions {
 				)
 			);
 		} else {
+			// LEGACY : kept for back-compatibility
 			foreach ( $sf_accounts as $key => $sf_account ) {
 				add_action(
 					'sf_get_orders_action_' . $key,
@@ -117,6 +118,18 @@ class WoocommerceActions {
 					}
 				);
 			}
+
+			add_action(
+				'sf_sync_orders',
+				function ( $sf_account ) {
+					$sf_accounts = ShoppingFeedHelper::get_sf_account_options();
+					if ( ! isset( $sf_accounts[ $sf_account ] ) ) {
+						return new \WP_Error( 'sf-invalid-account', 'Unknown account reference ' . $sf_account );
+					}
+
+					Orders::get_instance()->get_orders( $sf_accounts[ $sf_account ] );
+				}
+			);
 
 			add_action(
 				'sf_get_orders_action_custom',
