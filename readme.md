@@ -326,8 +326,12 @@ function your_custom_variation_images_function( $images, $wc_product, $variation
 ### Local environment
 
 Using [Lando](https://lando.dev/), you can start a local environment with all the required plugins and default dataset
-```
+```bash
+# Start local env
 lando start
+
+# Configure and load default dataset
+lando setup-env
 ```
 
 The environment will be available at https://shoppingfeed-for-woocommerce.lndo.site
@@ -339,31 +343,31 @@ The environment will be available at https://shoppingfeed-for-woocommerce.lndo.s
 Tests are handle through [WPBrowser](https://wpbrowser.wptestkit.dev/) built around the [Codeception framework](https://codeception.com/). [Lando](https://lando.dev/) is used to have a fully working environment.
 
 **To run all tests suite :**
-```
+```bash
 lando start
 lando tests
 ```
 
 **To run the Unit tests suite :**
-```
+```bash
 lando start
 lando test-unit
 ```
 
 **To run the WPUnit tests suite :**
-```
+```bash
 lando start
 lando test-wpunit
 ```
 
 **To run the functional tests suite :**
-```
+```bash
 lando start
 lando test-functional
 ```
 
 **To run the acceptance tests suite :**
-```
+```bash
 lando start
 lando test-acceptance
 ```
