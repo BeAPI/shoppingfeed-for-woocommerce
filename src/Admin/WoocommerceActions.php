@@ -69,10 +69,12 @@ class WoocommerceActions {
 		);
 
 		//Product Update
-		add_action( 'woocommerce_update_product', array( $this, 'update_product' ) );
+		add_action( 'woocommerce_update_product', [ $this, 'schedule_product_update' ] );
+		add_action( 'sf_update_product_data', [ $this, 'update_product_data_callback' ] );
 
 		//Stock Update
-		add_action( 'woocommerce_updated_product_stock', array( $this, 'update_stock' ) );
+		add_action( 'woocommerce_updated_product_stock', [ $this, 'schedule_product_stock_update' ] );
+		add_action( 'sf_update_product_stock', [ $this, 'update_product_stock_callback' ] );
 
 		//Feed Generation
 		add_action(
@@ -214,6 +216,74 @@ class WoocommerceActions {
 		}
 	}
 
+	/**
+	 * Schedule a product update.
+	 *
+	 * @param int $product_id
+	 *
+	 * @return void
+	 */
+	public function schedule_product_update( $product_id ) {
+		$sf_feed_options = ShoppingFeedHelper::get_sf_feed_options();
+		$sync_stock      = $sf_feed_options['synchro_stock'] ?? 'yes';
+		$sync_price      = $sf_feed_options['synchro_price'] ?? 'yes';
+		if ( 'no' === $sync_stock && 'no' === $sync_price ) {
+			return;
+		}
+
+		as_schedule_single_action(
+			time() + 15,
+			'sf_update_product_data',
+			[ 'product' => $product_id ],
+			'sf_products',
+			true
+		);
+	}
+
+	/**
+	 * Execute the product update.
+	 *
+	 * @param int $product_id
+	 *
+	 * @return void
+	 */
+	public function update_product_data_callback( $product_id ) {
+		$this->update_product( (int) $product_id );
+	}
+
+	/**
+	 * Schedule a product's stock update.
+	 *
+	 * @param int $product_id
+	 *
+	 * @return void
+	 */
+	public function schedule_product_stock_update( $product_id ) {
+		$sf_feed_options = ShoppingFeedHelper::get_sf_feed_options();
+		$sync_stock      = $sf_feed_options['synchro_stock'] ?? 'yes';
+		if ( 'no' === $sync_stock ) {
+			return;
+		}
+
+		as_schedule_single_action(
+			time() + 15,
+			'sf_update_product_stock',
+			[ 'product' => $product_id ],
+			'sf_products',
+			true
+		);
+	}
+
+	/**
+	 * Execute the product's stock update.
+	 *
+	 * @param int $product_id
+	 *
+	 * @return void
+	 */
+	public function update_product_stock_callback( $product_id ) {
+		$this->update_product( (int) $product_id, true );
+	}
 
 	/**
 	 * Update product inventory
