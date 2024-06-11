@@ -42,8 +42,9 @@ jobs:
 
       - name: "Install Lando"
         run: |
-          wget https://files.devwithlando.io/lando-stable.deb
-          sudo dpkg -i lando-stable.deb
+          curl -fsSL https://get.lando.dev/setup-lando.sh -o setup-lando.sh
+          chmod +x ./setup-lando.sh
+          CI=1 ./setup-lando.sh
 
       - name: "Install composer"
         uses: shivammathur/setup-php@v2
@@ -59,7 +60,7 @@ jobs:
       - name: "Setup Env"
         run: |
           lando start
-          lando setup
+          lando setup-env
 
       - name: "Run tests"
         run: |
