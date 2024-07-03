@@ -1,8 +1,8 @@
 ## ShoppingFeed
 Contributors: ShoppingFeed, BeAPI
 Tags: shoppingfeed, marketplace, woocommerce, woocommerce shoppingfeed, create woocommerce products shoppingfeed, products feed, generate shoppingfeed, amazon, Jet, Walmart, many marketplace, import orders
-Stable tag: 6.6.0
-Version: 6.6.0
+Stable tag: 6.7.0
+Version: 6.7.0
 Requires PHP: 7.3
 Requires at least: 5.7
 Tested up to: 6.5
@@ -13,6 +13,10 @@ WC tested up to: 8.8
 Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
 
 == Changelog ==
+* 6.7.0
+  * Orders : The 'buyer_identification_number' field is imported in an order custom field if it exists.
+  * Orders : Product updates (price and stock) via the SF API are made asynchronously via a scheduled task.
+  * Misc   : ShoppingFeed service identifiers are no longer stored in the application's logs offered by WooCommerce.
 * 6.6.0
   * Feed : Fix cases where some out-of-stock products would appear in the feed.
   * Feed : A new option to include out-of-stock products in the feed is available.
