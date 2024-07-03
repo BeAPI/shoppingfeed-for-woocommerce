@@ -54,9 +54,9 @@ class Actions {
 			as_schedule_recurring_action(
 				time() + 60,
 				ShoppingFeedHelper::get_sf_orders_import_frequency(),
-				'sf_get_orders_action_' . $key,
+				'sf_sync_orders',
 				array(
-					'sf_account' => $sf_account,
+					'sf_account' => $key,
 				),
 				self::ORDERS_GROUP
 			);
