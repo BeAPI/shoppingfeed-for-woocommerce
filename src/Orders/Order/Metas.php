@@ -39,8 +39,21 @@ class Metas {
 		$this->add_order_channel_name();
 		$this->add_order_shipping();
 		$this->add_sf_store_id();
+		$this->add_order_nif();
 
 		do_action_ref_array( 'sf_add_metas', array( $this ) );
+	}
+
+	/**
+	 * Add the 'buyer_identification_number' as sf_nif custom field if exists
+	 *
+	 * @author Stéphane Gillot
+	 */
+	private function add_order_nif() {
+		$sf_nif = $this->sf_order_array['additionalFields']['buyer_identification_number'] ?? '';
+		if ( ! empty( $sf_nif ) ) {
+			$this->add_meta( 'sf_nif', $sf_nif, true );
+		}
 	}
 
 	/**

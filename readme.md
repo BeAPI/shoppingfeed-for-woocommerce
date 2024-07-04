@@ -2,8 +2,8 @@
 
 * Contributors: ShoppingFeed, BeAPI
 * Tags: shoppingfeed, marketplace, woocommerce, woocommerce shoppingfeed, create woocommerce products shoppingfeed, products feed, generate shoppingfeed, amazon, Jet, Walmart, many marketplace, import orders
-* Stable tag: 6.6.0
-* Version: 6.6.0
+* Stable tag: 6.7.0
+* Version: 6.7.0
 * Requires PHP: 7.3
 * Requires at least: 5.7
 * Tested up to: 6.5
@@ -15,6 +15,10 @@
 > Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
 
 ## Changelog
+* 6.7.0
+  * Orders : The 'buyer_identification_number' field is imported in an order custom field if it exists.
+  * Orders : Product updates (price and stock) via the SF API are made asynchronously via a scheduled task.
+  * Misc   : ShoppingFeed service identifiers are no longer stored in the application's logs offered by WooCommerce.
 * 6.6.0
   * Feed : Fix cases where some out-of-stock products would appear in the feed.
   * Feed : A new option to include out-of-stock products in the feed is available.
@@ -326,8 +330,12 @@ function your_custom_variation_images_function( $images, $wc_product, $variation
 ### Local environment
 
 Using [Lando](https://lando.dev/), you can start a local environment with all the required plugins and default dataset
-```
+```bash
+# Start local env
 lando start
+
+# Configure and load default dataset
+lando setup-env
 ```
 
 The environment will be available at https://shoppingfeed-for-woocommerce.lndo.site
@@ -339,31 +347,31 @@ The environment will be available at https://shoppingfeed-for-woocommerce.lndo.s
 Tests are handle through [WPBrowser](https://wpbrowser.wptestkit.dev/) built around the [Codeception framework](https://codeception.com/). [Lando](https://lando.dev/) is used to have a fully working environment.
 
 **To run all tests suite :**
-```
+```bash
 lando start
 lando tests
 ```
 
 **To run the Unit tests suite :**
-```
+```bash
 lando start
 lando test-unit
 ```
 
 **To run the WPUnit tests suite :**
-```
+```bash
 lando start
 lando test-wpunit
 ```
 
 **To run the functional tests suite :**
-```
+```bash
 lando start
 lando test-functional
 ```
 
 **To run the acceptance tests suite :**
-```
+```bash
 lando start
 lando test-acceptance
 ```

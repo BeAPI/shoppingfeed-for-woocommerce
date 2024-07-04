@@ -18,7 +18,7 @@ services:
       password: wordpress-test
       database: wordpress-test
 tooling:
-  setup:
+  setup-env:
     service: appserver
     description: 'Setup env'
     cmd:
