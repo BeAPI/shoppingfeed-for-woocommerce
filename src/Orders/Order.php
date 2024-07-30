@@ -112,7 +112,7 @@ class Order {
 
 		//Payment
 		try {
-			$wc_order->set_prices_include_tax( $this->payment->get_total() );
+			$wc_order->set_prices_include_tax( true );
 			$wc_order->set_payment_method( $this->payment->get_method() );
 		} catch ( \Exception $exception ) {
 			$message = sprintf(
@@ -139,6 +139,14 @@ class Order {
 			$shipping_rate = $this->shipping->get_shipping_rate();
 			$item          = new \WC_Order_Item_Shipping();
 			$item->set_shipping_rate( $shipping_rate );
+			$item->set_taxes(
+				[
+					'total' => [
+						'999999999999999' => (float) $this->sf_order->toArray()['additionalFields']['shipping_tax']
+					]
+				]
+			);
+			$item->save();
 			$wc_order->add_item( $item );
 			do_action( 'sf_after_order_add_shipping', $item, $wc_order );
 		} else {
@@ -146,6 +154,13 @@ class Order {
 				$item = new \WC_Order_Item_Shipping();
 				$item->set_method_title( $this->shipping->get_method() );
 				$item->set_total( $this->shipping->get_total() );
+				$item->set_taxes(
+					[
+						'total' => [
+							'999999999999999' => (float) $this->sf_order->toArray()['additionalFields']['shipping_tax']
+						]
+					]
+				);
 				$item->save();
 				$wc_order->add_item( $item );
 				do_action( 'sf_after_order_add_shipping', $item, $wc_order );
@@ -204,6 +219,30 @@ class Order {
 				$wc_order->add_meta_data( $meta['key'], $meta['value'], $meta['unique'] );
 			}
 		}
+
+		$total_product_tax = 0;
+		foreach ( $this->sf_order->getItems() as $item ) {
+			$total_product_tax += $item->getTaxAmount();
+		}
+
+		$total_shipping_tax = 0;
+		$lol                = $this->sf_order->toArray();
+		if ( isset( $lol['additionalFields']['shipping_tax'] ) ) {
+			$total_shipping_tax = (float) $lol['additionalFields']['shipping_tax'];
+		}
+
+		$tax = new \WC_Order_Item_Tax();
+		$tax->set_props(
+			[
+				'rate_code'          => 'SF-TAX',
+				'rate_id'            => 999999999999999,
+				'label'              => 'Tax',
+				'tax_total'          => $total_product_tax,
+				'shipping_tax_total' => $total_shipping_tax,
+			]
+		);
+		$tax->save();
+		$wc_order->add_item( $tax );
 
 		$wc_order->set_status( $this->status->get_name(), $this->status->get_note() );
 		$wc_order->calculate_totals( false );
