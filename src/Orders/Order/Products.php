@@ -91,6 +91,14 @@ class Products {
 			'variation'    => $wc_product->is_type( 'variation' ) ? $wc_product->get_attributes() : array(),
 			'subtotal'     => $sf_product->getUnitPrice(),
 			'total'        => $sf_product->getTotalPrice(),
+			'taxes'        => [
+				'subtotal' => [
+					'999999999999999' => $sf_product->getTaxAmount()
+				],
+				'total' => [
+					'999999999999999' => $sf_product->getTaxAmount()
+				]
+			],
 			'quantity'     => $sf_product_quantity,
 		);
 
