@@ -165,6 +165,13 @@ class Product {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function is_on_sale(){
+		return (bool) $this->product->is_on_sale();
+	}
+
+	/**
 	 * @return string
 	 */
 	public function get_link() {
