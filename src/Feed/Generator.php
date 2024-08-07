@@ -123,7 +123,7 @@ class Generator {
 				if ( ! empty( $sf_product->get_link() ) ) {
 					$product->setLink( $sf_product->get_link() );
 				}
-				if ( ! empty( $sf_product->get_discount() ) ) {
+				if ( ! empty( $sf_product->is_on_sale() ) && ! empty( $sf_product->get_discount() ) ) {
 					$product->addDiscount( $sf_product->get_discount() );
 				}
 				if ( ! empty( $sf_product->get_image_main() ) ) {
