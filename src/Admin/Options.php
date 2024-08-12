@@ -10,6 +10,7 @@ use ShoppingFeed\ShoppingFeedWC\Feed\Generator;
 use ShoppingFeed\ShoppingFeedWC\Orders\Operations;
 use ShoppingFeed\ShoppingFeedWC\Sdk\Sdk;
 use ShoppingFeed\ShoppingFeedWC\Orders\Orders;
+use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\ShipmentTrackingManager;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 use ShoppingFeed\ShoppingFeedWC\Admin;
 
@@ -1232,25 +1233,36 @@ class Options {
 			},
 			self::SF_SHIPPING_SETTINGS_PAGE
 		);
+
 		add_settings_field(
-			'shipping_is_compatible_with_addons',
-			__( 'Retrieval mode', 'shopping-feed' ),
+			'shipping_tracking_provider',
+			__( 'Tracking provider', 'shopping-feed' ),
 			function () {
+				$manager = ShipmentTrackingManager::create();
 				?>
-				<select id="retrieval_mode"
-						name="<?php echo esc_html( sprintf( '%s[retrieval_mode]', self::SF_SHIPPING_OPTIONS ) ); ?>">
-					<option value="ADDONS"
-						<?php selected( 'ADDONS', $this->sf_shipping_options['retrieval_mode'] ? $this->sf_shipping_options['retrieval_mode'] : false ); ?>>
-						Addons
+				<select id="tracking_provider" name="<?php echo esc_html( sprintf( '%s[tracking_provider]', self::SF_SHIPPING_OPTIONS ) ); ?>">
+					<option value=""><?php esc_html_e( 'Disable', 'shopping-feed' ); ?></option>
+					<?php foreach ( $manager->get_providers() as $provider ) : ?>
+					<option value="<?php echo esc_attr( $provider->id() ); ?>"
+						<?php selected( $provider->id(), $this->sf_shipping_options['tracking_provider'] ?? '' ); ?>
+						<?php disabled( ! $provider->is_available() ); ?>>
+						<?php echo esc_html( $provider->name() ); ?>
+						<?php
+						if ( ! $provider->is_available() ) {
+							echo esc_html(
+								sprintf(
+									' (%s)',
+									__( 'not installed/activated ', 'shopping-feed' )
+								)
+							);
+						}
+						?>
 					</option>
-					<option value="METAS"
-						<?php selected( 'METAS', $this->sf_shipping_options['retrieval_mode'] ? $this->sf_shipping_options['retrieval_mode'] : false ); ?>>
-						Métas
-					</option>
+					<?php endforeach; ?>
 				</select>
 				<p class="description"
 				   id="tagline-description">
-					<?php echo esc_attr_e( 'How shipping information will be retrieved', 'shopping-feed' ); ?>
+					<?php esc_attr_e( 'Choose the provider used to retrieve tracking information.', 'shopping-feed' ); ?>
 				</p>
 				<?php
 			},
