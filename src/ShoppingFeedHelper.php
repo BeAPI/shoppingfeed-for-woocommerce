@@ -6,6 +6,7 @@ namespace ShoppingFeed\ShoppingFeedWC;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Admin\Options;
+use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\ShipmentTrackingManager;
 use ShoppingFeed\ShoppingFeedWC\Url\Rewrite;
 use WC_Logger;
 
@@ -705,10 +706,25 @@ XML;
 	 * @return string
 	 */
 	public static function wc_tracking_number( $wc_order ) {
-		$tracking_number = apply_filters( 'shopping_feed_tracking_number', '', $wc_order );
-		//COMPACT WITH OLD VERSION
-		if ( '6.0.19' >= SF_VERSION || ! self::tracking_is_compatible_with_addons() ) {
-			return (string) $wc_order->get_meta( $tracking_number );
+		$manager = ShipmentTrackingManager::create();
+
+		$tracking_number = '';
+		$tracking_data   = $manager->get_selected_provider()->get_tracking_data( $wc_order );
+		if ( $tracking_data->has_tracking_data() ) {
+			$tracking_number = implode( ',', $tracking_data->get_tracking_numbers() );
+		}
+
+		/**
+		 * Filter order's tracking number.
+		 *
+		 * @param string $tracking_number
+		 * @param \WC_Order $wc_order
+		 */
+		$tracking_number = apply_filters( 'shopping_feed_tracking_number', $tracking_number, $wc_order );
+
+		// Back-compat: handle case where the filter return a meta key.
+		if ( $wc_order->meta_exists( $tracking_number ) ) {
+			$tracking_number = (string) $wc_order->get_meta( $tracking_number );
 		}
 
 		return $tracking_number;
@@ -722,10 +738,25 @@ XML;
 	 * @return string
 	 */
 	public static function wc_tracking_link( $wc_order ) {
-		$tracking_link = apply_filters( 'shopping_feed_tracking_link', '', $wc_order );
-		//COMPACT WITH OLD VERSION
-		if ( '6.0.19' >= SF_VERSION || ! self::tracking_is_compatible_with_addons() ) {
-			return (string) $wc_order->get_meta( $tracking_link );
+		$manager = ShipmentTrackingManager::create();
+
+		$tracking_link = '';
+		$tracking_data = $manager->get_selected_provider()->get_tracking_data( $wc_order );
+		if ( $tracking_data->has_tracking_data() ) {
+			$tracking_link = implode( ',', $tracking_data->get_tracking_links() );
+		}
+
+		/**
+		 * Filter order's tracking link.
+		 *
+		 * @param string $tracking_link
+		 * @param \WC_Order $wc_order
+		 */
+		$tracking_link = apply_filters( 'shopping_feed_tracking_link', $tracking_link, $wc_order );
+
+		// Back-compat: handle case where the filter return a meta key.
+		if ( $wc_order->meta_exists( $tracking_link ) ) {
+			$tracking_link = (string) $wc_order->get_meta( $tracking_link );
 		}
 
 		return $tracking_link;
