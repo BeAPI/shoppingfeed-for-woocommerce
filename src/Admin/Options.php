@@ -1238,13 +1238,14 @@ class Options {
 			'shipping_tracking_provider',
 			__( 'Tracking provider', 'shopping-feed' ),
 			function () {
-				$manager = ShipmentTrackingManager::create();
+				$manager = ShoppingFeedHelper::wc_tracking_provider_manager();
+				$selected_provider = $this->sf_shipping_options['tracking_provider'] ?? '';
 				?>
 				<select id="tracking_provider" name="<?php echo esc_html( sprintf( '%s[tracking_provider]', self::SF_SHIPPING_OPTIONS ) ); ?>">
 					<option value=""><?php esc_html_e( 'Disable', 'shopping-feed' ); ?></option>
 					<?php foreach ( $manager->get_providers() as $provider ) : ?>
 					<option value="<?php echo esc_attr( $provider->id() ); ?>"
-						<?php selected( $provider->id(), $this->sf_shipping_options['tracking_provider'] ?? '' ); ?>
+						<?php selected( $selected_provider, $provider->id() ); ?>
 						<?php disabled( ! $provider->is_available() ); ?>>
 						<?php echo esc_html( $provider->name() ); ?>
 						<?php
@@ -1260,6 +1261,13 @@ class Options {
 					</option>
 					<?php endforeach; ?>
 				</select>
+				<?php if ( ! $manager->get_selected_provider( false )->is_available() ) : ?>
+				<p class="description"
+				   id="tagline-description">
+					<span class="dashicons dashicons-warning"></span>
+					<strong><?php esc_attr_e( 'The selected provider is not available.', 'shopping-feed' ); ?></strong>
+				</p>
+				<?php endif; ?>
 				<p class="description"
 				   id="tagline-description">
 					<?php esc_attr_e( 'Choose the provider used to retrieve tracking information.', 'shopping-feed' ); ?>

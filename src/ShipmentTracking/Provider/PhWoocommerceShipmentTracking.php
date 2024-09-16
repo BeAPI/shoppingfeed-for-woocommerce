@@ -10,18 +10,30 @@ use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\ShipmentTrackingProvider;
  */
 class PhWoocommerceShipmentTracking implements ShipmentTrackingProvider {
 
+	/**
+	 * @inheritDoc
+	 */
 	public function id(): string {
 		return 'woo_shipment_tracking';
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function name(): string {
 		return 'WooCommerce Shipment Tracking Pro';
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function is_available(): bool {
 		return defined( 'PH_SHIPMENT_TRACKING_PLUGIN_VERSION' );
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	public function get_tracking_data( \WC_Order $order ): ShipmentTrackingData {
 		$tracking_data    = new ShipmentTrackingData();
 		$ph_tracking_data = $order->get_meta( 'wf_wc_shipment_result' );
