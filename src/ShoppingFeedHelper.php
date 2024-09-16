@@ -7,6 +7,7 @@ defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Admin\Options;
 use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\ShipmentTrackingManager;
+use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\ShipmentTrackingProvider;
 use ShoppingFeed\ShoppingFeedWC\Url\Rewrite;
 use WC_Logger;
 
@@ -706,7 +707,7 @@ XML;
 	 * @return string
 	 */
 	public static function wc_tracking_number( $wc_order ) {
-		$manager = ShipmentTrackingManager::create();
+		$manager = self::wc_tracking_provider_manager();
 
 		$tracking_number = '';
 		$tracking_data   = $manager->get_selected_provider()->get_tracking_data( $wc_order );
@@ -738,7 +739,7 @@ XML;
 	 * @return string
 	 */
 	public static function wc_tracking_link( $wc_order ) {
-		$manager = ShipmentTrackingManager::create();
+		$manager = self::wc_tracking_provider_manager();
 
 		$tracking_link = '';
 		$tracking_data = $manager->get_selected_provider()->get_tracking_data( $wc_order );
@@ -760,6 +761,19 @@ XML;
 		}
 
 		return $tracking_link;
+	}
+
+	public static function wc_tracking_provider_manager(): ShipmentTrackingManager {
+		static $manager;
+		if ( ! $manager ) {
+			$shipping_options = self::get_sf_shipping_options();
+			if ( ! is_array( $shipping_options ) ) {
+				$shipping_options = [];
+			}
+			$manager = ShipmentTrackingManager::create( $shipping_options );
+		}
+
+		return $manager;
 	}
 
 	/**
