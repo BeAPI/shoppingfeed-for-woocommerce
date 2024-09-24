@@ -162,6 +162,10 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 	/**
+	 * @covers
+	 */
+
+	/**
 	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_quantity
 	 */
 	public function test_get_product_quantity_instock() {
@@ -209,4 +213,57 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 		$p = new Product( wc_get_product( 13 ) );
 		$this->assertEquals( 0, $p->get_quantity() );
 	}
+
+	/**
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_length
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_height
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_width
+	 *
+	 * @author Stéphane Gillot
+	 */
+	public function test_get_simple_product_dimensions_when_defined(){
+		$wc_product = wc_get_product( 32 );
+		$wc_product->set_length( 5 );
+		$wc_product->set_height( 10 );
+		$wc_product->set_width( 15 );
+		$wc_product->save();
+
+		$p = new Product( wc_get_product( 32 ) );
+
+		$this->assertEquals( 5, $p->get_length(), 'Product length should be 5.' );
+		$this->assertEquals( 10, $p->get_height(), 'Product height should be 10.' );
+		$this->assertEquals( 15, $p->get_width(), 'Product width should be 15.' );
+	}
+
+	/**
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_length
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_height
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_width
+	 *
+	 * @author Stéphane Gillot
+	 */
+	public function test_get_simple_product_dimensions_when_not_defined(){
+		$wc_product = wc_get_product( 32 );
+		$wc_product->set_length('' );
+		$wc_product->set_height( '' );
+		$wc_product->set_width( '' );
+		$wc_product->save();
+
+		$p = new Product( wc_get_product( 32 ) );
+
+		$this->assertEquals( '', $p->get_length(), 'Product length should be an empty string.' );
+		$this->assertEquals( '', $p->get_height(), 'Product height should be Product length should be an empty string.' );
+		$this->assertEquals( '', $p->get_width(), 'Product width should be Product length should be an empty string.' );
+	}
+
+	public function test_get_variation_dimensions_when_it_defaults_to_parent_dimensions(){
+		//TODO
+	}
+
+	public function test_get_variation_dimensions_when_it_overrides_parent_dimensions(){
+		//TODO
+	}
+
+
+
 }
