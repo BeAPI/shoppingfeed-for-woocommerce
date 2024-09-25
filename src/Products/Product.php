@@ -165,6 +165,13 @@ class Product {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function is_on_sale() {
+		return (bool) $this->product->is_on_sale();
+	}
+
+	/**
 	 * @return string
 	 */
 	public function get_link() {
@@ -407,7 +414,7 @@ class Product {
 			$variation_data['ean']      = $this->get_ean( $variation );
 			$variation_data['quantity'] = $this->_get_quantity( $variation );
 			$variation_data['price']    = ! is_null( $variation->get_regular_price() ) ? $variation->get_regular_price() : $variation->get_price();
-			$variation_data['discount'] = $variation->get_sale_price();
+			$variation_data['discount'] = $variation->is_on_sale() ? $variation->get_sale_price() : 0;
 			if ( ! empty( get_the_post_thumbnail_url( $variation->get_id(), 'full' ) ) ) {
 				$variation_data['image_main'] = get_the_post_thumbnail_url( $variation->get_id(), 'full' );
 			}
