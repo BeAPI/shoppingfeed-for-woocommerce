@@ -75,14 +75,16 @@ class Notices {
 			<div class="notice notice-error">
 				<p>
 					<span class="dashicons dashicons-warning"></span>
-					<?php echo wp_kses_post(
+					<?php
+					echo wp_kses_post(
 						sprintf(
-						// translators: 1: the provider name, 2: the plugin settings link
+							// translators: 1: the provider name, 2: the plugin settings link
 							__( 'The selected shipment tracking provider <strong>"%1$s"</strong> is not available. Please go the <a href="%2$s">shipping settings</a> to choose a new one.', 'shopping-feed' ),
 							$selected_provider->name(),
 							add_query_arg( 'tab', 'shipping-settings', ShoppingFeedHelper::get_setting_link() )
 						)
-					); ?>
+					);
+					?>
 				</p>
 			</div>
 			<?php
