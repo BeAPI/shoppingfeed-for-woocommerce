@@ -6,6 +6,8 @@ namespace ShoppingFeed\ShoppingFeedWC;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Admin\Options;
+use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\ShipmentTrackingManager;
+use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\ShipmentTrackingProvider;
 use ShoppingFeed\ShoppingFeedWC\Url\Rewrite;
 use WC_Logger;
 
@@ -698,37 +700,104 @@ XML;
 	}
 
 	/**
-	 * Add filter for order tracking number meta key
+	 * Get tracking number for the order.
+	 *
+	 *  If the order has multiple tracking numbers, they'll be separated by coma.
 	 *
 	 * @param \WC_Order $wc_order
 	 *
 	 * @return string
 	 */
 	public static function wc_tracking_number( $wc_order ) {
-		$tracking_number = apply_filters( 'shopping_feed_tracking_number', '', $wc_order );
-		//COMPACT WITH OLD VERSION
-		if ( '6.0.19' >= SF_VERSION || ! self::tracking_is_compatible_with_addons() ) {
-			return (string) $wc_order->get_meta( $tracking_number );
+		$manager = self::wc_tracking_provider_manager();
+
+		$tracking_number = '';
+		$tracking_data   = $manager->get_selected_provider()->get_tracking_data( $wc_order );
+		if ( $tracking_data->has_tracking_data() ) {
+			$tracking_number = implode( ',', $tracking_data->get_tracking_numbers() );
 		}
 
-		return $tracking_number;
+		/**
+		 * Filter order's tracking number.
+		 *
+		 * @param string $tracking_number
+		 * @param \WC_Order $wc_order
+		 */
+		$filtered_tracking_number = apply_filters( 'shopping_feed_tracking_number', $tracking_number, $wc_order );
+
+		/*
+		 * Back-compat: ignore filtered value if it comes from ShoppingFeed Advanced.
+		 *
+		 * Previously, the ShoppingFeed Advanced addon used the filter `shopping_feed_tracking_number` to specify
+		 * the meta key for retrieving tracking numbers. This functionality is now handled by the shipment tracking manager.
+		 */
+		if ( defined( 'TRACKING_NUMBER_FIELD_SLUG' ) && TRACKING_NUMBER_FIELD_SLUG === $filtered_tracking_number ) {
+			$filtered_tracking_number = $tracking_number;
+		}
+
+		// Back-compat: handle case where the filter return a meta key.
+		if ( $wc_order->meta_exists( $filtered_tracking_number ) ) {
+			$filtered_tracking_number = (string) $wc_order->get_meta( $filtered_tracking_number );
+		}
+
+		return $filtered_tracking_number;
 	}
 
 	/**
-	 * Add filter for order tracking link meta key
+	 * Get tracking link for the order.
+	 *
+	 * If the order has multiple tracking links, they'll be separated by coma.
 	 *
 	 * @param \WC_Order $wc_order
 	 *
 	 * @return string
 	 */
 	public static function wc_tracking_link( $wc_order ) {
-		$tracking_link = apply_filters( 'shopping_feed_tracking_link', '', $wc_order );
-		//COMPACT WITH OLD VERSION
-		if ( '6.0.19' >= SF_VERSION || ! self::tracking_is_compatible_with_addons() ) {
-			return (string) $wc_order->get_meta( $tracking_link );
+		$manager = self::wc_tracking_provider_manager();
+
+		$tracking_link = '';
+		$tracking_data = $manager->get_selected_provider()->get_tracking_data( $wc_order );
+		if ( $tracking_data->has_tracking_data() ) {
+			$tracking_link = implode( ',', $tracking_data->get_tracking_links() );
 		}
 
-		return $tracking_link;
+		/**
+		 * Filter order's tracking link.
+		 *
+		 * @param string $tracking_link
+		 * @param \WC_Order $wc_order
+		 */
+		$filtered_tracking_link = apply_filters( 'shopping_feed_tracking_link', $tracking_link, $wc_order );
+
+		/*
+		 * Back-compat: ignore filtered value if it comes from ShoppingFeed Advanced.
+		 *
+		 * Previously, the ShoppingFeed Advanced addon used the filter `shopping_feed_tracking_number` to specify
+		 * the meta key for retrieving tracking links. This functionality is now handled by the shipment tracking manager.
+		 */
+		if ( defined( 'TRACKING_LINK_FIELD_SLUG' ) && TRACKING_LINK_FIELD_SLUG === $filtered_tracking_link ) {
+			$filtered_tracking_link = $tracking_link;
+		}
+
+		// Back-compat: handle case where the filter return a meta key.
+		if ( $wc_order->meta_exists( $filtered_tracking_link ) ) {
+			$filtered_tracking_link = (string) $wc_order->get_meta( $filtered_tracking_link );
+		}
+
+		return $filtered_tracking_link;
+	}
+
+	public static function wc_tracking_provider_manager(): ShipmentTrackingManager {
+		static $manager;
+		if ( ! $manager ) {
+			$shipping_options = self::get_sf_shipping_options();
+			if ( ! is_array( $shipping_options ) ) {
+				$shipping_options = [];
+			}
+			$manager = ShipmentTrackingManager::create( $shipping_options );
+		}
+
+		return $manager;
 	}
 
 	/**

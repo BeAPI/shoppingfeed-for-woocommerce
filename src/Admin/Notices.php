@@ -14,6 +14,7 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 class Notices {
 
 	public function __construct() {
+		add_action( 'admin_notices', array( $this, 'unavailable_selected_shipping_tracking_provider' ) );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 	}
@@ -66,4 +67,27 @@ class Notices {
 		<?php
 	}
 
+	public function unavailable_selected_shipping_tracking_provider(): void {
+		$manager           = ShoppingFeedHelper::wc_tracking_provider_manager();
+		$selected_provider = $manager->get_selected_provider( false );
+		if ( ! $selected_provider->is_available() ) {
+			?>
+			<div class="notice notice-error">
+				<p>
+					<span class="dashicons dashicons-warning"></span>
+					<?php
+					echo wp_kses_post(
+						sprintf(
+							// translators: 1: the provider name, 2: the plugin settings link
+							__( 'The selected shipment tracking provider <strong>"%1$s"</strong> is not available. Please go the <a href="%2$s">shipping settings</a> to choose a new one.', 'shopping-feed' ),
+							$selected_provider->name(),
+							add_query_arg( 'tab', 'shipping-settings', ShoppingFeedHelper::get_setting_link() )
+						)
+					);
+					?>
+				</p>
+			</div>
+			<?php
+		}
+	}
 }
