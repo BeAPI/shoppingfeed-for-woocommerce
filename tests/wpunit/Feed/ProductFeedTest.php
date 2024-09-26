@@ -5,6 +5,7 @@ namespace ShoppingFeed\ShoppingFeedWC\Tests\wpunit\Feed;
 use ShoppingFeed\ShoppingFeedWC\Products\Product;
 use ShoppingFeed\ShoppingFeedWC\Products\Products;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
+use ShoppingFeed\ShoppingFeedWC\Tests\wpunit\WC_Helper_Product;
 
 class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	/**
@@ -129,13 +130,13 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	public function test_get_products_for_feed_query_args() {
 		$products_query_args = Products::get_instance()->get_list_args();
 		$this->assertEqualSets(
-			array(
+			[
 				'limit'        => - 1,
 				'orderby'      => 'date',
 				'order'        => 'DESC',
 				'status'       => 'publish',
 				'stock_status' => 'instock',
-			),
+			],
 			$products_query_args
 		);
 
@@ -150,13 +151,13 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 
 		$products_query_args = Products::get_instance()->get_list_args();
 		$this->assertEqualSets(
-			array(
+			[
 				'limit'        => - 1,
 				'orderby'      => 'date',
 				'order'        => 'DESC',
 				'status'       => 'publish',
 				'stock_status' => [ 'instock', 'outofstock' ],
-			),
+			],
 			$products_query_args
 		);
 	}
@@ -166,7 +167,7 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	 */
 	public function test_get_product_quantity_instock() {
 		$wc_product = wc_get_product( 13 );
-		$wc_product->set_stock_status('instock');
+		$wc_product->set_stock_status( 'instock' );
 		$wc_product->save();
 		$p = new Product( wc_get_product( 13 ) );
 		$this->assertEquals( ShoppingFeedHelper::get_default_product_quantity(), $p->get_quantity() );
@@ -177,7 +178,7 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	 */
 	public function test_get_product_quantity_outofstock() {
 		$wc_product = wc_get_product( 13 );
-		$wc_product->set_stock_status('outofstock');
+		$wc_product->set_stock_status( 'outofstock' );
 		$wc_product->save();
 
 		$p = new Product( wc_get_product( 13 ) );
@@ -208,5 +209,91 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 
 		$p = new Product( wc_get_product( 13 ) );
 		$this->assertEquals( 0, $p->get_quantity() );
+	}
+
+	/**
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_attributes
+	 *
+	 * @author Stéphane Gillot, Clément Boirie
+	 */
+	public function test_attribute_on_variable_product_is_applied_to_variations() {
+		// Prepare the attribute object
+		$attribute = new \WC_Product_Attribute();
+		$attribute->set_name( 'material' );
+		$attribute->set_options( [ 'Coton', 'Linen' ] );
+		$attribute->set_variation( 'true' );
+		$attribute->set_visible( 'true' );
+
+		// Prepare the variable product object
+		$wc_variable_product = WC_Helper_Product::create_variation_product();
+		$wc_variable_product->set_attributes( [ $attribute ] );
+		$wc_variable_product->save();
+
+		// Prepare the sf product object
+		$sf_product = new Product( $wc_variable_product->get_id() );
+
+		$this->assertEquals( [], $sf_product->get_attributes() );
+	}
+
+	/**
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_attributes
+	 *
+	 * @author Stéphane Gillot, Clément Boirie
+	 */
+	public function test_attribute_on_variable_product_is_not_applied_to_variations() {
+		// Prepare the attribute object
+		$attribute = new \WC_Product_Attribute();
+		$attribute->set_name( 'material' );
+		$attribute->set_options( [ 'Coton', 'Linen' ] );
+		$attribute->set_variation( 'false' );
+		$attribute->set_visible( 'true' );
+
+		// Prepare the variable product object
+		$wc_variable_product = WC_Helper_Product::create_variation_product();
+		$wc_variable_product->set_attributes( [ $attribute ] );
+		$wc_variable_product->save();
+
+		// Prepare the sf product object
+		$sf_product = new Product( $wc_variable_product );
+
+		$this->assertEquals( [ 'material' => 'Coton,Linen' ], $sf_product->get_attributes() );
+	}
+
+	/**
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_attributes
+	 *
+	 * @author Stéphane Gillot, Clément Boirie
+	 */
+	public function test_attribute_on_simple_product_exists() {
+		// Prepare the attribute object
+		$attribute = new \WC_Product_Attribute();
+		$attribute->set_name( 'material' );
+		$attribute->set_options( [ 'Coton' ] );
+		$attribute->set_visible( 'true' );
+
+		// Prepare the variable product object
+		$wc_simple_product = WC_Helper_Product::create_simple_product();
+		$wc_simple_product->set_attributes( [ $attribute ] );
+		$wc_simple_product->save();
+
+		// Prepare the sf product object
+		$sf_product = new Product( $wc_simple_product );
+
+		$this->assertEquals( [ 'material' => 'Coton' ], $sf_product->get_attributes() );
+	}
+
+	/**
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_attributes
+	 *
+	 * @author Stéphane Gillot, Clément Boirie
+	 */
+	public function test_attribute_on_simple_product_does_not_exist() {
+		// Prepare the variable product object
+		$wc_simple_product = WC_Helper_Product::create_simple_product();
+
+		// Prepare the sf product object
+		$sf_product = new Product( $wc_simple_product );
+
+		$this->assertEquals( [], $sf_product->get_attributes() );
 	}
 }
