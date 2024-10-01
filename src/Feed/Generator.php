@@ -123,7 +123,7 @@ class Generator {
 				if ( ! empty( $sf_product->get_link() ) ) {
 					$product->setLink( $sf_product->get_link() );
 				}
-				if ( ! empty( $sf_product->get_discount() ) ) {
+				if ( $sf_product->is_on_sale() && ! empty( $sf_product->get_discount() ) ) {
 					$product->addDiscount( $sf_product->get_discount() );
 				}
 				if ( ! empty( $sf_product->get_image_main() ) ) {
@@ -143,15 +143,15 @@ class Generator {
 				}
 
 				if ( ! empty( $sf_product->get_length() ) ) {
-					$product->setAttribute( 'length', (float) $sf_product->get_length() );
+					$product->setAttribute( 'length', (string) $sf_product->get_length() );
 				}
 
 				if ( ! empty( $sf_product->get_width() ) ) {
-					$product->setAttribute('width',  (float) $sf_product->get_width() );
+					$product->setAttribute( 'width', (string) $sf_product->get_width() );
 				}
 
 				if ( ! empty( $sf_product->get_height() ) ) {
-					$product->setAttribute('height',  (float) $sf_product->get_height() );
+					$product->setAttribute( 'height', (string) $sf_product->get_height() );
 				}
 
 				if ( ! empty( $sf_product->get_category_name() ) ) {
@@ -225,14 +225,14 @@ class Generator {
 					if ( ! empty( $variation_images ) ) {
 						$variation->setAdditionalImages( $variation_images );
 					}
-					if ( ! empty ( $sf_product_variation['width'] ) ){
-						$variation->setAttribute( 'width', (float) $sf_product_variation['width'] );
+					if ( ! empty ( $sf_product_variation['width'] ) ) {
+						$variation->setAttribute( 'width', (string) $sf_product_variation['width'] );
 					}
-					if ( ! empty ( $sf_product_variation['length'] ) ){
-						$variation->setAttribute( 'length', (float) $sf_product_variation['length'] );
+					if ( ! empty ( $sf_product_variation['length'] ) ) {
+						$variation->setAttribute( 'length', (string) $sf_product_variation['length'] );
 					}
-					if ( ! empty ( $sf_product_variation['height'] ) ){
-						$variation->setAttribute( 'height', (float) $sf_product_variation['height'] );
+					if ( ! empty ( $sf_product_variation['height'] ) ) {
+						$variation->setAttribute( 'height', (string) $sf_product_variation['height'] );
 					}
 				}
 			}

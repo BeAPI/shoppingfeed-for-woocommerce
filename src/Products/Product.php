@@ -33,16 +33,21 @@ class Product {
 	/**
 	 * @var string
 	 */
-	private $weight;	/**
- * @var string
- */
+	private $weight;
 
-	private $length;	/**
- * @var string
- */
-	private $width;	/**
- * @var string
- */
+	/**
+	 * @var string
+	 */
+	private $length;
+
+	/**
+	 * @var string
+	 */
+	private $width;
+
+	/**
+	 * @var string
+	 */
 	private $height;
 
 	/**
@@ -175,6 +180,13 @@ class Product {
 	 */
 	public function get_discount() {
 		return (float) $this->product->get_sale_price();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function is_on_sale() {
+		return (bool) $this->product->is_on_sale();
 	}
 
 	/**

@@ -155,8 +155,9 @@ class WC_Helper_Product {
 	 *
 	 * @since 2.3
 	 * @param \WC_Product_Variable|null $product Product object to configure, or null to create a new one.
-	 * @return \WC_Product_Variable
+	 * @return \WC_Product_Variable|null
 	 */
+	/** @psalm-suppress PossiblyNullReference */
 	public static function create_variation_product( $product = null ) {
 		$is_new_product = is_null( $product );
 		if ( $is_new_product ) {
@@ -249,7 +250,10 @@ class WC_Helper_Product {
 			},
 			$variations
 		);
-		$product->set_children( $variation_ids );
+
+		if ( ! empty( $variation_ids ) ) {
+			$product->set_children( $variation_ids );
+		}
 		return $product;
 	}
 
