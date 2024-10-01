@@ -33,7 +33,17 @@ class Product {
 	/**
 	 * @var string
 	 */
-	private $weight;
+	private $weight;	/**
+ * @var string
+ */
+
+	private $length;	/**
+ * @var string
+ */
+	private $width;	/**
+ * @var string
+ */
+	private $height;
 
 	/**
 	 * @var bool|mixed|\WP_Term
@@ -52,6 +62,9 @@ class Product {
 		$this->brand              = $this->set_brand();
 		$this->category           = $this->set_category();
 		$this->weight             = $this->product->get_weight();
+		$this->length             = $this->product->get_length();
+		$this->width              = $this->product->get_width();
+		$this->height             = $this->product->get_height();
 	}
 
 	/**
@@ -223,6 +236,39 @@ class Product {
 		}
 
 		return $this->weight;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_length() {
+		if ( empty( $this->length ) ) {
+			return '';
+		}
+
+		return $this->length;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_width() {
+		if ( empty( $this->width ) ) {
+			return '';
+		}
+
+		return $this->width;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_height() {
+		if ( empty( $this->height ) ) {
+			return '';
+		}
+
+		return $this->height;
 	}
 
 	/**
@@ -415,9 +461,15 @@ class Product {
 			$variation_data['quantity'] = $this->_get_quantity( $variation );
 			$variation_data['price']    = ! is_null( $variation->get_regular_price() ) ? $variation->get_regular_price() : $variation->get_price();
 			$variation_data['discount'] = $variation->is_on_sale() ? $variation->get_sale_price() : 0;
+			$variation_data['width']    = $variation->get_width();
+			$variation_data['height']   = $variation->get_height();
+			$variation_data['length']   = $variation->get_length();
+
+
 			if ( ! empty( get_the_post_thumbnail_url( $variation->get_id(), 'full' ) ) ) {
 				$variation_data['image_main'] = get_the_post_thumbnail_url( $variation->get_id(), 'full' );
 			}
+
 
 			$variation_data['attributes'] = $this->get_variation_attributes( $variation );
 			$variations[]                 = $variation_data;
@@ -459,6 +511,7 @@ class Product {
 				$attribute_names[ wc_attribute_label( $attribute ) ] = $variation->get_attribute( $attribute );
 			}
 		}
+
 
 		return apply_filters( 'shopping_feed_extra_variation_attributes', $attribute_names, $variation );
 	}
