@@ -225,13 +225,13 @@ class Generator {
 					if ( ! empty( $variation_images ) ) {
 						$variation->setAdditionalImages( $variation_images );
 					}
-					if ( ! empty ( $sf_product_variation['width'] ) ) {
+					if ( ! empty( $sf_product_variation['width'] ) ) {
 						$variation->setAttribute( 'width', (string) $sf_product_variation['width'] );
 					}
-					if ( ! empty ( $sf_product_variation['length'] ) ) {
+					if ( ! empty( $sf_product_variation['length'] ) ) {
 						$variation->setAttribute( 'length', (string) $sf_product_variation['length'] );
 					}
-					if ( ! empty ( $sf_product_variation['height'] ) ) {
+					if ( ! empty( $sf_product_variation['height'] ) ) {
 						$variation->setAttribute( 'height', (string) $sf_product_variation['height'] );
 					}
 				}

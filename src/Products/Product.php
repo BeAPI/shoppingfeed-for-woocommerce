@@ -470,11 +470,9 @@ class Product {
 			$variation_data['height']   = $variation->get_height();
 			$variation_data['length']   = $variation->get_length();
 
-
 			if ( ! empty( get_the_post_thumbnail_url( $variation->get_id(), 'full' ) ) ) {
 				$variation_data['image_main'] = get_the_post_thumbnail_url( $variation->get_id(), 'full' );
 			}
-
 
 			$variation_data['attributes'] = $this->get_variation_attributes( $variation );
 			$variations[]                 = $variation_data;
@@ -516,7 +514,6 @@ class Product {
 				$attribute_names[ wc_attribute_label( $attribute ) ] = $variation->get_attribute( $attribute );
 			}
 		}
-
 
 		return apply_filters( 'shopping_feed_extra_variation_attributes', $attribute_names, $variation );
 	}
