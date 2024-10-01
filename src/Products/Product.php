@@ -33,16 +33,21 @@ class Product {
 	/**
 	 * @var string
 	 */
-	private $weight;	/**
- * @var string
- */
+	private $weight;
 
-	private $length;	/**
- * @var string
- */
-	private $width;	/**
- * @var string
- */
+	/**
+	 * @var string
+	 */
+	private $length;
+
+	/**
+	 * @var string
+	 */
+	private $width;
+
+	/**
+	 * @var string
+	 */
 	private $height;
 
 	/**
