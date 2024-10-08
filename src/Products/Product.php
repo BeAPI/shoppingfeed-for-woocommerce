@@ -327,7 +327,7 @@ class Product {
 
 		$wc_attributes = $this->product->get_attributes();
 
-		if ( 'variable' === $this->product->get_type() && is_array( $wc_attributes ) && !empty( $wc_attributes ) ) {
+		if ( 'variable' === $this->product->get_type() && is_array( $wc_attributes ) && ! empty( $wc_attributes ) ) {
 			foreach ( $wc_attributes as $key => $attribute ) {
 				if ( $attribute->get_variation() ) {
 					unset( $wc_attributes[ $key ] );
