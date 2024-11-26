@@ -146,7 +146,6 @@ class Generator {
 					$product->setCategory( $sf_product->get_category_name(), $sf_product->get_category_link() );
 				}
 
-				// For variable products, don't include attributes. They will be available in the variations.
 				if ( ! empty( $sf_product->get_attributes() ) ) {
 					$product->setAttributes( $sf_product->get_attributes() );
 				}
