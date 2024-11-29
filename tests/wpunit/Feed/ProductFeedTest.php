@@ -163,6 +163,10 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 	/**
+	 * @covers
+	 */
+
+	/**
 	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_quantity
 	 */
 	public function test_get_product_quantity_instock() {
@@ -295,5 +299,91 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 		$sf_product = new Product( $wc_simple_product );
 
 		$this->assertEquals( [], $sf_product->get_attributes() );
+	}
+
+	/**
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_length
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_height
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_width
+	 *
+	 * @author Stéphane Gillot
+	 */
+	public function test_get_simple_product_dimensions_when_defined(){
+		$wc_product = WC_Helper_Product::create_simple_product();
+		$wc_product->set_length( 5 );
+		$wc_product->set_height( 10 );
+		$wc_product->set_width( 15 );
+		$wc_product->save();
+
+		$p = new Product( $wc_product->get_id() );
+
+		$this->assertEquals( 5, $p->get_length(), 'Product length should be 5.' );
+		$this->assertEquals( 10, $p->get_height(), 'Product height should be 10.' );
+		$this->assertEquals( 15, $p->get_width(), 'Product width should be 15.' );
+	}
+
+	/**
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_length
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_height
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_width
+	 *
+	 * @author Stéphane Gillot
+	 */
+	public function test_get_simple_product_dimensions_when_not_defined(){
+		$wc_product = WC_Helper_Product::create_simple_product();
+		$wc_product->set_length('' );
+		$wc_product->set_height( '' );
+		$wc_product->set_width( '' );
+		$wc_product->save();
+
+		$p = new Product( $wc_product->get_id() );
+
+		$this->assertEquals( '', $p->get_length(), 'Product length should be an empty string.' );
+		$this->assertEquals( '', $p->get_height(), 'Product height should be an empty string.' );
+		$this->assertEquals( '', $p->get_width(), 'Product width should be an empty string.' );
+	}
+
+	public function test_get_variation_dimensions_when_it_not_defined() {
+
+		// Prepare the variable product object
+		$wc_variable_product = New \WC_Product_Variable();
+		$wc_variable_product->set_length( 5 );
+		$wc_variable_product->set_height( 10 );
+		$wc_variable_product->set_width( 15 );
+		$wc_variable_product->save();
+
+		$variation = WC_Helper_Product::create_variation_product();
+		$variation->set_parent_id( $wc_variable_product->get_id() );
+		$variation->save();
+
+		// Create an SF variation
+		$sf_product = new Product( $variation );
+		$this->assertEquals( '', $sf_product->get_length(), 'Product length should be null.' );
+		$this->assertEquals( '', $sf_product->get_height(), 'Product height should be null.' );
+		$this->assertEquals( '', $sf_product->get_width(), 'Product width should be null.' );
+	}
+
+	public function test_get_variation_dimensions_when_it_overrides_parent_dimensions(){
+
+		// Prepare the variable product object
+		$wc_variable_product = New \WC_Product_Variable();
+		$wc_variable_product->set_length( 5 );
+		$wc_variable_product->set_height( 10 );
+		$wc_variable_product->set_width( 15 );
+		$wc_variable_product->save();
+
+		$variation = WC_Helper_Product::create_variation_product();
+		$variation->set_parent_id( $wc_variable_product->get_id() );
+		$variation->set_length(20);
+		$variation->set_height(30);
+		$variation->set_width(40);
+		$variation->save();
+
+
+		// Create an SF variation
+		$sf_product = new Product( $variation );
+		$this->assertEquals( 20, $sf_product->get_length(), 'Product length should be 20.' );
+		$this->assertEquals( 30, $sf_product->get_height(), 'Product height should be 30.' );
+		$this->assertEquals( 40, $sf_product->get_width(), 'Product width should be 40.' );
 	}
 }
