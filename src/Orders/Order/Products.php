@@ -6,8 +6,8 @@ namespace ShoppingFeed\ShoppingFeedWC\Orders\Order;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Order\{OrderItem, OrderResource};
+use ShoppingFeed\ShoppingFeedWC\Orders\Order;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
-use WC_Product;
 
 /**
  * @psalm-consistent-constructor
@@ -93,11 +93,11 @@ class Products {
 			'total'        => $sf_product->getTotalPrice(),
 			'taxes'        => [
 				'subtotal' => [
-					'999999999999999' => $sf_product->getTaxAmount()
+					Order::RATE_ID => $sf_product->getTaxAmount(),
 				],
 				'total' => [
-					'999999999999999' => $sf_product->getTaxAmount()
-				]
+					Order::RATE_ID => $sf_product->getTaxAmount(),
+				],
 			],
 			'quantity'     => $sf_product_quantity,
 		);

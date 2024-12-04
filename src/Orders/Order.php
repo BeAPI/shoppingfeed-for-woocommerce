@@ -25,6 +25,8 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
  */
 class Order {
 
+	public const RATE_ID = 999999999999;
+
 	use Marketplace;
 
 	/** @var OrderResource $sf_order */
@@ -142,8 +144,8 @@ class Order {
 			$item->set_taxes(
 				[
 					'total' => [
-						'999999999999999' => (float) $this->sf_order->toArray()['additionalFields']['shipping_tax']
-					]
+						self::RATE_ID => (float) $this->sf_order->toArray()['additionalFields']['shipping_tax'],
+					],
 				]
 			);
 			$item->save();
@@ -157,8 +159,8 @@ class Order {
 				$item->set_taxes(
 					[
 						'total' => [
-							'999999999999999' => (float) $this->sf_order->toArray()['additionalFields']['shipping_tax']
-						]
+							self::RATE_ID => (float) $this->sf_order->toArray()['additionalFields']['shipping_tax'],
+						],
 					]
 				);
 				$item->save();
@@ -234,9 +236,9 @@ class Order {
 		$tax = new \WC_Order_Item_Tax();
 		$tax->set_props(
 			[
-				'rate_code'          => 'SF-TAX',
-				'rate_id'            => 999999999999999,
-				'label'              => 'Tax',
+				'rate_code'          => 'SF-VAT',
+				'rate_id'            => self::RATE_ID,
+				'label'              => __( 'VAT', 'shopping-feed' ),
 				'tax_total'          => $total_product_tax,
 				'shipping_tax_total' => $total_shipping_tax,
 			]
