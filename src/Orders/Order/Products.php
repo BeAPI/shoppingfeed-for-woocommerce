@@ -20,6 +20,11 @@ class Products {
 	private $sf_order;
 
 	/**
+	 * @var bool $include_vat
+	 */
+	private $include_vat;
+
+	/**
 	 * @var array $products
 	 */
 	private $products;
@@ -27,10 +32,12 @@ class Products {
 	/**
 	 * Products constructor.
 	 *
-	 * @param $sf_order OrderResource
+	 * @param OrderResource $sf_order
+	 * @param bool $include_vat
 	 */
-	public function __construct( $sf_order ) {
-		$this->sf_order = $sf_order;
+	public function __construct( $sf_order, $include_vat = false ) {
+		$this->sf_order    = $sf_order;
+		$this->include_vat = $include_vat;
 		$this->set_products();
 	}
 
@@ -91,16 +98,19 @@ class Products {
 			'variation'    => $wc_product->is_type( 'variation' ) ? $wc_product->get_attributes() : array(),
 			'subtotal'     => $sf_product->getUnitPrice(),
 			'total'        => $sf_product->getTotalPrice(),
-			'taxes'        => [
+			'quantity'     => $sf_product_quantity,
+		);
+
+		if ( $this->include_vat ) {
+			$args['taxes'] = [
 				'subtotal' => [
 					Order::RATE_ID => $sf_product->getTaxAmount(),
 				],
-				'total' => [
+				'total'    => [
 					Order::RATE_ID => $sf_product->getTaxAmount(),
 				],
-			],
-			'quantity'     => $sf_product_quantity,
-		);
+			];
+		}
 
 		return array(
 			'args'         => $args,

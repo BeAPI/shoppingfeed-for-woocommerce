@@ -6,6 +6,7 @@ namespace ShoppingFeed\ShoppingFeedWC\Orders\Order;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Order\OrderResource;
+use ShoppingFeed\ShoppingFeedWC\Orders\Order;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
 /**
@@ -33,6 +34,11 @@ class Shipping {
 	 */
 	private $total;
 
+	/**
+	 * @var bool $include_vat
+	 */
+	private $include_vat;
+
 	/** @var array|\WC_Shipping_Rate $shipping_rate */
 	private $shipping_rate;
 
@@ -42,10 +48,12 @@ class Shipping {
 	/**
 	 * Shipping constructor.
 	 *
-	 * @param $sf_order OrderResource
+	 * @param OrderResource $sf_order
+	 * @param bool $include_vat
 	 */
-	public function __construct( $sf_order ) {
+	public function __construct( $sf_order, $include_vat = false ) {
 		$this->sf_order = $sf_order;
+		$this->include_vat = $include_vat;
 
 		$this->set_shipping_method_and_colis_number();
 		$this->set_total();
@@ -93,11 +101,20 @@ class Shipping {
 			$shipping_rate = $default_shipping_method;
 		}
 
+		$vat = [];
+		if ( $this->include_vat && isset( $this->sf_order->toArray()['additionalFields']['shipping_tax'] ) ) {
+			$vat = [
+				'total' => [
+					Order::RATE_ID => (float) $this->sf_order->toArray()['additionalFields']['shipping_tax'],
+				],
+			];
+		}
+
 		$rate                = new \WC_Shipping_Rate(
 			$shipping_rate['method_rate_id'],
 			$shipping_rate['method_title'],
 			$this->get_total_shipping() ? $this->get_total_shipping() : ShoppingFeedHelper::get_sf_default_shipping_fees(),
-			array(),
+			$vat,
 			$shipping_rate['method_rate_id'],
 			$shipping_rate['method_id']
 		);

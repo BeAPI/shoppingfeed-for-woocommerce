@@ -32,6 +32,9 @@ class Order {
 	/** @var OrderResource $sf_order */
 	private $sf_order;
 
+	/** @var bool $include_vat */
+	private $include_vat;
+
 	/** @var array $shipping_address */
 	private $shipping_address;
 
@@ -63,11 +66,13 @@ class Order {
 	 * Order constructor.
 	 * Init all order requirements
 	 *
-	 * @param $sf_order OrderResource
+	 * @param OrderResource $sf_order
+	 * @param bool $include_vat
 	 */
-	public function __construct( $sf_order ) {
+	public function __construct( $sf_order, $include_vat = false ) {
 
-		$this->sf_order = $sf_order;
+		$this->sf_order    = $sf_order;
+		$this->include_vat = $include_vat;
 
 		$this->set_shipping_address();
 		$this->set_billing_address();
@@ -141,13 +146,6 @@ class Order {
 			$shipping_rate = $this->shipping->get_shipping_rate();
 			$item          = new \WC_Order_Item_Shipping();
 			$item->set_shipping_rate( $shipping_rate );
-			$item->set_taxes(
-				[
-					'total' => [
-						self::RATE_ID => (float) $this->sf_order->toArray()['additionalFields']['shipping_tax'],
-					],
-				]
-			);
 			$item->save();
 			$wc_order->add_item( $item );
 			do_action( 'sf_after_order_add_shipping', $item, $wc_order );
@@ -156,13 +154,15 @@ class Order {
 				$item = new \WC_Order_Item_Shipping();
 				$item->set_method_title( $this->shipping->get_method() );
 				$item->set_total( $this->shipping->get_total() );
-				$item->set_taxes(
-					[
-						'total' => [
-							self::RATE_ID => (float) $this->sf_order->toArray()['additionalFields']['shipping_tax'],
-						],
-					]
-				);
+				if ( $this->include_vat ) {
+					$item->set_taxes(
+						[
+							'total' => [
+								self::RATE_ID => (float) $this->sf_order->toArray()['additionalFields']['shipping_tax'],
+							],
+						]
+					);
+				}
 				$item->save();
 				$wc_order->add_item( $item );
 				do_action( 'sf_after_order_add_shipping', $item, $wc_order );
@@ -222,29 +222,30 @@ class Order {
 			}
 		}
 
-		$total_product_tax = 0;
-		foreach ( $this->sf_order->getItems() as $item ) {
-			$total_product_tax += $item->getTaxAmount();
-		}
+		if ( $this->include_vat ) {
+			$total_product_tax = 0;
+			foreach ( $this->sf_order->getItems() as $item ) {
+				$total_product_tax += $item->getTaxAmount();
+			}
 
-		$total_shipping_tax = 0;
-		$lol                = $this->sf_order->toArray();
-		if ( isset( $lol['additionalFields']['shipping_tax'] ) ) {
-			$total_shipping_tax = (float) $lol['additionalFields']['shipping_tax'];
-		}
+			$total_shipping_tax = 0;
+			if ( isset( $this->sf_order->toArray()['additionalFields']['shipping_tax'] ) ) {
+				$total_shipping_tax = (float) $this->sf_order->toArray()['additionalFields']['shipping_tax'];
+			}
 
-		$tax = new \WC_Order_Item_Tax();
-		$tax->set_props(
-			[
-				'rate_code'          => 'SF-VAT',
-				'rate_id'            => self::RATE_ID,
-				'label'              => __( 'VAT', 'shopping-feed' ),
-				'tax_total'          => $total_product_tax,
-				'shipping_tax_total' => $total_shipping_tax,
-			]
-		);
-		$tax->save();
-		$wc_order->add_item( $tax );
+			$tax = new \WC_Order_Item_Tax();
+			$tax->set_props(
+				[
+					'rate_code'          => 'SF-VAT',
+					'rate_id'            => self::RATE_ID,
+					'label'              => __( 'VAT', 'shopping-feed' ),
+					'tax_total'          => $total_product_tax,
+					'shipping_tax_total' => $total_shipping_tax,
+				]
+			);
+			$tax->save();
+			$wc_order->add_item( $tax );
+		}
 
 		$wc_order->set_status( $this->status->get_name(), $this->status->get_note() );
 		$wc_order->calculate_totals( false );
@@ -364,7 +365,7 @@ class Order {
 			$this->products = array();
 		}
 
-		$products       = new Products( $this->sf_order );
+		$products       = new Products( $this->sf_order, $this->include_vat );
 		$this->products = $products->get_products();
 	}
 
