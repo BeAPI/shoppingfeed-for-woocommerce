@@ -101,7 +101,7 @@ class Products {
 			'quantity'     => $sf_product_quantity,
 		);
 
-		if ( $this->include_vat ) {
+		if ( $this->include_vat && $sf_product->getTaxAmount() > 0 ) {
 			$args['taxes'] = [
 				'subtotal' => [
 					Order::RATE_ID => $sf_product->getTaxAmount(),
