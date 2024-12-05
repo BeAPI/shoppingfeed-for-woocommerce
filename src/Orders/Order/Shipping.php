@@ -34,9 +34,10 @@ class Shipping {
 	 */
 	private $total;
 
-	/**
-	 * @var bool $include_vat
-	 */
+	/** @var float $total_tax */
+	private $total_tax;
+
+	/** @var bool $include_vat */
 	private $include_vat;
 
 	/** @var array|\WC_Shipping_Rate $shipping_rate */
@@ -52,11 +53,12 @@ class Shipping {
 	 * @param bool $include_vat
 	 */
 	public function __construct( $sf_order, $include_vat = false ) {
-		$this->sf_order = $sf_order;
+		$this->sf_order    = $sf_order;
 		$this->include_vat = $include_vat;
 
 		$this->set_shipping_method_and_colis_number();
 		$this->set_total();
+		$this->set_total_tax();
 	}
 
 	/**
@@ -101,11 +103,11 @@ class Shipping {
 			$shipping_rate = $default_shipping_method;
 		}
 
-		$vat = [];
-		if ( $this->include_vat && isset( $this->sf_order->toArray()['additionalFields']['shipping_tax'] ) ) {
-			$vat = [
+		$taxes = [];
+		if ( $this->include_vat && $this->get_total_tax() > 0 ) {
+			$taxes = [
 				'total' => [
-					Order::RATE_ID => (float) $this->sf_order->toArray()['additionalFields']['shipping_tax'],
+					Order::RATE_ID => $this->get_total_tax(),
 				],
 			];
 		}
@@ -114,7 +116,7 @@ class Shipping {
 			$shipping_rate['method_rate_id'],
 			$shipping_rate['method_title'],
 			$this->get_total_shipping() ? $this->get_total_shipping() : ShoppingFeedHelper::get_sf_default_shipping_fees(),
-			$vat,
+			$taxes,
 			$shipping_rate['method_rate_id'],
 			$shipping_rate['method_id']
 		);
@@ -123,6 +125,8 @@ class Shipping {
 	}
 
 	/**
+	 * Get total shipping amount.
+	 *
 	 * @return float
 	 */
 	public function get_total() {
@@ -130,10 +134,26 @@ class Shipping {
 	}
 
 	/**
-	 * Set total
+	 * Set total shipping amount.
 	 */
 	public function set_total() {
 		$this->total = $this->get_total_shipping();
+	}
+
+	/**
+	 * Get total shipping tax amount.
+	 *
+	 * @return float
+	 */
+	public function get_total_tax() {
+		return $this->total_tax;
+	}
+
+	/**
+	 * Set total shipping tax amount.
+	 */
+	public function set_total_tax() {
+		$this->total_tax = isset( $this->sf_order->toArray()['additionalFields']['shipping_tax'] ) ? (float) $this->sf_order->toArray()['additionalFields']['shipping_tax'] : 0;
 	}
 
 	/**
