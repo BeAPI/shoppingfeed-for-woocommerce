@@ -6,8 +6,8 @@ namespace ShoppingFeed\ShoppingFeedWC\Orders\Order;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Order\{OrderItem, OrderResource};
+use ShoppingFeed\ShoppingFeedWC\Orders\Order;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
-use WC_Product;
 
 /**
  * @psalm-consistent-constructor
@@ -20,6 +20,11 @@ class Products {
 	private $sf_order;
 
 	/**
+	 * @var bool $include_vat
+	 */
+	private $include_vat;
+
+	/**
 	 * @var array $products
 	 */
 	private $products;
@@ -27,10 +32,12 @@ class Products {
 	/**
 	 * Products constructor.
 	 *
-	 * @param $sf_order OrderResource
+	 * @param OrderResource $sf_order
+	 * @param bool $include_vat
 	 */
-	public function __construct( $sf_order ) {
-		$this->sf_order = $sf_order;
+	public function __construct( $sf_order, $include_vat = false ) {
+		$this->sf_order    = $sf_order;
+		$this->include_vat = $include_vat;
 		$this->set_products();
 	}
 
@@ -93,6 +100,17 @@ class Products {
 			'total'        => $sf_product->getTotalPrice(),
 			'quantity'     => $sf_product_quantity,
 		);
+
+		if ( $this->include_vat && $sf_product->getTaxAmount() > 0 ) {
+			$args['taxes'] = [
+				'subtotal' => [
+					Order::RATE_ID => $sf_product->getTaxAmount(),
+				],
+				'total'    => [
+					Order::RATE_ID => $sf_product->getTaxAmount(),
+				],
+			];
+		}
 
 		return array(
 			'args'         => $args,

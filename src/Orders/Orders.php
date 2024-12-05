@@ -115,8 +115,11 @@ class Orders {
 				continue;
 			}
 
+			// Include VAT when importing the order.
+			$include_vat = (bool) ( ShoppingFeedHelper::get_sf_orders_options()['import_vat_order'] ?? false );
+
 			//Init Order
-			$order = new Order( $sf_order );
+			$order = new Order( $sf_order, $include_vat );
 			//Add Order
 			$order->add();
 		}

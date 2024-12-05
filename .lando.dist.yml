@@ -17,6 +17,11 @@ services:
       user: wordpress-test
       password: wordpress-test
       database: wordpress-test
+  mailcatcher:
+    type: mailhog
+    hogfrom:
+      - appserver
+    portforward: true
 tooling:
   setup-env:
     service: appserver
@@ -32,13 +37,14 @@ tooling:
       - wp config create --dbname=wordpress --dbuser=wordpress --dbpass=wordpress --dbhost=database --path=/app/wordpress
       - echo "➡️ Install WP"
       - wp core install --url="https://shoppingfeed-for-woocommerce.lndo.site" --title="Test" --admin_user=admin --admin_password=password --admin_email=wordpress@example.com --skip-email
+      - wp rewrite structure "/%postname%/"
       - echo "➡️ Install Woocommerce"
       - wp plugin install --activate woocommerce
       - echo "➡️ Install Storefront"
       - wp theme install storefront --activate
       - echo "➡️ Install WordPress importer"
       - wp plugin install wordpress-importer --activate
-      - echo "➡️ Install Woocommerce"
+      - echo "➡️ Configure Woocommerce"
       - wp option set woocommerce_store_address "Example Address Line 1"
       - wp option set woocommerce_store_address_2 "Example Address Line 2"
       - wp option set woocommerce_store_city "Example City"
@@ -46,6 +52,12 @@ tooling:
       - wp option set woocommerce_store_postcode "94110"
       - wp option set woocommerce_currency "EUR"
       - wp option set woocommerce_product_type "both"
+      - wp option set woocommerce_calc_taxes "yes"
+      - wp option set woocommerce_prices_include_tax "yes"
+      - wp option set woocommerce_tax_display_shop "incl"
+      - wp option set woocommerce_tax_display_cart "incl"
+      - wp wc tax create --country=FR --rate=20 --user=admin
+      - wp wc tax create --country=FR --rate=5.5 --class=reduced-rate --user=admin
       - wp option set woocommerce_allow_tracking "no"
       - wp option set woocommerce_enable_checkout_login_reminder "yes"
       - wp option set --format=json woocommerce_cod_settings '{"enabled":"yes"}'

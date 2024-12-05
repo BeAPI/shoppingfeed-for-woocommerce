@@ -25,10 +25,15 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
  */
 class Order {
 
+	public const RATE_ID = 999999999999;
+
 	use Marketplace;
 
 	/** @var OrderResource $sf_order */
 	private $sf_order;
+
+	/** @var bool $include_vat */
+	private $include_vat;
 
 	/** @var array $shipping_address */
 	private $shipping_address;
@@ -61,11 +66,13 @@ class Order {
 	 * Order constructor.
 	 * Init all order requirements
 	 *
-	 * @param $sf_order OrderResource
+	 * @param OrderResource $sf_order
+	 * @param bool $include_vat
 	 */
-	public function __construct( $sf_order ) {
+	public function __construct( $sf_order, $include_vat = false ) {
 
-		$this->sf_order = $sf_order;
+		$this->sf_order    = $sf_order;
+		$this->include_vat = $include_vat;
 
 		$this->set_shipping_address();
 		$this->set_billing_address();
@@ -112,7 +119,7 @@ class Order {
 
 		//Payment
 		try {
-			$wc_order->set_prices_include_tax( $this->payment->get_total() );
+			$wc_order->set_prices_include_tax( true );
 			$wc_order->set_payment_method( $this->payment->get_method() );
 		} catch ( \Exception $exception ) {
 			$message = sprintf(
@@ -139,6 +146,7 @@ class Order {
 			$shipping_rate = $this->shipping->get_shipping_rate();
 			$item          = new \WC_Order_Item_Shipping();
 			$item->set_shipping_rate( $shipping_rate );
+			$item->save();
 			$wc_order->add_item( $item );
 			do_action( 'sf_after_order_add_shipping', $item, $wc_order );
 		} else {
@@ -146,6 +154,15 @@ class Order {
 				$item = new \WC_Order_Item_Shipping();
 				$item->set_method_title( $this->shipping->get_method() );
 				$item->set_total( $this->shipping->get_total() );
+				if ( $this->include_vat && $this->shipping->get_total_tax() > 0 ) {
+					$item->set_taxes(
+						[
+							'total' => [
+								self::RATE_ID => $this->shipping->get_total_tax(),
+							],
+						]
+					);
+				}
 				$item->save();
 				$wc_order->add_item( $item );
 				do_action( 'sf_after_order_add_shipping', $item, $wc_order );
@@ -202,6 +219,33 @@ class Order {
 		if ( ! empty( $this->metas->get_metas() ) ) {
 			foreach ( $this->metas->get_metas() as $meta ) {
 				$wc_order->add_meta_data( $meta['key'], $meta['value'], $meta['unique'] );
+			}
+		}
+
+		if ( $this->include_vat ) {
+			$total_product_tax = 0;
+			foreach ( $this->sf_order->getItems() as $item ) {
+				$total_product_tax += $item->getTaxAmount();
+			}
+
+			$total_shipping_tax = 0;
+			if ( isset( $this->sf_order->toArray()['additionalFields']['shipping_tax'] ) ) {
+				$total_shipping_tax = (float) $this->sf_order->toArray()['additionalFields']['shipping_tax'];
+			}
+
+			if ( $total_product_tax > 0 || $total_shipping_tax > 0 ) {
+				$tax = new \WC_Order_Item_Tax();
+				$tax->set_props(
+					[
+						'rate_code'          => 'SF-VAT',
+						'rate_id'            => self::RATE_ID,
+						'label'              => __( 'VAT', 'shopping-feed' ),
+						'tax_total'          => $total_product_tax,
+						'shipping_tax_total' => $total_shipping_tax,
+					]
+				);
+				$tax->save();
+				$wc_order->add_item( $tax );
 			}
 		}
 
@@ -323,7 +367,7 @@ class Order {
 			$this->products = array();
 		}
 
-		$products       = new Products( $this->sf_order );
+		$products       = new Products( $this->sf_order, $this->include_vat );
 		$this->products = $products->get_products();
 	}
 
