@@ -256,19 +256,19 @@ class Generator {
 	 *
 	 * @param bool $no_cache
 	 */
-	public function render( $no_cache = false ) {
-		$file_path = Uri::get_instance()->get_full_path();
+	public function render( $no_cache = false, $lang = null ) {
+		$file_path = sprintf(
+			'%s%s%s',
+			Uri::get_instance()->get_file_path(),
+			! empty( $lang ) ? '_' . $lang : '',
+			Uri::get_instance()->is_compressed ? '.xml.gz' : '.xml'
+		);
 
 		if ( true === $no_cache || ! is_file( $file_path ) ) {
 			if ( ShoppingFeedHelper::is_process_running( 'sf_feed_generation_process' ) ) {
 				wp_die( 'Feed generation already launched' );
 			}
-			as_schedule_single_action(
-				false,
-				'sf_feed_generation_process',
-				array(),
-				'sf_feed_generation_process'
-			);
+			AsyncGenerator::get_instance()->launch();
 			wp_die( 'Feed generation launched' );
 		}
 

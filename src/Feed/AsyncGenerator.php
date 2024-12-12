@@ -20,13 +20,32 @@ class AsyncGenerator extends Generator {
 		// This is to avoid reusing old parts that could remain if a previous execution of the generator failed.
 		$this->clean_feed_parts_directory();
 
-		$part_size = ShoppingFeedHelper::get_sf_part_size();
+		$part_size           = ShoppingFeedHelper::get_sf_part_size();
+		$available_languages = ShoppingFeedHelper::get_available_languages();
+		if ( ! empty( $available_languages ) ) {
+			foreach ( $available_languages as $language ) {
+				as_schedule_single_action(
+					time() + 10,
+					'sf_feed_generation_part',
+					array(
+						1,
+						$part_size,
+						$language,
+					),
+					'sf_feed_generation_process'
+				);
+			}
+
+			return;
+		}
+
 		as_schedule_single_action(
-			time() + 5,
+			time() + 10,
 			'sf_feed_generation_part',
 			array(
 				1,
 				$part_size,
+				'',
 			),
 			'sf_feed_generation_process'
 		);
@@ -37,23 +56,32 @@ class AsyncGenerator extends Generator {
 	 *
 	 * @param int $page
 	 * @param int $post_per_page
+	 * @param string $lang
 	 *
 	 * @return bool|\WP_Error
 	 */
-	public function generate_feed_part( $page, $post_per_page ) {
-		$args     = array(
+	public function generate_feed_part( $page = 1, $post_per_page = 20, $lang = '' ) {
+		$args = array(
 			'page'   => $page,
 			'limit'  => $post_per_page,
 			'return' => 'ids',
 		);
+		if ( ! empty( $lang ) ) {
+			$args['lang'] = $lang;
+			$current_language = apply_filters( 'wpml_current_language', null );
+			do_action( 'wpml_switch_language', $lang );
+		}
 		$products = Products::get_instance()->get_products( $args );
+		if ( ! empty( $lang ) ) {
+			do_action( 'wpml_switch_language', $current_language );
+		}
 
 		// If the query doesn't return any products, schedule the combine action and stop the current action.
 		if ( empty( $products ) ) {
 			as_schedule_single_action(
-				time() + 5,
+				time(),
 				'sf_feed_generation_combine_feed_parts',
-				array(),
+				array( $lang ),
 				'sf_feed_generation_process'
 			);
 
@@ -61,12 +89,16 @@ class AsyncGenerator extends Generator {
 		}
 
 		// Process products returned by the query and reschedule the action for the next page.
-		$path          = sprintf( '%s/%s', ShoppingFeedHelper::get_feed_parts_directory(), 'part_' . $page );
+		$path          = sprintf(
+			'file://%s/%s.xml',
+			ShoppingFeedHelper::get_feed_parts_directory(),
+			! empty( $lang ) ? 'part_' . $page . '_' . $lang : 'part_' . $page
+		);
 		$products_list = Products::get_instance()->format_products( $products );
 		try {
 			$this->generator = new ProductGenerator();
 			$this->generator->setPlatform( (string) $page, (string) $page );
-			$this->generator->setUri( sprintf( 'file://%s.xml', $path ) );
+			$this->generator->setUri( $path );
 			$this->set_filters();
 			$this->set_mappers();
 			$this->generator->write( $products_list );
@@ -78,6 +110,7 @@ class AsyncGenerator extends Generator {
 				array(
 					$page,
 					$post_per_page,
+					$lang,
 				),
 				'sf_feed_generation_process'
 			);
@@ -90,14 +123,17 @@ class AsyncGenerator extends Generator {
 
 	/**
 	 * Combine the generated parts to a unique and final file
+	 *
+	 * @param string $lang
 	 */
-	public function combine_feed_parts() {
+	public function combine_feed_parts( $lang = '' ) {
 		$option = get_option( 'sf_feed_generation_process' );
 
 		$dir       = ShoppingFeedHelper::get_feed_directory();
 		$dir_parts = ShoppingFeedHelper::get_feed_parts_directory();
 
-		$files = glob( $dir_parts . '/' . '*.xml' ); // @codingStandardsIgnoreLine.
+		$pattern = ! empty( $lang ) ? sprintf( '%s/*_%s.xml', $dir_parts, $lang ) : $dir_parts . '/*.xml';
+		$files   = glob( $pattern ); // @codingStandardsIgnoreLine.
 
 		$xml_content      = '<products>';
 		$xml_invalid      = 0;
@@ -109,9 +145,9 @@ class AsyncGenerator extends Generator {
 			$file_xml         = simplexml_load_string( file_get_contents( $file ) );
 			$last_started_at  = $file_xml->metadata->startedAt;
 			$last_finished_at = $file_xml->metadata->finishedAt;
-			$xml_invalid     += (int) $file_xml->metadata->invalid;
-			$xml_ignored     += (int) $file_xml->metadata->ignored;
-			$xml_written     += (int) $file_xml->metadata->written;
+			$xml_invalid      += (int) $file_xml->metadata->invalid;
+			$xml_ignored      += (int) $file_xml->metadata->ignored;
+			$xml_written      += (int) $file_xml->metadata->written;
 			$products         = $file_xml->products[0];
 			foreach ( $products as $product ) {
 				$xml_content .= $product->asXML();
@@ -126,7 +162,7 @@ class AsyncGenerator extends Generator {
 		 * Read and get the xml content from the file and remove the xml header
 		 * Delete the temporary file
 		 */
-		$tmp_file_path = $dir . '/products_tmp.xml';
+		$tmp_file_path = ! empty( $lang ) ? sprintf( '%s/products_%s_tmp.xml', $dir, $lang ) : $dir . '/products_tmp.xml';
 		if ( ! file_put_contents( $tmp_file_path, $xml_content->asXML() ) ) {
 			ShoppingFeedHelper::get_logger()->error(
 				sprintf(
@@ -141,18 +177,22 @@ class AsyncGenerator extends Generator {
 
 			return;
 		}
-		$products = preg_replace( '/<\?xml version="1.0"\?>\n/', '', file_get_contents( $dir . '/products_tmp.xml' ) );
-		wp_delete_file( $dir . '/products_tmp.xml' );
+		$products = preg_replace( '/<\?xml version="1.0"\?>\n/', '', file_get_contents( $tmp_file_path ) );
+		wp_delete_file( $tmp_file_path );
 
 		$skelton = simplexml_load_string( ShoppingFeedHelper::get_feed_skeleton() );
 		$this->simplexml_import_xml( $skelton->metadata, $products, true );
-		$skelton->metadata->platform = sprintf( 'WooCommerce:%s-module:%s', ShoppingFeedHelper::get_wc_version(), SF_VERSION );
+		$skelton->metadata->platform   = sprintf( 'WooCommerce:%s-module:%s', ShoppingFeedHelper::get_wc_version(), SF_VERSION );
 		$skelton->metadata->startedAt  = $last_started_at;
 		$skelton->metadata->finishedAt = $last_finished_at;
 		$skelton->metadata->invalid    = $xml_invalid;
 		$skelton->metadata->ignored    = $xml_ignored;
 		$skelton->metadata->written    = $xml_written;
-		$uri                           = Uri::get_full_path();
+		$uri                           = Uri::get_instance()->get_file_path();
+		if ( ! empty( $lang ) ) {
+			$uri .= '_' . $lang;
+		}
+		$uri .= '.xml';
 		if ( ! file_put_contents( $uri, $skelton->asXML() ) ) {
 			ShoppingFeedHelper::get_logger()->error(
 				sprintf(
