@@ -859,14 +859,18 @@ class Options {
 				$sf_last_generation_date = get_option( Generator::SF_FEED_LAST_GENERATION_DATE );
 				?>
 				<?php if ( ! $sf_process_running ) : ?>
-					<a href="<?php echo esc_html( $sf_feed_public_url ); ?>" target="_blank">
-						<?php
-						echo esc_url( $sf_feed_public_url );
-						;
-						?>
-					</a>
+				    <?php foreach ( ShoppingFeedHelper::get_feeds_urls() as $feed_url ) : ?>
+				    <p>
+                        <a href="<?php echo esc_url( $feed_url ); ?>" target="_blank">
+                            <?php echo esc_html( $feed_url ); ?>
+                        </a>
+                        <span> | </span>
+                         <a href="<?php echo esc_url( add_query_arg( [ 'version' => time() ], $feed_url ) ); ?>" target="_blank">
+                            <?php esc_html_e( 'Refresh', 'shopping-feed' ); ?>
+                        </a>
+                        </p>
+					<?php endforeach; ?>
 				<?php endif; ?>
-				<br>
 				<p>
 					<?php if ( ! $sf_process_running ) : ?>
 						<?php esc_html_e( 'Last update', 'shopping-feed' ); ?> :

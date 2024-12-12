@@ -8,6 +8,7 @@ defined( 'ABSPATH' ) || exit;
 use ShoppingFeed\ShoppingFeedWC\Admin\Options;
 use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\ShipmentTrackingManager;
 use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\ShipmentTrackingProvider;
+use ShoppingFeed\ShoppingFeedWC\Feed\Uri;
 use ShoppingFeed\ShoppingFeedWC\Url\Rewrite;
 use WC_Logger;
 
@@ -611,7 +612,7 @@ XML;
 		/**
 		 * Filter the value of the carrier for the order before it is retrieve.
 		 *
-		 * @param bool|string $pre    The value to return instead of the value computed from
+		 * @param bool|string $pre The value to return instead of the value computed from
 		 *                            the `sf_shipping` metadata.
 		 * @param \WC_Order $wc_order The order object for the carrier data.
 		 */
@@ -685,7 +686,7 @@ XML;
 	 */
 	public static function sf_order_statuses_to_import() {
 		$default_statuses = [ 'waiting_shipment' ];
-		$orders_options = self::get_sf_orders_options();
+		$orders_options   = self::get_sf_orders_options();
 
 		/**
 		 * Add shipped status if importing fulfilled by marketplace orders
@@ -693,7 +694,7 @@ XML;
 		 */
 		if ( isset( $orders_options['import_order_fulfilled_by_marketplace'] ) && true === (bool) $orders_options['import_order_fulfilled_by_marketplace'] ) {
 			$fullfilled_by_marketplace_statuses = [ 'shipped', 'refunded', 'cancelled' ];
-			$default_statuses = array_merge( $default_statuses, $fullfilled_by_marketplace_statuses );
+			$default_statuses                   = array_merge( $default_statuses, $fullfilled_by_marketplace_statuses );
 		}
 
 		return apply_filters( 'shopping_feed_orders_to_import', $default_statuses );
@@ -894,9 +895,9 @@ XML;
 	 */
 	public static function sf_new_customer() {
 		return empty( get_option( Options::SF_ACCOUNT_OPTIONS ) ) &&
-			   empty( get_option( Options::SF_FEED_OPTIONS ) ) &&
-			   empty( get_option( Options::SF_SHIPPING_OPTIONS ) ) &&
-			   empty( get_option( Options::SF_ORDERS_OPTIONS ) );
+		       empty( get_option( Options::SF_FEED_OPTIONS ) ) &&
+		       empty( get_option( Options::SF_SHIPPING_OPTIONS ) ) &&
+		       empty( get_option( Options::SF_ORDERS_OPTIONS ) );
 	}
 
 	/**
@@ -938,5 +939,78 @@ XML;
 	public static function end_upgrade() {
 		delete_option( SF_UPGRADE_RUNNING );
 		update_option( SF_DB_VERSION_SLUG, SF_DB_VERSION );
+	}
+
+	/**
+	 * Get available languages
+	 *
+	 * @return string[]
+	 */
+	public static function get_available_languages() {
+		$languages = [];
+		if ( function_exists( '\pll_languages_list' ) ) {
+			$languages = pll_languages_list(
+				[
+					'hide_empty' => false,
+				]
+			);
+		} elseif ( defined( 'ICL_SITEPRESS_VERSION' ) ) {
+			$icl_languages = apply_filters( 'wpml_active_languages', null );
+			if ( is_array( $icl_languages ) ) {
+				$languages = wp_list_pluck( $icl_languages, 'language_code' );
+			}
+		}
+
+		return $languages;
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function get_feeds_urls() {
+		$urls = [];
+		if ( ! empty( self::get_available_languages() ) ) {
+			foreach ( self::get_available_languages() as $language ) {
+				$urls[] = trailingslashit(
+					sprintf(
+						'%s-%s',
+						untrailingslashit( self::get_public_feed_url() ),
+						$language,
+					)
+				);
+			}
+		} else {
+			$urls[] = self::get_public_feed_url();
+		}
+
+		return $urls;
+	}
+
+	public static function get_feed_data() {
+		static $feed_data;
+
+		if ( ! is_array( $feed_data ) ) {
+			$feed_data = [];
+			$languages = self::get_available_languages();
+			if ( ! empty( $languages ) ) {
+				foreach ( $languages as $language ) {
+					$feed_data[] = [
+						'url'              => self::get_public_feed_url(),
+						'folder'           => self::get_feed_directory(),
+						'folder_parts'     => self::get_feed_parts_directory(),
+						'feed_custom_args' => [],
+					];
+				}
+			} else {
+				$feed_data[] = [
+					'url'              => self::get_public_feed_url(),
+					'folder'           => self::get_feed_directory(),
+					'folder_parts'     => self::get_feed_parts_directory(),
+					'feed_custom_args' => [],
+				];
+			}
+		}
+
+		return $feed_data;
 	}
 }
