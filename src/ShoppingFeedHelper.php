@@ -967,4 +967,36 @@ class ShoppingFeedHelper {
 		$feed_manager = self::get_feedbuilder_manager();
 		return $feed_manager->get_builder()->current_languages();
 	}
+
+	/**
+	 * Return SF disable order import
+	 * @return bool
+	 */
+	public static function is_disable_order_import() {
+		$orders_options = self::get_sf_orders_options();
+
+		if ( false === $orders_options ) {
+			return false;
+		}
+
+		return (bool) ( $orders_options['disable_order_import'] ?? 0 ); // True if the value does not exist. For existing customers
+	}
+
+	/**
+	 * Set default orders options
+	 * @return void
+	 */
+	public static function set_default_orders_option() {
+		// Skip if option has already set
+		if ( false !== get_option( options::SF_ORDERS_OPTIONS ) ) {
+			return;
+		}
+
+		update_option(
+			options::SF_ORDERS_OPTIONS,
+			[
+				'disable_order_import' => 1,
+			]
+		);
+	}
 }

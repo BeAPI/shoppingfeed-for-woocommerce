@@ -60,6 +60,11 @@ class Orders {
 			'shopping-feed-orders'
 		);
 
+		// Check if import is enable
+		if ( ShoppingFeedHelper::is_disable_order_import() ) {
+			return false;
+		}
+
 		$shop = Sdk::get_sf_shop( $sf_account );
 
 		if ( ! $shop instanceof StoreResource ) {
