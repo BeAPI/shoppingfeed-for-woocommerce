@@ -219,6 +219,7 @@ class ShoppingFeed {
 	public static function activate() {
 		if ( defined( 'WC_VERSION' ) ) {
 			self::add_sf_directory();
+			ShoppingFeedHelper::set_default_orders_option();
 			Actions::register_feed_generation();
 			Actions::register_get_orders();
 		}

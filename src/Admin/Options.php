@@ -1423,6 +1423,30 @@ class Options {
 			);
 		}
 
+				add_settings_field(
+					'disable_orders_import_option',
+					__( 'Disable order import', 'shopping-feed' ),
+					function () {
+						?>
+				<label for="disable_order_import">
+					<input
+						type="checkbox"
+						id="disable_order_import"
+								name="<?php echo esc_attr( sprintf( '%s[disable_order_import]', self::SF_ORDERS_OPTIONS ) ); ?>"
+						value="yes"
+								<?php checked( 1, isset( $this->sf_orders_options['disable_order_import'] ) ? $this->sf_orders_options['disable_order_import'] : 0 ); ?>
+					>
+							<?php esc_html_e( 'Would you like to deactivate order import ?', 'shopping-feed' ); ?>
+				</label>
+				<p class="description" id="tagline-description">
+							<?php esc_html_e( 'If the box is checked, item import will be disabled.', 'shopping-feed' ); ?>
+				</p>
+						<?php
+					},
+					self::SF_ORDERS_SETTINGS_PAGE,
+					'sf_orders_settings_import_options'
+				);
+
 		add_settings_field(
 			'Frequency',
 			__( 'Frequency', 'shopping-feed' ),
