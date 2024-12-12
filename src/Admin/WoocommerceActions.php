@@ -37,22 +37,11 @@ class WoocommerceActions {
 
 
 	public function __construct() {
-
-		//Generate async feed
-		add_action(
-			'sf_feed_generation_process',
-			[
-				AsyncGenerator::get_instance(),
-				'launch',
-			]
-		);
-
 		//Generate feed part
 		add_action(
 			'sf_feed_generation_part',
 			[
 				AsyncGenerator::get_instance(),
-
 				'generate_feed_part',
 			],
 			10,
@@ -315,8 +304,8 @@ class WoocommerceActions {
 	 */
 	public function update_product( $product_id, $only_stock = false ) {
 		$sf_feed_options = ShoppingFeedHelper::get_sf_feed_options();
-		$sync_stock = $sf_feed_options['synchro_stock'] ?? 'yes';
-		$sync_price = $sf_feed_options['synchro_price'] ?? 'yes';
+		$sync_stock      = $sf_feed_options['synchro_stock'] ?? 'yes';
+		$sync_price      = $sf_feed_options['synchro_price'] ?? 'yes';
 
 		/**
 		 * If both stock and price synchronization are disable, bail out.
