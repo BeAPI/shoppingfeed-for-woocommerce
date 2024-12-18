@@ -38,7 +38,7 @@ class PhWoocommerceShipmentTracking implements ShipmentTrackingProvider {
 		$tracking_data    = new ShipmentTrackingData();
 		$ph_tracking_data = $order->get_meta( 'wf_wc_shipment_result' );
 		if ( is_array( $ph_tracking_data ) && isset( $ph_tracking_data['tracking_info'] ) ) {
-			foreach ( $ph_tracking_data as $ph_tracking_datum ) {
+			foreach ( $ph_tracking_data['tracking_info'] as $ph_tracking_datum ) {
 				$tracking_data->add_tracking_data(
 					$ph_tracking_datum['tracking_id'],
 					$ph_tracking_datum['tracking_link']

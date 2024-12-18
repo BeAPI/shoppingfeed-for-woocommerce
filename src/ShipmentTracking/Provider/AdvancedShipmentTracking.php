@@ -48,7 +48,7 @@ class AdvancedShipmentTracking implements ShipmentTrackingProvider {
 			foreach ( $tracking_info as $tracking_item ) {
 				$tracking_data->add_tracking_data(
 					$tracking_item['tracking_number'],
-					$tracking_item['formatted_tracking_link ']
+					$tracking_item['formatted_tracking_link']
 				);
 			}
 		}
