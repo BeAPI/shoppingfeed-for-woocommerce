@@ -59,7 +59,7 @@
     "codeception/module-filesystem": "^1.0",
     "codeception/module-cli": "^1.0",
     "codeception/util-universalframework": "^1.0",
-    "roots/wordpress": "^6.2",
+    "roots/wordpress": "^6.7",
     "wp-cli/wp-cli-bundle": "^2.7",
     "coenjacobs/mozart": "^0.7.1",
     "shoppingfeed/php-sdk": "^0.7.0"
@@ -99,8 +99,8 @@
     "test-acceptance": "./vendor/bin/codecept run acceptance --html",
     "mozart-compose": [
       "vendor/bin/mozart compose",
-      "find ./vendor_prefixed -type f -exec sed -i '' 's/use GuzzleHttp;/use ShoppingFeed\\\\ShoppingFeedWC\\\\Dependencies\\\\GuzzleHttp;/g' {} \\;",
-      "find ./vendor_prefixed -type f -exec sed -i '' 's/use Psr\\\\Http\\\\/use ShoppingFeed\\\\ShoppingFeedWC\\\\Dependencies\\\\Psr\\\\Http\\\\/g' {} \\;",
+      "find ./vendor_prefixed -type f -name '*.php' -exec sed -i '' 's/use GuzzleHttp;/use ShoppingFeed\\\\ShoppingFeedWC\\\\Dependencies\\\\GuzzleHttp;/g' {} \\;",
+      "find ./vendor_prefixed -type f -name '*.php' -exec sed -i '' 's/use Psr\\\\Http\\\\/use ShoppingFeed\\\\ShoppingFeedWC\\\\Dependencies\\\\Psr\\\\Http\\\\/g' {} \\;",
       "find ./vendor_prefixed -type f -name '*.php' -exec sed -i '' 's/\\\\GuzzleHttp\\\\ClientInterface::VERSION/\\\\ShoppingFeed\\\\ShoppingFeedWC\\\\Dependencies\\\\GuzzleHttp\\\\ClientInterface::VERSION/g' {} \\;",
       "@composer dump-autoload -o",
       "@composer dump-autoload -o"
