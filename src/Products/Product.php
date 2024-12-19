@@ -36,6 +36,21 @@ class Product {
 	private $weight;
 
 	/**
+	 * @var string
+	 */
+	private $length;
+
+	/**
+	 * @var string
+	 */
+	private $width;
+
+	/**
+	 * @var string
+	 */
+	private $height;
+
+	/**
 	 * @var bool|mixed|\WP_Term
 	 */
 	private $category;
@@ -52,6 +67,9 @@ class Product {
 		$this->brand              = $this->set_brand();
 		$this->category           = $this->set_category();
 		$this->weight             = $this->product->get_weight();
+		$this->length             = $this->product->get_length();
+		$this->width              = $this->product->get_width();
+		$this->height             = $this->product->get_height();
 	}
 
 	/**
@@ -228,6 +246,39 @@ class Product {
 	/**
 	 * @return string
 	 */
+	public function get_length() {
+		if ( empty( $this->length ) ) {
+			return '';
+		}
+
+		return $this->length;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_width() {
+		if ( empty( $this->width ) ) {
+			return '';
+		}
+
+		return $this->width;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_height() {
+		if ( empty( $this->height ) ) {
+			return '';
+		}
+
+		return $this->height;
+	}
+
+	/**
+	 * @return string
+	 */
 	public function get_category_name() {
 		if ( empty( $this->category ) ) {
 			return '';
@@ -327,7 +378,15 @@ class Product {
 
 		$wc_attributes = $this->product->get_attributes();
 
-		$attributes = array();
+		if ( 'variable' === $this->product->get_type() && is_array( $wc_attributes ) && ! empty( $wc_attributes ) ) {
+			foreach ( $wc_attributes as $key => $attribute ) {
+				if ( $attribute->get_variation() ) {
+					unset( $wc_attributes[ $key ] );
+				}
+			}
+		}
+
+		$attributes = [];
 		if ( ! empty( $wc_attributes ) ) {
 			foreach ( $wc_attributes as $taxonomy => $attribute_obj ) {
 				$attribute = reset( $attribute_obj );
@@ -415,6 +474,9 @@ class Product {
 			$variation_data['quantity'] = $this->_get_quantity( $variation );
 			$variation_data['price']    = ! is_null( $variation->get_regular_price() ) ? $variation->get_regular_price() : $variation->get_price();
 			$variation_data['discount'] = $variation->is_on_sale() ? $variation->get_sale_price() : 0;
+			$variation_data['width']    = $variation->get_width();
+			$variation_data['height']   = $variation->get_height();
+			$variation_data['length']   = $variation->get_length();
 			if ( ! empty( get_the_post_thumbnail_url( $variation->get_id(), 'full' ) ) ) {
 				$variation_data['image_main'] = get_the_post_thumbnail_url( $variation->get_id(), 'full' );
 			}

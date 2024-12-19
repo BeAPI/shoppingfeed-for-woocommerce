@@ -2,19 +2,23 @@
 
 * Contributors: ShoppingFeed, BeAPI
 * Tags: shoppingfeed, marketplace, woocommerce, woocommerce shoppingfeed, create woocommerce products shoppingfeed, products feed, generate shoppingfeed, amazon, Jet, Walmart, many marketplace, import orders
-* Stable tag: 6.8.0
-* Version: 6.8.0
+* Stable tag: 6.9.0
+* Version: 6.9.0
 * Requires PHP: 7.3
 * Requires at least: 5.7
-* Tested up to: 6.5
+* Tested up to: 6.7
 * WC requires at least: 5.1.0
-* WC tested up to: 8.8
+* WC tested up to: 9.4.3
 
 ## Upgrade Notice
 
 > Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
 
 ## Changelog
+* 6.9.0
+  * Feed : Fix attributes not use in variations missing in the feed.
+  * Feed : Dimension data are correctly included in the feed.
+  * Orders : Fix invalid timestamp when scheduling async task to acknowledge orders.
 * 6.8.0
   * Feed : Fix the promotion date
 * 6.7.0
