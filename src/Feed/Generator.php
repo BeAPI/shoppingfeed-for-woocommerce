@@ -142,12 +142,23 @@ class Generator {
 					$product->setWeight( (float) $sf_product->get_weight() );
 				}
 
+				if ( ! empty( $sf_product->get_length() ) ) {
+					$product->setAttribute( 'length', (string) $sf_product->get_length() );
+				}
+
+				if ( ! empty( $sf_product->get_width() ) ) {
+					$product->setAttribute( 'width', (string) $sf_product->get_width() );
+				}
+
+				if ( ! empty( $sf_product->get_height() ) ) {
+					$product->setAttribute( 'height', (string) $sf_product->get_height() );
+				}
+
 				if ( ! empty( $sf_product->get_category_name() ) ) {
 					$product->setCategory( $sf_product->get_category_name(), $sf_product->get_category_link() );
 				}
 
-				// For variable products, don't include attributes. They will be available in the variations.
-				if ( ! $sf_product->has_variations() && ! empty( $sf_product->get_attributes() ) ) {
+				if ( ! empty( $sf_product->get_attributes() ) ) {
 					$product->setAttributes( $sf_product->get_attributes() );
 				}
 
@@ -212,6 +223,15 @@ class Generator {
 					$variation_images = $sf_product->get_variation_images( $sf_product_variation['id'] );
 					if ( ! empty( $variation_images ) ) {
 						$variation->setAdditionalImages( $variation_images );
+					}
+					if ( ! empty( $sf_product_variation['width'] ) ) {
+						$variation->setAttribute( 'width', (string) $sf_product_variation['width'] );
+					}
+					if ( ! empty( $sf_product_variation['length'] ) ) {
+						$variation->setAttribute( 'length', (string) $sf_product_variation['length'] );
+					}
+					if ( ! empty( $sf_product_variation['height'] ) ) {
+						$variation->setAttribute( 'height', (string) $sf_product_variation['height'] );
 					}
 				}
 			}
