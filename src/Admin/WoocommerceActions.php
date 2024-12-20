@@ -163,6 +163,11 @@ class WoocommerceActions {
 		add_action( 'sf_migrate_single_action', array( $this, 'migrate_old_accounts' ) );
 
 		/**
+		 * Divide orders query in batches of 10 for migration
+		 */
+		add_action( 'sf_migrate_orders_add_default_account', [ $this, 'migrate_orders_batch' ] );
+
+		/**
 		 * Orders Statuses Mapping
 		 * Each status with action
 		 * @see Operations
@@ -564,19 +569,52 @@ class WoocommerceActions {
 			return false;
 		}
 
-		//Migrate old orders to default account
-		$args = array(
-			'limit'        => - 1,
-			'meta_key'     => Query::WC_META_SF_REFERENCE,
-			'meta_compare' => 'EXISTS',
+		// Add WC schedule action for orders account migration, batch of 10
+		as_schedule_single_action(
+			time() + 3,
+			'sf_migrate_orders_add_default_account',
+			[
+				$account_id
+			],
+			'sf_migrate_single'
 		);
 
-		$query     = new \WC_Order_Query( $args );
+		return true;
+	}
+
+	/**
+	 * Run orders meta data migration, by batches of 10
+	 *
+	 * @param int $account_id
+	 *
+	 * @throws Exception
+	 */
+	public function migrate_orders_batch( $account_id ) {
+		// Get SF orders that are not yet migrated, by batches of 10
+		$args = [
+			'limit'        => 10,
+			'meta_query' => [
+				'relation' => 'AND',
+				[
+					'meta_key'     => Query::WC_META_SF_REFERENCE,
+					'meta_compare' => 'EXISTS',
+				],
+				[
+					'meta_key'     => Query::WC_META_SF_STORE_ID,
+					'meta_compare' => 'NOT EXISTS',
+				]
+			],
+		];
+
+		$query = new \WC_Order_Query( $args );
+
 		$wc_orders = $query->get_orders();
+
+		// If no order, log the info
 		if ( empty( $wc_orders ) ) {
-			ShoppingFeedHelper::get_logger()->error(
+			ShoppingFeedHelper::get_logger()->info(
 				sprintf(
-					__( 'No SF orders founds for migration', 'shopping-feed' )
+					__( 'No more SF orders founds for migration, ending migration script.', 'shopping-feed' )
 				),
 				array(
 					'source' => 'shopping-feed',
@@ -587,15 +625,23 @@ class WoocommerceActions {
 			return false;
 		}
 
+		// Add the new meta to every found order
 		foreach ( $wc_orders as $wc_order ) {
-			//add store id
+			// Add store id
 			/** @var \WC_Order $wc_order */
 			$wc_order->add_meta_data( Query::WC_META_SF_STORE_ID, $account_id );
 			$wc_order->save();
 		}
 
-		ShoppingFeedHelper::end_upgrade();
+		// Add schedule action on self to process next 10 orders, until completion
+		as_schedule_single_action(
+			time() + 3,
+			'sf_migrate_orders_add_default_account',
+			[
+				$account_id
+			],
+			'sf_migrate_single'
+		);
 
-		return true;
 	}
 }
