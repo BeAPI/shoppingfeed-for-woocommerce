@@ -54,6 +54,10 @@ class Orders {
 	 * Get Orders from SF
 	 */
 	public function get_orders( $sf_account, $since = '' ) {
+		// Check if import is enable
+		if ( ShoppingFeedHelper::is_disable_order_import() ) {
+			return false;
+		}
 		$shop = Sdk::get_sf_shop( $sf_account );
 
 		if ( ! $shop instanceof StoreResource ) {

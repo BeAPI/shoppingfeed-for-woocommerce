@@ -53,6 +53,10 @@ class Operations {
 	 * @throws Exception
 	 */
 	public function __construct( $order_id ) {
+		// Check if import is enable
+		if ( ShoppingFeedHelper::is_disable_order_import() ) {
+			return;
+		}
 		//Check if the order from SF and return it with metas data
 		$order_sf_metas = Order::get_order_sf_metas( $order_id );
 		if (

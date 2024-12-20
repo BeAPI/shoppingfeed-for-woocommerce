@@ -134,6 +134,9 @@ class ShoppingFeed {
 		$this->metabox = new Metabox();
 		$this->rewrite = new Rewrite();
 
+		//Run upgrades
+		Upgrade::do_upgrades();
+
 		//Init Payment Gateway
 		add_action( 'woocommerce_payment_gateways', array( $this, 'register_sf_gateway' ) );
 
@@ -216,6 +219,7 @@ class ShoppingFeed {
 	public static function activate() {
 		if ( defined( 'WC_VERSION' ) ) {
 			self::add_sf_directory();
+			ShoppingFeedHelper::set_default_orders_option();
 			Actions::register_feed_generation();
 			Actions::register_get_orders();
 		}
