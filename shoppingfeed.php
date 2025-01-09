@@ -29,7 +29,6 @@ if ( file_exists( plugin_dir_path( __FILE__ ) . '/vendor/autoload.php' ) ) {
 define( 'SF_VERSION', '6.9.0' );
 define( 'SF_DB_VERSION_SLUG', 'SF_DB_VERSION' );
 define( 'SF_DB_VERSION', '1.0.0' );
-define( 'SF_UPGRADE_VERSION', '6.9.0' );
 define( 'SF_UPGRADE_RUNNING', 'SF_UPGRADE_RUNNING' );
 define( 'SF_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SF_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
