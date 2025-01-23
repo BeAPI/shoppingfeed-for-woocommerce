@@ -1533,6 +1533,30 @@ class Options {
 			'sf_orders_settings_import_options'
 		);
 
+		add_settings_field(
+			'import_vat_order',
+			__( 'VAT', 'shopping-feed' ),
+			function () {
+				?>
+				<label for="import_vat_order">
+					<input
+						type="checkbox"
+						id="import_vat_order"
+						name="<?php echo esc_attr( sprintf( '%s[import_vat_order]', self::SF_ORDERS_OPTIONS ) ); ?>"
+						value="1"
+						<?php checked( '1', isset( $this->sf_orders_options['import_vat_order'] ) ? $this->sf_orders_options['import_vat_order'] : '0' ); ?>
+					>
+					<?php esc_html_e( 'Import VAT (beta)', 'shopping-feed' ); ?>
+				</label>
+				<p class="description" id="tagline-description">
+					<?php esc_html_e( 'Include VAT when importing orders. The option "Enable taxes" in the Woocommerce general settings must be checked.', 'shopping-feed' ); ?>
+				</p>
+				<?php
+			},
+			self::SF_ORDERS_SETTINGS_PAGE,
+			'sf_orders_settings_import_options'
+		);
+
 		//mapping
 		$sf_actions = Operations::get_available_operations();
 
