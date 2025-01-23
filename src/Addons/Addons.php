@@ -36,22 +36,10 @@ class Addons {
 	 */
 	private $chained_products_plugin;
 
-	/**
-	 * @var ASTPlugin
-	 */
-	private $ast_plugin;
-
-	/**
-	 * @var PhWoocommerceShipmentTrackingProPlugin
-	 */
-	private $woocommerce_shipment_tracking_pro;
-
 	public function __construct() {
 		$this->shipping                          = new Shipping();
 		$this->inventory                         = new Inventory();
 		$this->marketplaces                      = new Marketplaces();
 		$this->chained_products_plugin           = new ChainedProducts();
-		$this->ast_plugin                        = new ASTPlugin();
-		$this->woocommerce_shipment_tracking_pro = new PhWoocommerceShipmentTrackingProPlugin();
 	}
 }
