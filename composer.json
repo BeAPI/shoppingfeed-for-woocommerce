@@ -59,7 +59,7 @@
     "codeception/module-filesystem": "^1.0",
     "codeception/module-cli": "^1.0",
     "codeception/util-universalframework": "^1.0",
-    "roots/wordpress": "^6.2",
+    "roots/wordpress": "^6.7",
     "wp-cli/wp-cli-bundle": "^2.7",
     "coenjacobs/mozart": "^0.7.1",
     "shoppingfeed/php-sdk": "^0.7.0"
