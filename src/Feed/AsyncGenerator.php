@@ -44,8 +44,7 @@ class AsyncGenerator extends Generator {
 			'sf_feed_generation_part',
 			array(
 				1,
-				$part_size,
-				'',
+				$part_size
 			),
 			'sf_feed_generation_process'
 		);
@@ -80,6 +79,11 @@ class AsyncGenerator extends Generator {
 		if ( empty( $products ) ) {
 			as_schedule_single_action(
 				time(),
+				'sf_feed_generation_combine_feed_parts',
+				array( $lang ),
+				'sf_feed_generation_process'
+			);
+			as_enqueue_async_action(
 				'sf_feed_generation_combine_feed_parts',
 				array( $lang ),
 				'sf_feed_generation_process'
