@@ -1526,10 +1526,10 @@ class Options {
 						value="1"
 						<?php checked( '1', isset( $this->sf_orders_options['import_vat_order'] ) ? $this->sf_orders_options['import_vat_order'] : '0' ); ?>
 					>
-					<?php esc_html_e( 'Import VAT', 'shopping-feed' ); ?>
+					<?php esc_html_e( 'Import VAT (beta)', 'shopping-feed' ); ?>
 				</label>
 				<p class="description" id="tagline-description">
-					<?php esc_html_e( 'Include VAT when importing orders.', 'shopping-feed' ); ?>
+					<?php esc_html_e( 'Include VAT when importing orders. The option "Enable taxes" in the Woocommerce general settings must be checked.', 'shopping-feed' ); ?>
 				</p>
 				<?php
 			},
