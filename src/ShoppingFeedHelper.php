@@ -451,7 +451,7 @@ XML;
 		$all_shipping_methods = array();
 		foreach ( $shipping_zones as $shipping_zone ) {
 			$shipping_zone    = new \WC_Shipping_Zone( $shipping_zone['id'] );
-			$shipping_methods = $shipping_zone->get_shipping_methods();
+			$shipping_methods = $shipping_zone->get_shipping_methods( true );
 
 			if ( empty( $shipping_methods ) ) {
 				continue;
