@@ -273,9 +273,14 @@ class Generator {
 		}
 
 		if ( is_file( $file_path ) ) {
+			$etag = sprintf( '"%s"', md5_file( $file_path ) );
+
 			header( 'Content-Type: application/xml; charset=utf-8' );
 			header( 'Content-Length: ' . filesize( $file_path ) );
 			nocache_headers();
+			header( 'ETag: ' . $etag );
+			header( 'X-SFtag: ' . $etag );
+
 			readfile( $file_path );
 			exit;
 		}
