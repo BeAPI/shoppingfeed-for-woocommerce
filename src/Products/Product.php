@@ -453,6 +453,7 @@ class Product {
 
 		$product                      = new \WC_Product_Variable( $this->id );
 		$show_out_of_stock_variations = $for_feed && ShoppingFeedHelper::show_out_of_stock_products_in_feed();
+		$check_parent_main_image      = ShoppingFeedHelper::check_get_parent_image_if_empty_in_feed();
 		$variations                   = [];
 		foreach ( $product->get_children() as $variation_id ) {
 			$variation = wc_get_product( $variation_id );
@@ -479,6 +480,8 @@ class Product {
 			$variation_data['length']   = $variation->get_length();
 			if ( ! empty( get_the_post_thumbnail_url( $variation->get_id(), 'full' ) ) ) {
 				$variation_data['image_main'] = get_the_post_thumbnail_url( $variation->get_id(), 'full' );
+			} elseif ($check_parent_main_image && ! empty( get_the_post_thumbnail_url( $variation->get_parent_id(), 'full' ) ) ) {
+				$variation_data['image_main'] = get_the_post_thumbnail_url( $variation->get_parent_id(), 'full' );
 			}
 
 			$variation_data['attributes'] = $this->get_variation_attributes( $variation );
