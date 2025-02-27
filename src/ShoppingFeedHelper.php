@@ -263,6 +263,15 @@ XML;
 	}
 
 	/**
+	 * Should the main image of the parent product be collected if the variation image is empty?
+	 *
+	 * @return bool true if you have to make this check, false otherwise.
+	 */
+	public static function check_get_parent_image_if_empty_in_feed() {
+		return 'on' === self::get_sf_feed_options( 'get_parent_image_if_empty_in_feed' );
+	}
+	
+	/**
 	 * Return display mode for category
 	 * @return string
 	 */

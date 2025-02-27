@@ -940,6 +940,26 @@ class Options {
 			self::SF_FEED_SETTINGS_PAGE,
 			'sf_feed_settings_categories'
 		);
+		
+		// Get main image from parent without have variant in feed
+		add_settings_field(
+			'get_parent_image_if_empty_in_feed',
+			__( 'Set the main image of the parent if the variation is blank', 'shopping-feed' ),
+			function () {
+				?>
+				<label>
+					<input
+						type="checkbox"
+						name="<?php echo esc_attr( sprintf( '%s[get_parent_image_if_empty_in_feed]', self::SF_FEED_OPTIONS ) ); ?>"
+						<?php checked( $this->sf_feed_options['get_parent_image_if_empty_in_feed'], 'on' ); ?>
+					/>
+				</label>
+
+				<?php
+			},
+			self::SF_FEED_SETTINGS_PAGE,
+			'sf_feed_settings_categories'
+		);
 
 		//Identifier Field
 		add_settings_field(
