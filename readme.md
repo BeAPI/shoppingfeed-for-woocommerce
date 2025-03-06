@@ -7,7 +7,7 @@
 * Requires PHP: 7.3
 * Requires at least: 5.7
 * Tested up to: 6.7
-* WC requires at least: 5.1.0
+* WC requires at least: 7.0
 * WC tested up to: 9.6.0
 
 ## Upgrade Notice
@@ -172,12 +172,12 @@ WordPress connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, 
 ## Requirements
 
 ### Server :
-- PHP version 7.1 or above
+- PHP version 7.3 or above
 - PHP cURL extension is activated
 
 ### WordPress :
 - Core version 5.7 or above
-- WooCommerce version 5.1 or above
+- WooCommerce version 7.0 or above
 
 ## Installation
 Sign up for free on ShoppingFeed : https://shopping-feed.com/
