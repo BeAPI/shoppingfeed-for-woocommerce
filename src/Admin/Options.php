@@ -6,13 +6,11 @@ namespace ShoppingFeed\ShoppingFeedWC\Admin;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Actions\Actions;
+use ShoppingFeed\ShoppingFeedWC\Feed\AsyncGenerator;
 use ShoppingFeed\ShoppingFeedWC\Feed\Generator;
 use ShoppingFeed\ShoppingFeedWC\Orders\Operations;
 use ShoppingFeed\ShoppingFeedWC\Sdk\Sdk;
-use ShoppingFeed\ShoppingFeedWC\Orders\Orders;
-use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\ShipmentTrackingManager;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
-use ShoppingFeed\ShoppingFeedWC\Admin;
 
 class Options {
 
@@ -102,6 +100,25 @@ class Options {
 			'admin_init',
 			[ $this, 'process_account_page_actions' ],
 			5
+		);
+
+		/**
+		 * Custom handler for ShoppingFeed feed settings.
+		 */
+		add_action(
+			'admin_init',
+			[ $this, 'schedule_feed_refresh' ],
+			5
+		);
+
+		/**
+		 * Refresh feed generation frequency.
+		 */
+		add_action(
+			'update_option_' . self::SF_FEED_OPTIONS,
+			function ( $old_value ) {
+				Actions::register_feed_generation();
+			}
 		);
 
 		/*
@@ -243,6 +260,24 @@ class Options {
 				'use_principal_categories' => '0',
 			]
 		);
+	}
+
+	public function schedule_feed_refresh() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		if ( isset( $_GET['action'] ) && 'refresh_feeds' === $_GET['action'] && check_admin_referer( 'refresh_feeds' ) ) {
+			AsyncGenerator::get_instance()->launch();
+
+			wp_safe_redirect(
+				add_query_arg(
+					[ 'tab' => 'feed-settings' ],
+					ShoppingFeedHelper::get_setting_link()
+				)
+			);
+			exit;
+		}
 	}
 
 	/**
@@ -854,32 +889,44 @@ class Options {
 			'url',
 			__( 'Your source feed', 'shopping-feed' ),
 			function () {
-				$sf_feed_public_url      = ShoppingFeedHelper::get_public_feed_url();
 				$sf_process_running      = ShoppingFeedHelper::is_process_running( 'sf_feed_generation_process' );
 				$sf_last_generation_date = get_option( Generator::SF_FEED_LAST_GENERATION_DATE );
+				$sf_refresh_feed_action_url = add_query_arg(
+					[
+						'action' => 'refresh_feeds',
+						'_wpnonce' => wp_create_nonce( 'refresh_feeds' ),
+					]
+				);
 				?>
 				<?php if ( ! $sf_process_running ) : ?>
-					<a href="<?php echo esc_html( $sf_feed_public_url ); ?>" target="_blank">
-						<?php
-						echo esc_url( $sf_feed_public_url );
-						;
-						?>
-					</a>
+					<?php foreach ( ShoppingFeedHelper::get_feedbuilder_manager()->get_feed_urls() as $feed_url ) : ?>
+						<p>
+							<a href="<?php echo esc_url( $feed_url ); ?>" target="_blank">
+								<?php echo esc_html( $feed_url ); ?>
+							</a>
+						</p>
+					<?php endforeach; ?>
 				<?php endif; ?>
-				<br>
 				<p>
 					<?php if ( ! $sf_process_running ) : ?>
-						<?php esc_html_e( 'Last update', 'shopping-feed' ); ?> :
+						<?php esc_html_e( 'Last update: ', 'shopping-feed' ); ?>
 						<?php
-						echo ! empty( $sf_last_generation_date ) ? esc_html( $sf_last_generation_date ) : esc_html__( 'Never', 'shopping-feed' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						if ( ! empty( $sf_last_generation_date ) ) {
+							if ( is_numeric( $sf_last_generation_date ) ) {
+								$date_format = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+								echo esc_html( wp_date( $date_format, $sf_last_generation_date ) );
+							} else {
+								echo esc_html( $sf_last_generation_date );
+							}
+						} else {
+							esc_html__( 'Never', 'shopping-feed' );
+						}
 						?>
-						<a href="<?php echo esc_url( ShoppingFeedHelper::get_public_feed_url_with_generation() ); ?>"
-						   target="_blank">
+						<a href="<?php echo esc_url( $sf_refresh_feed_action_url ); ?>">
 							<?php esc_html_e( 'Refresh', 'shopping-feed' ); ?>
 						</a>
 					<?php else : ?>
-						<strong>(<?php esc_html_e( 'The feed is update is running', 'shopping-feed' ); ?>) <a href="#"
-																											  onClick="window.location.reload();"><?php esc_html_e( 'Refresh to check progress', 'shopping-feed' ); ?></a></strong>
+						<strong>(<?php esc_html_e( 'The feed is update is running', 'shopping-feed' ); ?>) <a href="#" onClick="window.location.reload();"><?php esc_html_e( 'Refresh to check progress', 'shopping-feed' ); ?></a></strong>
 					<?php endif; ?>
 				</p>
 				<?php
@@ -997,25 +1044,21 @@ class Options {
 		add_settings_section(
 			'sf_feed_settings_frequency',
 			__( 'Feed generation frequency', 'shopping-feed' ),
-			function () {
-				//Init feed actions after update
-				Actions::clean_feed_generation();
-				Actions::register_feed_generation();
-			},
+			'__return_empty_string',
 			self::SF_FEED_SETTINGS_PAGE
 		);
 
 		$frequencies_options = [];
-		for ( $i = 1; $i <= 24; $i ++ ) {
-			$frequencies_options[ $i * HOUR_IN_SECONDS ] = sprintf(
-			/* translators: %s: Frequency. */
+		foreach ( [ 2, 4, 6, 8, 12, 24 ] as $interval ) {
+			$frequencies_options[ $interval * HOUR_IN_SECONDS ] = sprintf(
+				// translators: %s frequency
 				_n(
 					'%s hour',
 					'%s hours',
-					$i,
+					$interval,
 					'shopping-feed'
 				),
-				number_format_i18n( $i )
+				number_format_i18n( $interval )
 			);
 		}
 
@@ -1029,15 +1072,18 @@ class Options {
 					foreach ( $frequencies_options as $frequency => $name ) {
 						?>
 						<option
-								value="<?php echo esc_html( $frequency ); ?>"
-							<?php selected( $frequency, $this->sf_feed_options['frequency'] ? $this->sf_feed_options['frequency'] : false ); ?>
-						><?php echo esc_html( $name ); ?></option>
+							value="<?php echo esc_attr( $frequency ); ?>"
+							<?php selected( $frequency, $this->sf_feed_options['frequency'] ?? 6 ); ?>
+						>
+						<?php echo esc_html( $name ); ?>
+						</option>
 						<?php
 					}
 					?>
 				</select>
-				<p class="description"
-				   id="tagline-description"><?php echo esc_attr_e( 'Frequency to generate the feed (usually 6h)', 'shopping-feed' ); ?></p>
+				<p class="description" id="tagline-description">
+					<?php esc_html_e( 'Frequency to generate the feed (usually 6h)', 'shopping-feed' ); ?>
+				</p>
 				<?php
 			},
 			self::SF_FEED_SETTINGS_PAGE,

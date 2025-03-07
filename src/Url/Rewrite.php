@@ -5,7 +5,6 @@ namespace ShoppingFeed\ShoppingFeedWC\Url;
 // Exit on direct access
 defined( 'ABSPATH' ) || exit;
 
-use ShoppingFeed\ShoppingFeedWC\Feed\Generator;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
 /**
@@ -15,6 +14,8 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 class Rewrite {
 
 	const FEED_PARAM = 'shopping-feed';
+	const FEED_QUERY_VAR = 'shopping_feed';
+	const FEED_LANG_QUERY_VAR = 'feed_language';
 
 	/**
 	 * Rewrite constructor.
@@ -35,11 +36,19 @@ class Rewrite {
 	 * Add new pretty url to getting the feed
 	 */
 	public function sf_add_custom_rewrite_rule() {
-		$endpoint = ShoppingFeedHelper::get_public_feed_endpoint();
-		$regex = '^' . $endpoint . '$';
+		// regex match either the base endpoint or the localized endpoints.
+		$regex = sprintf(
+			'^%s(?:-([a-z]{2,3}))?/?$',
+			ShoppingFeedHelper::get_public_feed_endpoint()
+		);
+		$query = sprintf(
+			'index.php?%s=1&%s=$matches[1]',
+			self::FEED_QUERY_VAR,
+			self::FEED_LANG_QUERY_VAR
+		);
 		add_rewrite_rule(
 			$regex,
-			array( self::FEED_PARAM => true ),
+			$query,
 			'top'
 		);
 	}
@@ -52,7 +61,8 @@ class Rewrite {
 	 * @return mixed
 	 */
 	public function sf_add_custom_query_vars( $vars ) {
-		$vars[] = self::FEED_PARAM;
+		$vars[] = self::FEED_QUERY_VAR;
+		$vars[] = self::FEED_LANG_QUERY_VAR;
 
 		return $vars;
 	}
@@ -62,8 +72,9 @@ class Rewrite {
 	 */
 	public function sf_parse_request() {
 		global $wp;
-		if ( isset( $wp->query_vars[ self::FEED_PARAM ] ) ) {
-			Generator::get_instance()->render( isset( $_GET['version'] ) );
+		if ( isset( $wp->query_vars[ self::FEED_QUERY_VAR ] ) ) {
+			$lang = $wp->query_vars[ self::FEED_LANG_QUERY_VAR ] ?? null;
+			ShoppingFeedHelper::get_feedbuilder_manager()->render_feed( $lang );
 		}
 	}
 }
