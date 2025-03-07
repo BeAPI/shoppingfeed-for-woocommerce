@@ -2,7 +2,6 @@
 
 namespace ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilder;
 
-use ShoppingFeed\ShoppingFeedWC\Feed\AsyncGenerator;
 use ShoppingFeed\ShoppingFeedWC\Products\Products;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
@@ -61,24 +60,6 @@ class FeedBuilderPolylang extends FeedBuilder {
 		return $urls;
 	}
 
-	public function render_feed( $lang = null ): void {
-		$file_path = self::get_feed_file_path( $lang, false );
-
-		if ( ! is_file( $file_path ) ) {
-			if ( ShoppingFeedHelper::is_process_running( 'sf_feed_generation_process' ) ) {
-				wp_die( 'Feed generation already launched' );
-			}
-			AsyncGenerator::get_instance()->launch();
-			wp_die( 'Feed generation launched' );
-		}
-
-		header( 'Content-Type: application/xml; charset=utf-8' );
-		header( 'Content-Length: ' . filesize( $file_path ) );
-		nocache_headers();
-		readfile( $file_path );
-		exit;
-	}
-
 	/**
 	 * @return string[]
 	 */
@@ -88,36 +69,6 @@ class FeedBuilderPolylang extends FeedBuilder {
 				'hide_empty' => false,
 			]
 		);
-	}
-
-	public static function get_feed_folder_path( bool $include_prefix = true ): string {
-		$dir = ShoppingFeedHelper::get_feed_directory();
-
-		return $include_prefix ? 'file://' . $dir : $dir;
-	}
-
-	public static function get_feed_file_path( string $lang, bool $include_prefix = true, bool $tmp = false ): string {
-		$dir  = self::get_feed_folder_path( $include_prefix );
-		$file = ShoppingFeedHelper::get_feed_filename() . '_' . $lang;
-		if ( $tmp ) {
-			$file .= '_tmp';
-		}
-
-		return $dir . '/' . $file . '.xml';
-	}
-
-	public static function get_feed_parts_folder_path( string $lang, bool $include_prefix = true ): string {
-		$dir = ShoppingFeedHelper::get_feed_parts_directory();
-		$dir .= '/' . $lang;
-
-		return $include_prefix ? 'file://' . $dir : $dir;
-	}
-
-	public static function get_feed_parts_file_path( string $lang, int $page, bool $include_prefix = true ): string {
-		$dir  = self::get_feed_parts_folder_path( $lang, $include_prefix );
-		$file = sprintf( 'part_%s', zeroise( $page, 2 ) );
-
-		return $dir . '/' . $file . '.xml';
 	}
 
 	/**
@@ -175,8 +126,8 @@ class FeedBuilderPolylang extends FeedBuilder {
 	 * @return bool|\WP_Error true for success otherwise \WP_Error.
 	 */
 	public function generate_part( string $lang, int $page = 1, int $post_per_page = 20 ) {
-		if ( ! is_dir( self::get_feed_parts_folder_path( $lang, false ) ) ) {
-			wp_mkdir_p( self::get_feed_parts_folder_path( $lang, false ) );
+		if ( ! is_dir( self::get_feed_parts_folder_path( $lang ) ) ) {
+			wp_mkdir_p( self::get_feed_parts_folder_path( $lang ) );
 		}
 
 		$args     = array(
@@ -213,7 +164,7 @@ class FeedBuilderPolylang extends FeedBuilder {
 	 * @return bool|\WP_Error true for success otherwise \WP_Error.
 	 */
 	public function combine_parts( string $lang ) {
-		$dir_parts = self::get_feed_parts_folder_path( $lang, false );
+		$dir_parts = self::get_feed_parts_folder_path( $lang );
 		$pattern   = $dir_parts . '/part_*.xml';
 		$files     = glob( $pattern,  ); // @codingStandardsIgnoreLine.
 

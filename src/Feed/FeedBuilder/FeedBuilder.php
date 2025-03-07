@@ -4,11 +4,82 @@ namespace ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilder;
 
 use ShoppingFeed\Feed\ProductFeedMetadata;
 use ShoppingFeed\Feed\ProductGenerator;
+use ShoppingFeed\ShoppingFeedWC\Feed\AsyncGenerator;
 use ShoppingFeed\ShoppingFeedWC\Feed\Generator;
 use ShoppingFeed\ShoppingFeedWC\Products\Products;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
 abstract class FeedBuilder extends Generator {
+
+	/**
+	 * Get path for the products' feeds folder.
+	 *
+	 * @return string
+	 */
+	public static function get_feed_folder_path(): string {
+		return ShoppingFeedHelper::get_feed_directory();
+	}
+
+	/**
+	 * Get path for a products' feed file.
+	 *
+	 * @param string|null $lang
+	 * @param bool $include_prefix
+	 * @param bool $tmp
+	 *
+	 * @return string
+	 */
+	public static function get_feed_file_path( string $lang = null, bool $include_prefix = true, bool $tmp = false ): string {
+		$dir  = self::get_feed_folder_path();
+		$file = ShoppingFeedHelper::get_feed_filename();
+
+		// maybe add language code in filename.
+		if ( null !== $lang ) {
+			$file .= '_' . $lang;
+		}
+
+		// maybe add temp suffix in filename.
+		if ( $tmp ) {
+			$file .= '_tmp';
+		}
+
+		$file_path = $dir . '/' . $file . '.xml';
+
+		return $include_prefix ? 'file://' . $file_path : $file_path;
+	}
+
+	/**
+	 * Get path for the products' feeds parts.
+	 *
+	 * @param string|null $lang
+	 *
+	 * @return string
+	 */
+	public static function get_feed_parts_folder_path( string $lang = null ): string {
+		$dir = ShoppingFeedHelper::get_feed_parts_directory();
+		if ( null !== $lang ) {
+			$dir .= '/' . $lang;
+		}
+
+		return $dir;
+	}
+
+	/**
+	 * Get path for a products' feed part file.
+	 *
+	 * @param string|null $lang
+	 * @param int $page
+	 * @param bool $include_prefix
+	 *
+	 * @return string
+	 */
+	public static function get_feed_parts_file_path( string $lang = null, int $page = 1, bool $include_prefix = true ): string {
+		$dir       = self::get_feed_parts_folder_path( $lang );
+		$file      = sprintf( 'part_%s', zeroise( $page, 2 ) );
+		$file_path = $dir . '/' . $file . '.xml';
+
+		return $include_prefix ? 'file://' . $file_path : $file_path;
+	}
 
 	/**
 	 * Check if the builder is available.
@@ -43,7 +114,23 @@ abstract class FeedBuilder extends Generator {
 	 *
 	 * @return void
 	 */
-	abstract public function render_feed( $lang = null ): void;
+	public function render_feed( $lang = null ): void {
+		$file_path = self::get_feed_file_path( $lang, false );
+
+		if ( ! is_file( $file_path ) ) {
+			if ( ShoppingFeedHelper::is_process_running( 'sf_feed_generation_process' ) ) {
+				wp_die( 'Feed generation already launched' );
+			}
+			AsyncGenerator::get_instance()->launch();
+			wp_die( 'Feed generation launched' );
+		}
+
+		header( 'Content-Type: application/xml; charset=utf-8' );
+		header( 'Content-Length: ' . filesize( $file_path ) );
+		nocache_headers();
+		readfile( $file_path );
+		exit;
+	}
 
 	/**
 	 * @param string $file_path
