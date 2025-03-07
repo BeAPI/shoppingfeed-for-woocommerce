@@ -2,7 +2,6 @@
 
 namespace ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilder;
 
-use ShoppingFeed\ShoppingFeedWC\Feed\AsyncGenerator;
 use ShoppingFeed\ShoppingFeedWC\Products\Products;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
@@ -36,56 +35,6 @@ class FeedBuilderBase extends FeedBuilder {
 		}
 
 		return [ sprintf( '%s?%s', get_home_url(), ShoppingFeedHelper::get_public_feed_endpoint() ) ];
-	}
-
-	/**
-	 * @return void
-	 */
-	public function render_feed( $lang = null ): void {
-		$file_path = self::get_feed_file_path( false );
-
-		if ( ! is_file( $file_path ) ) {
-			if ( ShoppingFeedHelper::is_process_running( 'sf_feed_generation_process' ) ) {
-				wp_die( 'Feed generation already launched' );
-			}
-			AsyncGenerator::get_instance()->launch();
-			wp_die( 'Feed generation launched' );
-		}
-
-		header( 'Content-Type: application/xml; charset=utf-8' );
-		header( 'Content-Length: ' . filesize( $file_path ) );
-		nocache_headers();
-		readfile( $file_path );
-		exit;
-	}
-
-	public static function get_feed_folder_path( bool $include_prefix = true ): string {
-		$dir = ShoppingFeedHelper::get_feed_directory();
-
-		return $include_prefix ? 'file://' . $dir : $dir;
-	}
-
-	public static function get_feed_file_path( bool $include_prefix = true, bool $tmp = false ): string {
-		$dir  = self::get_feed_folder_path( $include_prefix );
-		$file = ShoppingFeedHelper::get_feed_filename();
-		if ( $tmp ) {
-			$file .= '_tmp';
-		}
-
-		return $dir . '/' . $file . '.xml';
-	}
-
-	public static function get_feed_parts_folder_path( bool $include_prefix = true ): string {
-		$dir = ShoppingFeedHelper::get_feed_parts_directory();
-
-		return $include_prefix ? 'file://' . $dir : $dir;
-	}
-
-	public static function get_feed_parts_file_path( int $page, bool $include_prefix = true ): string {
-		$dir  = self::get_feed_parts_folder_path( $include_prefix );
-		$file = sprintf( 'part_%s', zeroise( $page, 2 ) );
-
-		return $dir . '/' . $file . '.xml';
 	}
 
 	/**
@@ -157,7 +106,7 @@ class FeedBuilderBase extends FeedBuilder {
 
 		// Process products returned by the query and reschedule the action for the next page.
 		$result = $this->write_products_feed(
-			self::get_feed_parts_file_path( $page ),
+			self::get_feed_parts_file_path( null, $page ),
 			$products
 		);
 		if ( is_wp_error( $result ) ) {
@@ -174,7 +123,7 @@ class FeedBuilderBase extends FeedBuilder {
 	 * @return bool|\WP_Error true for success otherwise \WP_Error.
 	 */
 	public function combine_parts() {
-		$dir_parts = self::get_feed_parts_folder_path( false );
+		$dir_parts = self::get_feed_parts_folder_path();
 		$pattern   = $dir_parts . '/part_*.xml';
 		$files     = glob( $pattern ); // @codingStandardsIgnoreLine.
 
@@ -185,8 +134,8 @@ class FeedBuilderBase extends FeedBuilder {
 		 */
 		return $this->combine_and_write_product_feed(
 			$files,
-			self::get_feed_file_path( false, true ),
-			self::get_feed_file_path( false )
+			self::get_feed_file_path( null, false, true ),
+			self::get_feed_file_path( null, false )
 		);
 	}
 }
