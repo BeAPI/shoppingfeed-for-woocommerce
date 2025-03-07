@@ -8,8 +8,6 @@ defined( 'ABSPATH' ) || exit;
 use ShoppingFeed\ShoppingFeedWC\Admin\Options;
 use ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilderManager;
 use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\ShipmentTrackingManager;
-use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\ShipmentTrackingProvider;
-use ShoppingFeed\ShoppingFeedWC\Feed\Uri;
 use ShoppingFeed\ShoppingFeedWC\Url\Rewrite;
 use WC_Logger;
 
@@ -74,43 +72,11 @@ class ShoppingFeedHelper {
 	}
 
 	/**
-	 * @return string
-	 */
-	public static function get_feed_skeleton() {
-		return <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<catalog>
-    <metadata>
-        <platform>WooCommerce:5.1.0</platform>
-        <agent>shopping-feed-generator:1.0.0</agent>
-        <startedAt/>
-        <finishedAt/>
-        <invalid/>
-        <ignored/>
-        <written/>
-    </metadata>
-</catalog>
-XML;
-	}
-
-	/**
 	 * Return the feed's file name
 	 * @return string
 	 */
 	public static function get_feed_filename() {
 		return 'products';
-	}
-
-	/**
-	 * Return the feed's public url
-	 * @return string
-	 */
-	public static function get_public_feed_url() {
-		if ( ! empty( get_option( 'permalink_structure' ) ) ) {
-			return sprintf( '%s/%s/', get_home_url(), self::get_public_feed_endpoint() );
-		}
-
-		return sprintf( '%s?%s', get_home_url(), self::get_public_feed_endpoint() );
 	}
 
 	/**
@@ -121,25 +87,6 @@ XML;
 		global $wp_rewrite;
 
 		return $wp_rewrite->root . Rewrite::FEED_PARAM;
-	}
-
-	/**
-	 * Return the feed's public url with new generation
-	 * @return string
-	 */
-	public static function get_public_feed_url_with_generation() {
-		if ( ! empty( get_option( 'permalink_structure' ) ) ) {
-			return sprintf( '%1$s/%2$s/?version=%3$s', get_home_url(), self::get_public_feed_endpoint(), time() );
-		}
-
-		return sprintf( '%1$s?%2$s&version=%3$s', get_home_url(), self::get_public_feed_endpoint(), time() );
-	}
-
-	/**
-	 * @param $uri
-	 */
-	public static function get_tmp_uri( $uri ) {
-		return str_replace( '.xml', '_tmp.xml', $uri );
 	}
 
 	/**

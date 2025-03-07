@@ -6,6 +6,7 @@ use ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilder\FeedBuilder;
 use ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilder\FeedBuilderBase;
 use ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilder\FeedBuilderPolylang;
 use ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilder\FeedBuilderWpml;
+use ShoppingFeed\ShoppingFeedWC\ShoppingFeed;
 
 class FeedBuilderManager {
 
@@ -37,6 +38,9 @@ class FeedBuilderManager {
 	}
 
 	public function launch_feed_generation( int $part_size = 20 ) {
+		// Ensure all necessary directories have been created.
+		ShoppingFeed::add_sf_directory();
+
 		$this->get_builder()->launch_feed_generation( $part_size );
 
 		return true;

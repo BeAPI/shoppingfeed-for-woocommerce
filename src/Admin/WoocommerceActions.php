@@ -10,10 +10,6 @@ use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Catalog\{Inven
 use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Store\StoreResource;
 use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Client;
 use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Credential;
-use ShoppingFeed\ShoppingFeedWC\Feed\AsyncGenerator;
-use ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilder\FeedBuilderBase;
-use ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilder\FeedBuilderPolylang;
-use ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilder\FeedBuilderWpml;
 use ShoppingFeed\ShoppingFeedWC\Orders\Operations;
 use ShoppingFeed\ShoppingFeedWC\Orders\Order;
 use ShoppingFeed\ShoppingFeedWC\Orders\Orders;
@@ -65,7 +61,8 @@ class WoocommerceActions {
 					return true;
 				}
 
-				AsyncGenerator::get_instance()->launch();
+				$part_size = ShoppingFeedHelper::get_sf_part_size();
+				ShoppingFeedHelper::get_feedbuilder_manager()->launch_feed_generation( $part_size );
 
 				return true;
 			}

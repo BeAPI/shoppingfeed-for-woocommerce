@@ -26,6 +26,7 @@ class FeedBuilderBase extends FeedBuilder {
 	}
 
 	public function launch_feed_generation( int $page_size ): void {
+		$this->clean_feed_parts_directory();
 		self::schedule_generation_part( 1, $page_size );
 	}
 
@@ -124,8 +125,7 @@ class FeedBuilderBase extends FeedBuilder {
 	 */
 	public function combine_parts() {
 		$dir_parts = self::get_feed_parts_folder_path();
-		$pattern   = $dir_parts . '/part_*.xml';
-		$files     = glob( $pattern ); // @codingStandardsIgnoreLine.
+		$files     = glob( $dir_parts . '/part_*.xml' ); // @codingStandardsIgnoreLine.
 
 		/**
 		 * Save products tag to a temporary file

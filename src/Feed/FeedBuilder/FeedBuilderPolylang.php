@@ -43,6 +43,7 @@ class FeedBuilderPolylang extends FeedBuilder {
 
 	public function launch_feed_generation( int $page_size ): void {
 		foreach ( $this->get_languages() as $language ) {
+			$this->clean_feed_parts_directory( $language );
 			self::schedule_generation_part( $language, 1, $page_size );
 		}
 	}
@@ -165,8 +166,7 @@ class FeedBuilderPolylang extends FeedBuilder {
 	 */
 	public function combine_parts( string $lang ) {
 		$dir_parts = self::get_feed_parts_folder_path( $lang );
-		$pattern   = $dir_parts . '/part_*.xml';
-		$files     = glob( $pattern,  ); // @codingStandardsIgnoreLine.
+		$files     = glob( $dir_parts . '/part_*.xml' ); // @codingStandardsIgnoreLine.
 
 		/**
 		 * Save products tag to a temporary file
