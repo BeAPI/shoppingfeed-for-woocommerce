@@ -3,13 +3,11 @@
 namespace ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilder;
 
 use ShoppingFeed\Feed\ProductFeedMetadata;
-use ShoppingFeed\Feed\ProductGenerator;
-use ShoppingFeed\ShoppingFeedWC\Feed\AsyncGenerator;
 use ShoppingFeed\ShoppingFeedWC\Feed\Generator;
 use ShoppingFeed\ShoppingFeedWC\Products\Products;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
-abstract class FeedBuilder extends Generator {
+abstract class FeedBuilder {
 
 	/**
 	 * Get path for the products' feeds folder.
@@ -121,7 +119,8 @@ abstract class FeedBuilder extends Generator {
 			if ( ShoppingFeedHelper::is_process_running( 'sf_feed_generation_process' ) ) {
 				wp_die( 'Feed generation already launched' );
 			}
-			AsyncGenerator::get_instance()->launch();
+
+			ShoppingFeedHelper::get_feedbuilder_manager()->launch_feed_generation( ShoppingFeedHelper::get_sf_part_size() );
 			wp_die( 'Feed generation launched' );
 		}
 
@@ -141,15 +140,8 @@ abstract class FeedBuilder extends Generator {
 	protected function write_products_feed( string $file_path, array $products ) {
 		$products_list = Products::get_instance()->format_products( $products );
 		try {
-			$this->generator = new ProductGenerator();
-			$this->generator->setPlatform(
-				'WooCommerce',
-				sprintf( '%s-module:%s', ShoppingFeedHelper::get_wc_version(), SF_VERSION )
-			);
-			$this->generator->setUri( $file_path );
-			$this->set_filters();
-			$this->set_mappers();
-			$this->generator->write( $products_list );
+			$generator = Generator::make( $file_path );
+			$generator->write( $products_list );
 		} catch ( \Exception $exception ) {
 			return new \WP_Error( 'shopping_feed_generation_error', $exception->getMessage() );
 		}
@@ -224,8 +216,18 @@ abstract class FeedBuilder extends Generator {
 			);
 		}
 
-		update_option( self::SF_FEED_LAST_GENERATION_DATE, time() );
+		update_option( Generator::SF_FEED_LAST_GENERATION_DATE, time() );
 
 		return true;
+	}
+
+	protected function clean_feed_parts_directory( string $lang = null ): void {
+		$dir_parts = self::get_feed_parts_folder_path( $lang );
+		$files     = glob( $dir_parts . '/*.xml' ); // @codingStandardsIgnoreLine.
+		if ( is_array( $files ) && ! empty( $files ) ) {
+			foreach ( $files as $file ) {
+				unlink( $file );
+			}
+		}
 	}
 }

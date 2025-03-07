@@ -21,73 +21,44 @@ class Generator {
 	 * Option name to save last generation date
 	 */
 	const SF_FEED_LAST_GENERATION_DATE = 'SF_FEED_LAST_GENERATION';
-	/**
-	 * @var static
-	 */
-	private static $instance;
-	/** @var Platform */
-	private $platform;
-	private $uri;
-	/**
-	 * @var ProductGenerator
-	 */
-	protected $generator;
 
-	/**
-	 * Generator constructor.
-	 */
-	public function __construct() {
-		$this->set_platform();
-		$this->set_uri();
-		$this->set_generator();
-		$this->set_processors();
-		$this->set_filters();
-		$this->set_mappers();
+	public static function make( string $uri ): ProductGenerator {
+		$generator = new ProductGenerator( $uri );
+		$generator = self::set_platform( $generator );
+		$generator = self::set_processors( $generator );
+		$generator = self::set_filters( $generator );
+		$generator = self::set_mappers( $generator );
+
+		return $generator;
 	}
 
 	/**
 	 * Set the platform
 	 */
-	private function set_platform() {
-		if ( ! isset( $this->platform ) ) {
-			$this->platform = Platform::get_instance();
-		}
-	}
+	protected static function set_platform( ProductGenerator $generator ): ProductGenerator {
+		$generator->setPlatform(
+			'WooCommerce',
+			sprintf( '%s-module:%s', ShoppingFeedHelper::get_wc_version(), SF_VERSION )
+		);
 
-	/**
-	 * Set the uri
-	 */
-	private function set_uri() {
-		if ( ! isset( $this->uri ) ) {
-			$this->uri = ShoppingFeedHelper::get_tmp_uri( Uri::get_instance()->get_uri() );
-		}
-	}
-
-	/**
-	 * Instanciate an instance from ProductGenerator
-	 */
-	private function set_generator() {
-		if ( ! isset( $this->generator ) ) {
-			$this->generator = new ProductGenerator();
-			$this->generator->setPlatform( $this->platform->get_name(), $this->platform->get_version() . '-module:' . SF_VERSION );
-			$this->generator->setUri( $this->uri );
-		}
+		return $generator;
 	}
 
 	/**
 	 * In some case, you may need to pre-process data before to map them.
 	 * This can be achieved in mappers or in your dataset, but sometimes things have to be separated, so you can register processors that are executed before mappers, and prepare your data before the mapping process.
 	 */
-	protected function set_processors() {
+	protected static function set_processors( ProductGenerator $generator ): ProductGenerator {
+		return $generator;
 	}
 
 	/**
 	 * Filters are designed discard some items from the feed.
 	 * Filters are executed after processors, because item must be completely filled before to make the decision to keep it or not.
 	 */
-	protected function set_filters() {
+	protected static function set_filters( ProductGenerator $generator ): ProductGenerator {
 		# Ignore all items with undefined price
-		$this->generator->addFilter(
+		$generator->addFilter(
 			function (
 				array $sf_product
 			) {
@@ -97,14 +68,16 @@ class Generator {
 				return ! empty( $sf_product->get_price() );
 			}
 		);
+
+		return $generator;
 	}
 
 	/**
 	 * As stated above, at least one mapper must be registered, this is where you populate the Product instance, which is later converted to XML by the library
 	 */
-	protected function set_mappers() {
+	protected static function set_mappers( ProductGenerator $generator ): ProductGenerator {
 		//Simple product mapping
-		$this->generator->addMapper(
+		$generator->addMapper(
 			function (
 				array $sf_product, \ShoppingFeed\Feed\Product\Product $product
 			) {
@@ -187,7 +160,7 @@ class Generator {
 		);
 
 		//Product with variations mapping
-		$this->generator->addMapper(
+		$generator->addMapper(
 			function (
 				array $sf_product, \ShoppingFeed\Feed\Product\Product $product
 			) {
@@ -236,82 +209,7 @@ class Generator {
 				}
 			}
 		);
-	}
 
-	/**
-	 * Get the singleton instance.
-	 *
-	 * @return static
-	 */
-	public static function get_instance() {
-		if ( is_null( self::$instance ) ) {
-			self::$instance = new static();
-		}
-
-		return self::$instance;
-	}
-
-	/**
-	 * Return generated feed content
-	 *
-	 * @param bool $no_cache
-	 */
-	public function render( $no_cache = false ) {
-		$file_path = Uri::get_instance()->get_full_path();
-
-		if ( true === $no_cache || ! is_file( $file_path ) ) {
-			if ( ShoppingFeedHelper::is_process_running( 'sf_feed_generation_process' ) ) {
-				wp_die( 'Feed generation already launched' );
-			}
-			as_schedule_single_action(
-				false,
-				'sf_feed_generation_process',
-				array(),
-				'sf_feed_generation_process'
-			);
-			wp_die( 'Feed generation launched' );
-		}
-
-		if ( is_file( $file_path ) ) {
-			header( 'Content-Type: application/xml; charset=utf-8' );
-			header( 'Content-Length: ' . filesize( $file_path ) );
-			nocache_headers();
-			readfile( $file_path );
-			exit;
-		}
-
-		wp_die( 'Feed not ready' );
-	}
-
-	/**
-	 * Generate Feed
-	 *
-	 * @return WP_Error|void
-	 */
-	public function generate() {
-		$products_list = Products::get_instance()->get_list();
-
-		try {
-			$this->generator->write( $products_list );
-			$uri = Uri::get_full_path();
-			rename( ShoppingFeedHelper::get_tmp_uri( $uri ), $uri );
-			update_option( self::SF_FEED_LAST_GENERATION_DATE, date_i18n( 'd/m/Y H:m:s' ) );
-		} catch ( Exception $e ) {
-			return new WP_Error( 'shopping_feed_generation_error', $e->getMessage() );
-		}
-	}
-
-	/**
-	 * Singleton instance can't be cloned.
-	 */
-	private function __clone() {
-	}
-
-	/**
-	 * Singleton instance can't be serialized.
-	 * @throws \Exception
-	 */
-	public function __wakeup() {
-		throw new \Exception( 'Cannot serialize singleton' );
+		return $generator;
 	}
 }

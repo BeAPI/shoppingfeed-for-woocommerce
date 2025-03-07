@@ -6,7 +6,6 @@ namespace ShoppingFeed\ShoppingFeedWC\Admin;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Actions\Actions;
-use ShoppingFeed\ShoppingFeedWC\Feed\AsyncGenerator;
 use ShoppingFeed\ShoppingFeedWC\Feed\Generator;
 use ShoppingFeed\ShoppingFeedWC\Orders\Operations;
 use ShoppingFeed\ShoppingFeedWC\Sdk\Sdk;
@@ -268,7 +267,7 @@ class Options {
 		}
 
 		if ( isset( $_GET['action'] ) && 'refresh_feeds' === $_GET['action'] && check_admin_referer( 'refresh_feeds' ) ) {
-			AsyncGenerator::get_instance()->launch();
+			ShoppingFeedHelper::get_feedbuilder_manager()->launch_feed_generation( ShoppingFeedHelper::get_sf_part_size() );
 
 			wp_safe_redirect(
 				add_query_arg(
