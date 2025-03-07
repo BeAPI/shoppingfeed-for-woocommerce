@@ -11,6 +11,9 @@ use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Store\StoreRes
 use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Client;
 use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Credential;
 use ShoppingFeed\ShoppingFeedWC\Feed\AsyncGenerator;
+use ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilder\FeedBuilderBase;
+use ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilder\FeedBuilderPolylang;
+use ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilder\FeedBuilderWpml;
 use ShoppingFeed\ShoppingFeedWC\Orders\Operations;
 use ShoppingFeed\ShoppingFeedWC\Orders\Order;
 use ShoppingFeed\ShoppingFeedWC\Orders\Orders;
@@ -37,37 +40,6 @@ class WoocommerceActions {
 
 
 	public function __construct() {
-
-		//Generate async feed
-		add_action(
-			'sf_feed_generation_process',
-			[
-				AsyncGenerator::get_instance(),
-				'launch',
-			]
-		);
-
-		//Generate feed part
-		add_action(
-			'sf_feed_generation_part',
-			[
-				AsyncGenerator::get_instance(),
-
-				'generate_feed_part',
-			],
-			10,
-			3
-		);
-
-		//Combine feed's parts
-		add_action(
-			'sf_feed_generation_combine_feed_parts',
-			array(
-				AsyncGenerator::get_instance(),
-				'combine_feed_parts',
-			)
-		);
-
 		//Product Update
 		add_action( 'woocommerce_update_product', [ $this, 'schedule_product_update' ] );
 		add_action( 'sf_update_product_data', [ $this, 'update_product_data_callback' ] );
@@ -315,8 +287,8 @@ class WoocommerceActions {
 	 */
 	public function update_product( $product_id, $only_stock = false ) {
 		$sf_feed_options = ShoppingFeedHelper::get_sf_feed_options();
-		$sync_stock = $sf_feed_options['synchro_stock'] ?? 'yes';
-		$sync_price = $sf_feed_options['synchro_price'] ?? 'yes';
+		$sync_stock      = $sf_feed_options['synchro_stock'] ?? 'yes';
+		$sync_price      = $sf_feed_options['synchro_price'] ?? 'yes';
 
 		/**
 		 * If both stock and price synchronization are disable, bail out.

@@ -6,8 +6,10 @@ namespace ShoppingFeed\ShoppingFeedWC;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Admin\Options;
+use ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilderManager;
 use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\ShipmentTrackingManager;
 use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\ShipmentTrackingProvider;
+use ShoppingFeed\ShoppingFeedWC\Feed\Uri;
 use ShoppingFeed\ShoppingFeedWC\Url\Rewrite;
 use WC_Logger;
 
@@ -611,7 +613,7 @@ XML;
 		/**
 		 * Filter the value of the carrier for the order before it is retrieve.
 		 *
-		 * @param bool|string $pre    The value to return instead of the value computed from
+		 * @param bool|string $pre The value to return instead of the value computed from
 		 *                            the `sf_shipping` metadata.
 		 * @param \WC_Order $wc_order The order object for the carrier data.
 		 */
@@ -685,7 +687,7 @@ XML;
 	 */
 	public static function sf_order_statuses_to_import() {
 		$default_statuses = [ 'waiting_shipment' ];
-		$orders_options = self::get_sf_orders_options();
+		$orders_options   = self::get_sf_orders_options();
 
 		/**
 		 * Add shipped status if importing fulfilled by marketplace orders
@@ -693,7 +695,7 @@ XML;
 		 */
 		if ( isset( $orders_options['import_order_fulfilled_by_marketplace'] ) && true === (bool) $orders_options['import_order_fulfilled_by_marketplace'] ) {
 			$fullfilled_by_marketplace_statuses = [ 'shipped', 'refunded', 'cancelled' ];
-			$default_statuses = array_merge( $default_statuses, $fullfilled_by_marketplace_statuses );
+			$default_statuses                   = array_merge( $default_statuses, $fullfilled_by_marketplace_statuses );
 		}
 
 		return apply_filters( 'shopping_feed_orders_to_import', $default_statuses );
@@ -938,5 +940,20 @@ XML;
 	public static function end_upgrade() {
 		delete_option( SF_UPGRADE_RUNNING );
 		update_option( SF_DB_VERSION_SLUG, SF_DB_VERSION );
+	}
+
+	/**
+	 * Get FeedBuilderManager instance.
+	 *
+	 * @return FeedBuilderManager
+	 */
+	public static function get_feedbuilder_manager(): FeedBuilderManager {
+		static $manager;
+		if ( ! $manager ) {
+			$manager = new FeedBuilderManager();
+			$manager->register();
+		}
+
+		return $manager;
 	}
 }
