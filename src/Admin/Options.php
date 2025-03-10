@@ -649,8 +649,8 @@ class Options {
 				?>
 				<!-- Here we are comparing stored value with 1. Stored value is 1 if user checks the checkbox otherwise empty string. -->
 				<input type="checkbox"
-					   name="<?php echo esc_html( sprintf( '%s[use_principal_categories]', self::SF_YOAST_OPTIONS ) ); ?>"
-					   value="1" <?php checked( 1, (int) $this->sf_yoast_options['use_principal_categories'], true ); ?> />
+					   name="<?php echo esc_attr( sprintf( '%s[use_principal_categories]', self::SF_YOAST_OPTIONS ) ); ?>"
+					   value="1" <?php checked( 1, (int) ( $this->sf_yoast_options['use_principal_categories'] ?? 0 ) ); ?> />
 				<?php
 			},
 			self::SF_YOAST_SETTINGS_PAGE,
@@ -901,7 +901,7 @@ class Options {
 					<?php foreach ( ShoppingFeedHelper::get_feedbuilder_manager()->get_feed_urls() as $feed_url ) : ?>
 						<p>
 							<a href="<?php echo esc_url( $feed_url ); ?>" target="_blank">
-								<?php echo esc_html( $feed_url ); ?>
+								<?php echo esc_url( $feed_url ); ?>
 							</a>
 						</p>
 					<?php endforeach; ?>
@@ -918,7 +918,7 @@ class Options {
 								echo esc_html( $sf_last_generation_date );
 							}
 						} else {
-							esc_html__( 'Never', 'shopping-feed' );
+							esc_html_e( 'Never', 'shopping-feed' );
 						}
 						?>
 						<a href="<?php echo esc_url( $sf_refresh_feed_action_url ); ?>">
@@ -950,16 +950,18 @@ class Options {
 			__( 'Product identifier', 'shopping-feed' ),
 			function () {
 				?>
-				<select name="<?php echo esc_html( sprintf( '%s[product_identifier]', self::SF_FEED_OPTIONS ) ); ?>">
-					<option value="id" <?php selected( 'id', $this->sf_feed_options['product_identifier'] ? $this->sf_feed_options['product_identifier'] : false ); ?>>
+				<select name="<?php echo esc_attr( sprintf( '%s[product_identifier]', self::SF_FEED_OPTIONS ) ); ?>">
+					<option value="id" <?php selected( 'id', $this->sf_feed_options['product_identifier'] ?? false ); ?>>
 						<?php esc_html_e( 'Product ID (recommended)', 'shopping-feed' ); ?>
 					</option>
-					<option value="sku" <?php selected( 'sku', $this->sf_feed_options['product_identifier'] ? $this->sf_feed_options['product_identifier'] : false ); ?>>
+					<option value="sku" <?php selected( 'sku', $this->sf_feed_options['product_identifier'] ?? false ); ?>>
 						<?php esc_html_e( 'SKU', 'shopping-feed' ); ?>
 					</option>
 				</select>
 				<p class="description"
-				   id="tagline-description"><?php echo esc_attr_e( 'Product identifier', 'shopping-feed' ); ?></p>
+				   id="tagline-description">
+				   <?php esc_html_e( 'Product identifier', 'shopping-feed' ); ?>
+				</p>
 
 				<?php
 			},
@@ -977,7 +979,7 @@ class Options {
 					<input
 						type="checkbox"
 						name="<?php echo esc_attr( sprintf( '%s[out_of_stock_products_in_feed]', self::SF_FEED_OPTIONS ) ); ?>"
-						<?php checked( $this->sf_feed_options['out_of_stock_products_in_feed'], 'on' ); ?>
+						<?php checked( $this->sf_feed_options['out_of_stock_products_in_feed'] ?? '', 'on' ); ?>
 					/>
 				</label>
 
@@ -994,10 +996,10 @@ class Options {
 			function () {
 				?>
 				<select name="<?php echo esc_html( sprintf( '%s[category_display_mode]', self::SF_FEED_OPTIONS ) ); ?>">
-					<option value="normal" <?php selected( 'id', $this->sf_feed_options['category_display_mode'] ? $this->sf_feed_options['category_display_mode'] : false ); ?>>
+					<option value="normal" <?php selected( 'id', $this->sf_feed_options['category_display_mode'] ?? false ); ?>>
 						<?php esc_html_e( 'Normal', 'shopping-feed' ); ?>
 					</option>
-					<option value="breadcrumb" <?php selected( 'breadcrumb', $this->sf_feed_options['category_display_mode'] ? $this->sf_feed_options['category_display_mode'] : false ); ?>>
+					<option value="breadcrumb" <?php selected( 'breadcrumb', $this->sf_feed_options['category_display_mode'] ?? false ); ?>>
 						<?php esc_html_e( 'Breadcrumb', 'shopping-feed' ); ?>
 					</option>
 				</select>
@@ -1014,14 +1016,15 @@ class Options {
 			'categories',
 			__( 'Categories to export', 'shopping-feed' ),
 			function () use ( $product_categories ) {
+				$selected_product_categories = array_map( 'absint', ( $this->sf_feed_options['categories'] ?? [] ) );
 				?>
 				<select class="categories" multiple
-						name='<?php echo esc_html( sprintf( '%s[categories][]', self::SF_FEED_OPTIONS ) ); ?>'>
+						name='<?php echo esc_attr( sprintf( '%s[categories][]', self::SF_FEED_OPTIONS ) ); ?>'>
 					<?php
 					foreach ( $product_categories as $category ) {
 						?>
-						<option value="<?php echo esc_html( $category->term_id ); ?>"
-							<?php selected( in_array( $category->term_id, ! empty( $this->sf_feed_options['categories'] ) ? $this->sf_feed_options['categories'] : [] ), 1 ); ?>
+						<option value="<?php echo esc_attr( $category->term_id ); ?>"
+							<?php selected( in_array( $category->term_id, $selected_product_categories, true ) ); ?>
 						>
 							<?php echo esc_html( $category->name ); ?></option>
 						<?php
@@ -1029,7 +1032,7 @@ class Options {
 					?>
 				</select>
 				<p class="description"
-				   id="tagline-description"><?php echo esc_attr_e( 'Product categories to export to Shoppingfeed. Default : all', 'shopping-feed' ); ?></p>
+				   id="tagline-description"><?php esc_html_e( 'Product categories to export to Shoppingfeed. Default : all', 'shopping-feed' ); ?></p>
 				<?php
 
 			},
@@ -1066,7 +1069,7 @@ class Options {
 			__( 'Number of hours', 'shopping-feed' ),
 			function () use ( $frequencies_options ) {
 				?>
-				<select name="<?php echo esc_html( sprintf( '%s[frequency]', self::SF_FEED_OPTIONS ) ); ?>">
+				<select name="<?php echo esc_attr( sprintf( '%s[frequency]', self::SF_FEED_OPTIONS ) ); ?>">
 					<?php
 					foreach ( $frequencies_options as $frequency => $name ) {
 						?>
@@ -1096,26 +1099,30 @@ class Options {
 				$running_process = ShoppingFeedHelper::get_running_process( 'sf_feed_generation_process' );
 				$running_process = is_array( $running_process ) ? count( $running_process ) : 0;
 				?>
-				<select name="<?php echo esc_html( sprintf( '%s[part_size]', self::SF_FEED_OPTIONS ) ); ?>">
+				<select name="<?php echo esc_attr( sprintf( '%s[part_size]', self::SF_FEED_OPTIONS ) ); ?>">
 					<?php
 					foreach ( [ 10, 20, 50, 100, 200, 500, 1000 ] as $part_size_option ) {
 						?>
 						<option
-								value="<?php echo esc_html( $part_size_option ); ?>"
-							<?php selected( $part_size_option, $this->sf_feed_options['part_size'] ? $this->sf_feed_options['part_size'] : false ); ?>
-						><?php echo esc_html( $part_size_option ); ?></option>
+								value="<?php echo esc_attr( $part_size_option ); ?>"
+							<?php selected( $part_size_option, $this->sf_feed_options['part_size'] ?? false ); ?>
+						>
+						<?php echo esc_html( $part_size_option ); ?>
+						</option>
 						<?php
 					}
 					?>
 				</select>
 				<p class="description" id="tagline-description">
-					<?php esc_attr_e( 'Batch size (default 200 to decrease in case of performance issues)', 'shopping-feed' ); ?>
+					<?php esc_html_e( 'Batch size (default 200 to decrease in case of performance issues)', 'shopping-feed' ); ?>
 				</p>
 				<p class="description">
-					<?php esc_attr_e( 'If the feed is blocked and not generated', 'shopping-feed' ); ?>
-					<a href="<?php echo sprintf( '%s&clean_process=true', esc_url( ShoppingFeedHelper::get_setting_link() ) ); ?>"
-					   class="button-link-delete"><?php esc_attr_e( 'click here', 'shopping-feed' ); ?></a>
-					<?php esc_attr_e( 'to clean all running process', 'shopping-feed' ); ?>
+					<?php esc_html_e( 'If the feed is blocked and not generated', 'shopping-feed' ); ?>
+					<a href="<?php echo esc_url( add_query_arg( 'clean_process', true, ShoppingFeedHelper::get_setting_link() ) ); ?>"
+					   class="button-link-delete">
+					   <?php esc_html_e( 'click here', 'shopping-feed' ); ?>
+					</a>
+					<?php esc_html_e( 'to clean all running process', 'shopping-feed' ); ?>
 					<?php echo esc_html( sprintf( '(%s)', $running_process ) ); ?>
 				</p>
 				<?php
@@ -1134,9 +1141,9 @@ class Options {
 
 		$shipping_zones = \WC_Shipping_Zones::get_zones();
 		// Ensure retro compatibility
-		$selected_shipping_zone = ! empty( $this->sf_feed_options['zone'] ) ? $this->sf_feed_options['zone'] : false;
+		$selected_shipping_zone = $this->sf_feed_options['zone'] ?? false;
 		if ( false === $selected_shipping_zone ) {
-			$selected_shipping_zone = ! empty( $this->sf_shipping_options['zone'] ) ? $this->sf_shipping_options['zone'] : false;
+			$selected_shipping_zone = $this->sf_shipping_options['zone'] ?? false;
 		}
 		add_settings_field(
 			'default_zone',
@@ -1147,7 +1154,7 @@ class Options {
 					   value="<?php echo esc_attr( $selected_shipping_zone ); ?>">
 			<select id="default_shipping_zone"
 					name="<?php echo esc_attr( sprintf( '%s[zone]', self::SF_FEED_OPTIONS ) ); ?>">
-				<option value=""><?php echo esc_attr_e( 'None', 'shopping-feed' ); ?></option>
+				<option value=""><?php esc_html_e( 'None', 'shopping-feed' ); ?></option>
 				<?php
 				if ( ! empty( $shipping_zones ) ) {
 					foreach ( $shipping_zones as $zone ) {
@@ -1161,7 +1168,7 @@ class Options {
 					?>
 					</select>
 					<p class="description"
-					   id="tagline-description"><?php echo esc_attr_e( 'Selected shipping zone defines shipping method data used in the feed', 'shopping-feed' ); ?></p>
+					   id="tagline-description"><?php esc_html_e( 'Selected shipping zone defines shipping method data used in the feed', 'shopping-feed' ); ?></p>
 					<?php
 				}
 			},
@@ -1174,9 +1181,9 @@ class Options {
 			__( 'Default Shipping Fees', 'shopping-feed' ),
 			function () {
 				// Ensure retro compatibility
-				$shipping_fees = isset( $this->sf_feed_options['fees'] ) ? $this->sf_feed_options['fees'] : 0;
+				$shipping_fees = $this->sf_feed_options['fees'] ?? 0;
 				if ( 0 === $shipping_fees ) {
-					$shipping_fees = isset( $this->sf_shipping_options['fees'] ) ? $this->sf_shipping_options['fees'] : 0;
+					$shipping_fees = $this->sf_shipping_options['fees'] ?? 0;
 				}
 				?>
 				<input type="number"
@@ -1185,9 +1192,9 @@ class Options {
 					   name='<?php echo esc_attr( sprintf( '%s[fees]', self::SF_FEED_OPTIONS ) ); ?>'
 					   value='<?php echo esc_attr( $shipping_fees ); ?>'>
 
-				<p class="description"
-				   id="tagline-description"><?php echo esc_attr_e( 'Default shipping price added in the feed if no shipping methods were founded or no shipping zone is selected', 'shopping-feed' ); ?></p>
-
+				<p class="description" id="tagline-description">
+					<?php esc_html_e( 'Default shipping price added in the feed if no shipping methods were founded or no shipping zone is selected', 'shopping-feed' ); ?>
+				</p>
 				<?php
 			},
 			self::SF_FEED_SETTINGS_PAGE,
@@ -1286,7 +1293,7 @@ class Options {
 				$manager = ShoppingFeedHelper::wc_tracking_provider_manager();
 				$selected_provider = $this->sf_shipping_options['tracking_provider'] ?? '';
 				?>
-				<select id="tracking_provider" name="<?php echo esc_html( sprintf( '%s[tracking_provider]', self::SF_SHIPPING_OPTIONS ) ); ?>">
+				<select id="tracking_provider" name="<?php echo esc_attr( sprintf( '%s[tracking_provider]', self::SF_SHIPPING_OPTIONS ) ); ?>">
 					<option value=""><?php esc_html_e( 'Disable', 'shopping-feed' ); ?></option>
 					<?php foreach ( $manager->get_providers() as $provider ) : ?>
 					<option value="<?php echo esc_attr( $provider->id() ); ?>"
@@ -1310,12 +1317,12 @@ class Options {
 				<p class="description"
 				   id="tagline-description">
 					<span class="dashicons dashicons-warning"></span>
-					<strong><?php esc_attr_e( 'The selected provider is not available.', 'shopping-feed' ); ?></strong>
+					<strong><?php esc_html_e( 'The selected provider is not available.', 'shopping-feed' ); ?></strong>
 				</p>
 				<?php endif; ?>
 				<p class="description"
 				   id="tagline-description">
-					<?php esc_attr_e( 'Choose the provider used to retrieve tracking information.', 'shopping-feed' ); ?>
+					<?php esc_html_e( 'Choose the provider used to retrieve tracking information.', 'shopping-feed' ); ?>
 				</p>
 				<?php
 			},
@@ -1329,20 +1336,20 @@ class Options {
 			function () use ( $zone_with_methods, $sf_orders_options_default_shipping_method_id ) {
 				?>
 				<select id="default_shipping_method"
-						name="<?php echo esc_html( sprintf( '%s[default_shipping_method]', self::SF_SHIPPING_OPTIONS ) ); ?>">
-					<option value=""><?php echo esc_attr_e( '-', 'shopping-feed' ); ?></option>
+						name="<?php echo esc_attr( sprintf( '%s[default_shipping_method]', self::SF_SHIPPING_OPTIONS ) ); ?>">
+					<option value=""><?php esc_html_e( '-', 'shopping-feed' ); ?></option>
 					<?php
 					if ( ! empty( $zone_with_methods ) ) {
 						foreach ( $zone_with_methods as $zone_with_method ) {
 							?>
-							<optgroup label="<?php echo esc_html( $zone_with_method['zone_name'] ); ?>">
+							<optgroup label="<?php echo esc_attr( $zone_with_method['zone_name'] ); ?>">
 								<?php
 								if ( ! empty( $zone_with_method['methods'] ) ) {
 									foreach ( $zone_with_method['methods'] as $shipping_method ) {
 										?>
 										<option value="<?php echo wc_esc_json( wp_json_encode( $shipping_method ) ); ?>"
 											<?php selected( $shipping_method['method_id'], $sf_orders_options_default_shipping_method_id ); ?>>
-											<?php echo sprintf( '%s', esc_html( $shipping_method['method_title'] ) ); ?>
+											<?php echo esc_html( $shipping_method['method_title'] ); ?>
 										</option>
 										<?php
 									}
@@ -1356,7 +1363,7 @@ class Options {
 				</select>
 				<p class="description"
 				   id="tagline-description">
-					<?php echo esc_attr_e( 'Default shipping method for imported orders from SF', 'shopping-feed' ); ?>
+					<?php esc_html_e( 'Default shipping method for imported orders from SF', 'shopping-feed' ); ?>
 				</p>
 				<?php
 			},
@@ -1368,7 +1375,7 @@ class Options {
 		$zone_with_methods = ShoppingFeedHelper::get_zones_with_shipping_methods();
 
 		if ( ! empty( $sf_carriers ) ) {
-			$matching_shipping_method = ! empty( $this->sf_shipping_options['matching_shipping_method'] ) ? $this->sf_shipping_options['matching_shipping_method'] : [];
+			$matching_shipping_method = $this->sf_shipping_options['matching_shipping_method'] ?? [];
 			add_settings_section(
 				'sf_orders_settings_shippings_methods_matching',
 				__( 'Shipping Matching', 'shopping-feed' ),
@@ -1392,14 +1399,14 @@ class Options {
 					$sf_carrier,
 					function () use ( $zone_with_methods, $sf_carrier_id, $matching_shipping_method_carrier ) {
 						?>
-						<select id="<?php echo esc_html( 'matching_shipping_' . $sf_carrier_id ); ?>"
-								name="<?php echo esc_html( sprintf( '%s[matching_shipping_method][%s]', self::SF_SHIPPING_OPTIONS, $sf_carrier_id ) ); ?>">
-							<option value=""><?php echo esc_attr_e( '-', 'shopping-feed' ); ?></option>
+						<select id="<?php echo esc_attr( 'matching_shipping_' . $sf_carrier_id ); ?>"
+								name="<?php echo esc_attr( sprintf( '%s[matching_shipping_method][%s]', self::SF_SHIPPING_OPTIONS, $sf_carrier_id ) ); ?>">
+							<option value=""><?php esc_html_e( '-', 'shopping-feed' ); ?></option>
 							<?php
 							if ( ! empty( $zone_with_methods ) ) {
 								foreach ( $zone_with_methods as $zone_with_method ) {
 									?>
-									<optgroup label="<?php echo esc_html( $zone_with_method['zone_name'] ); ?>">
+									<optgroup label="<?php echo esc_attr( $zone_with_method['zone_name'] ); ?>">
 										<?php
 										if ( ! empty( $zone_with_method['methods'] ) ) {
 											foreach ( $zone_with_method['methods'] as $shipping_method ) {
@@ -1407,8 +1414,8 @@ class Options {
 												?>
 												<option value="<?php echo wc_esc_json( wp_json_encode( $shipping_method ) ); ?>"
 													<?php selected( wp_json_encode( $shipping_method ), $matching_shipping_method_carrier ); ?>>
-													<?php echo sprintf( '%s', esc_html( $shipping_method['method_title'] ) ); ?></option>>
-												<?php echo sprintf( '%s', esc_html( $shipping_method['method_title'] ) ); ?></option>
+													<?php echo esc_html( $shipping_method['method_title'] ); ?>
+												</option>
 												<?php
 											}
 										}
