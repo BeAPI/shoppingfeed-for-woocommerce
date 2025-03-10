@@ -91,7 +91,8 @@ class FeedBuilderWpml extends FeedBuilder {
 			$post_per_page = 20;
 		}
 
-		as_enqueue_async_action(
+		as_schedule_single_action(
+			time() + 15,
 			'sf_feed_generation_part_wpml',
 			array(
 				$lang,
@@ -106,7 +107,8 @@ class FeedBuilderWpml extends FeedBuilder {
 	 * @return void
 	 */
 	public static function schedule_combine_parts( string $lang ): void {
-		as_enqueue_async_action(
+		as_schedule_single_action(
+			time() + 15,
 			'sf_feed_generation_combine_feed_parts_wpml',
 			array( $lang ),
 			'sf_feed_generation_process'
