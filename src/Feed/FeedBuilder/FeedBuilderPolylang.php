@@ -89,7 +89,8 @@ class FeedBuilderPolylang extends FeedBuilder {
 			$post_per_page = 20;
 		}
 
-		as_enqueue_async_action(
+		as_schedule_single_action(
+			time() + 15,
 			'sf_feed_generation_part_pll',
 			array(
 				$lang,
@@ -104,7 +105,8 @@ class FeedBuilderPolylang extends FeedBuilder {
 	 * @return void
 	 */
 	public static function schedule_combine_parts( string $lang ): void {
-		as_enqueue_async_action(
+		as_schedule_single_action(
+			time() + 15,
 			'sf_feed_generation_combine_feed_parts_pll',
 			array( $lang ),
 			'sf_feed_generation_process'
