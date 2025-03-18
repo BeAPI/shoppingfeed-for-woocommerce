@@ -320,6 +320,34 @@ function your_custom_fields_function($fields, $wc_product) {
 `
 
 ### Variation Images
+
+#### Main image
+By default the variation's thumbnail is used as the main image in the feed.
+
+You can customize the main image using the filter "shopping_feed_variation_main_image".
+
+`
+add_filter( 'shopping_feed_variation_main_image', 'your_custom_variation_main_images_function', 10, 3 );
+
+/**
+ * Use the parent's thumbnail if the variation doesn't have one.
+ *
+ * @param string $main_image The main image of the variation.
+ * @param \WC_Product_Variation $variation The variation.
+ * @param \WC_Product_Variable $product The product.
+ *
+ * @return string
+ */
+function your_custom_variation_main_images_function( $main_image, $variation, $product ) {
+    if ( empty( $main_image ) && has_post_thumbnail( $product->get_id() ) ) {
+      $main_image = get_the_post_thumbnail_url( $product->get_id(), 'full' );
+    }
+
+    return $main_image;
+}
+`
+
+#### Additional images
 By default, we don’t support any custom plugin for adding images to WC Product Variation, with this filter you can set the desired images to each variation, you can use the following snippet
 
 `

@@ -477,9 +477,20 @@ class Product {
 			$variation_data['width']    = $variation->get_width();
 			$variation_data['height']   = $variation->get_height();
 			$variation_data['length']   = $variation->get_length();
-			if ( ! empty( get_the_post_thumbnail_url( $variation->get_id(), 'full' ) ) ) {
-				$variation_data['image_main'] = get_the_post_thumbnail_url( $variation->get_id(), 'full' );
+
+			$main_image = '';
+			if ( has_post_thumbnail( $variation->get_id() ) ) {
+				$main_image = get_the_post_thumbnail_url( $variation->get_id(), 'full' );
 			}
+
+			/**
+			 * Filter the main image of the variation.
+			 *
+			 * @param string $main_image The main image of the variation.
+			 * @param \WC_Product_Variation $variation The variation.
+			 * @param \WC_Product_Variable $product The product.
+			 */
+			$variation_data['image_main'] = apply_filters( 'shopping_feed_variation_main_image', $main_image, $variation, $product );
 
 			$variation_data['attributes'] = $this->get_variation_attributes( $variation );
 			$variations[]                 = $variation_data;
