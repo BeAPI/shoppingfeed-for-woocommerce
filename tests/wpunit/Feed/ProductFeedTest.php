@@ -346,7 +346,7 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	public function test_get_variation_dimensions_when_it_not_defined() {
 
 		// Prepare the variable product object
-		$wc_variable_product = New \WC_Product_Variable();
+		$wc_variable_product = new \WC_Product_Variable();
 		$wc_variable_product->set_length( 5 );
 		$wc_variable_product->set_height( 10 );
 		$wc_variable_product->set_width( 15 );
@@ -366,7 +366,7 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	public function test_get_variation_dimensions_when_it_overrides_parent_dimensions(){
 
 		// Prepare the variable product object
-		$wc_variable_product = New \WC_Product_Variable();
+		$wc_variable_product = new \WC_Product_Variable();
 		$wc_variable_product->set_length( 5 );
 		$wc_variable_product->set_height( 10 );
 		$wc_variable_product->set_width( 15 );
@@ -385,5 +385,84 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertEquals( 20, $sf_product->get_length(), 'Product length should be 20.' );
 		$this->assertEquals( 30, $sf_product->get_height(), 'Product height should be 30.' );
 		$this->assertEquals( 40, $sf_product->get_width(), 'Product width should be 40.' );
+	}
+
+	public function test_variation_set_custom_main_image() {
+		add_filter(
+			'shopping_feed_variation_main_image',
+			function( $image, $variation, $product ) {
+				return 'https://example.com/image.jpg';
+			},
+			10,
+			3
+		);
+
+		$image_id = $this->factory()->attachment->create_object(
+			[
+				'file' => codecept_data_dir( 'images/image1.png' ),
+				'post_mime_type' => 'image/png',
+				'post_title' => 'Test Image',
+				'post_content' => '',
+				'post_status' => 'inherit',
+			]
+		);
+		
+		$variable_product = new \WC_Product_Variable();
+		$variable_product_id = $variable_product->save();
+
+		WC_Helper_Product::create_product_variation_object( $variable_product_id, 'variation-1', 10, [], true );
+
+		$sf_product = new Product( $variable_product_id );
+		$this->assertCount( 1, $sf_product->get_variations(), 'Variable product should have 1 variation.' );
+		$this->assertArrayHasKey( 'image_main', $sf_product->get_variations()[0], 'Variation should have an image_main key.' );
+		$this->assertEquals( 'https://example.com/image.jpg', $sf_product->get_variations()[0]['image_main'], 'Product main image should be equal to the custom value from the filter.' );
+	}
+
+	public function test_variation_use_thumbnail_as_main_image() {
+		$image_id = $this->factory()->attachment->create_object(
+			[
+				'file' => codecept_data_dir( 'images/image1.png' ),
+				'post_mime_type' => 'image/png',
+				'post_title' => 'Test Image',
+				'post_content' => '',
+				'post_status' => 'inherit',
+			]
+		);
+		$image_url = wp_get_attachment_image_url( $image_id, 'full' );
+		
+		$variable_product = new \WC_Product_Variable();
+		$variable_product_id = $variable_product->save();
+
+		$variation_product = WC_Helper_Product::create_product_variation_object( $variable_product_id, 'variation-1', 10, [], true );
+		$variation_product->set_image_id( $image_id );
+		$variation_product->save();
+
+		$sf_product = new Product( $variable_product_id );
+		$this->assertCount( 1, $sf_product->get_variations(), 'Variable product should have 1 variation.' );
+		$this->assertArrayHasKey( 'image_main', $sf_product->get_variations()[0], 'Variation should have an image_main key.' );
+		$this->assertEquals( $image_url, $sf_product->get_variations()[0]['image_main'], 'Product main image should be empty.' );
+	}
+
+	public function test_variation_empty_main_image_if_no_image_set() {
+		$image_id = $this->factory()->attachment->create_object(
+			[
+				'file' => codecept_data_dir( 'images/image1.png' ),
+				'post_mime_type' => 'image/png',
+				'post_title' => 'Test Image',
+				'post_content' => '',
+				'post_status' => 'inherit',
+			]
+		);
+		
+		$variable_product = new \WC_Product_Variable();
+		$variable_product->set_image_id( $image_id );
+		$variable_product_id = $variable_product->save();
+
+		WC_Helper_Product::create_product_variation_object( $variable_product_id, 'variation-1', 10, [], true );
+
+		$sf_product = new Product( $variable_product_id );
+		$this->assertCount( 1, $sf_product->get_variations(), 'Variable product should have 1 variation.' );
+		$this->assertArrayHasKey( 'image_main', $sf_product->get_variations()[0], 'Variation should have an image_main key.' );
+		$this->assertEquals( '', $sf_product->get_variations()[0]['image_main'], 'Product main image should be empty.' );
 	}
 }
