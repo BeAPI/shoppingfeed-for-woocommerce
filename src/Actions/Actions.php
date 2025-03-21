@@ -24,6 +24,10 @@ class Actions {
 	 * Register new action to generate feed
 	 */
 	public static function register_feed_generation() {
+		if ( as_has_scheduled_action( 'sf_generate_feed_action', array(), self::FEED_GROUP ) ) {
+			as_unschedule_action( 'sf_generate_feed_action', array(), self::FEED_GROUP );
+		}
+
 		as_schedule_recurring_action(
 			time() + 60,
 			ShoppingFeedHelper::get_sf_feed_generation_frequency(),
