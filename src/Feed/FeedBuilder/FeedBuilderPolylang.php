@@ -8,7 +8,7 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 class FeedBuilderPolylang extends FeedBuilder {
 
 	public function is_available(): bool {
-		return function_exists( '\pll_languages_list' );
+		return function_exists( '\pll_languages_list' ) && ! empty( $this->get_languages() );
 	}
 
 	/**

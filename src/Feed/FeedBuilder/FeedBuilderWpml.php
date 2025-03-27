@@ -8,7 +8,7 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 class FeedBuilderWpml extends FeedBuilder {
 
 	public function is_available(): bool {
-		return defined( 'ICL_SITEPRESS_VERSION' );
+		return defined( 'ICL_SITEPRESS_VERSION' ) && ! empty( $this->get_languages() );
 	}
 
 	/**
