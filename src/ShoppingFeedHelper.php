@@ -145,7 +145,7 @@ XML;
 	 * @return array
 	 */
 	public static function get_sf_account_options() {
-		return get_option( Options::SF_ACCOUNT_OPTIONS, array() );
+		return get_option( Options::SF_ACCOUNT_OPTIONS, [] );
 	}
 
 	/**
@@ -183,7 +183,7 @@ XML;
 		$account_options = self::get_sf_account_options();
 		$index           = array_search( (int) $account_id, array_column( $account_options, 'sf_store_id' ), true );
 		if ( false === $index || empty( $account_options[ $index ] ) ) {
-			return array();
+			return [];
 		}
 
 		return $account_options[ $index ];
@@ -200,7 +200,7 @@ XML;
 		$account_options = self::get_sf_account_options();
 		$index           = array_search( $username, array_column( $account_options, 'username' ), true );
 		if ( false === $index || empty( $account_options[ $index ] ) ) {
-			return array();
+			return [];
 		}
 
 		return $account_options[ $index ];
@@ -214,7 +214,7 @@ XML;
 	public static function get_sf_feed_export_categories() {
 		$categories = self::get_sf_feed_options( 'categories' );
 		if ( empty( $categories ) ) {
-			return array();
+			return [];
 		}
 
 		return $categories;
@@ -372,10 +372,10 @@ XML;
 	public static function get_sf_statuses_actions() {
 		$orders_options = self::get_sf_orders_options();
 		if ( ! is_array( $orders_options ) ) {
-			return array();
+			return [];
 		}
 		if ( empty( $orders_options['statuses_actions'] ) ) {
-			return array();
+			return [];
 		}
 
 		return $orders_options['statuses_actions'];
@@ -443,12 +443,12 @@ XML;
 	 * @return array
 	 */
 	public static function get_zones_with_shipping_methods() {
-		$shipping_methods = array();
+		$shipping_methods = [];
 		$shipping_zones   = \WC_Shipping_Zones::get_zones();
 		if ( empty( $shipping_zones ) ) {
 			return $shipping_methods;
 		}
-		$all_shipping_methods = array();
+		$all_shipping_methods = [];
 		foreach ( $shipping_zones as $shipping_zone ) {
 			$shipping_zone    = new \WC_Shipping_Zone( $shipping_zone['id'] );
 			$shipping_methods = $shipping_zone->get_shipping_methods();
@@ -457,20 +457,20 @@ XML;
 				continue;
 			}
 
-			$_shipping_methods = array();
+			$_shipping_methods = [];
 			foreach ( $shipping_methods as $shipping_method ) {
-				$_shipping_methods[] = array(
+				$_shipping_methods[] = [
 					'method_rate_id' => $shipping_method->id,
 					'method_id'      => $shipping_method->instance_id,
 					'method_title'   => $shipping_method->title,
-				);
+				];
 			}
 
-			$all_shipping_methods[] = array(
+			$all_shipping_methods[] = [
 				'zone_id'   => $shipping_zone->get_id(),
 				'zone_name' => $shipping_zone->get_zone_name(),
 				'methods'   => $_shipping_methods,
-			);
+			];
 		}
 
 		return $all_shipping_methods;
@@ -497,7 +497,7 @@ XML;
 				return self::get_default_shipping_method();
 			}
 
-			return array();
+			return [];
 		}
 
 		return json_decode( $matching_shipping_method_list[ $sf_carrier_id ], true );
@@ -532,7 +532,7 @@ XML;
 	public static function get_sf_carriers() {
 		$sf_carriers = get_option( Options::SF_CARRIERS );
 		if ( empty( $sf_carriers ) || ! is_array( $sf_carriers ) ) {
-			return array();
+			return [];
 		}
 
 		return $sf_carriers;
@@ -560,7 +560,7 @@ XML;
 	public static function get_matching_shipping_method_list() {
 		$orders_options = self::get_sf_shipping_options();
 		if ( empty( $orders_options ) || empty( $orders_options['matching_shipping_method'] ) ) {
-			return array();
+			return [];
 		}
 
 		return (array) $orders_options['matching_shipping_method'];
@@ -573,7 +573,7 @@ XML;
 	public static function get_default_shipping_method() {
 		$shipping_options = self::get_sf_shipping_options();
 		if ( empty( $shipping_options ) || empty( $shipping_options['default_shipping_method'] ) ) {
-			return array();
+			return [];
 		}
 
 		return (array) json_decode( $shipping_options['default_shipping_method'], true );
@@ -611,7 +611,7 @@ XML;
 		/**
 		 * Filter the value of the carrier for the order before it is retrieve.
 		 *
-		 * @param bool|string $pre    The value to return instead of the value computed from
+		 * @param bool|string $pre The value to return instead of the value computed from
 		 *                            the `sf_shipping` metadata.
 		 * @param \WC_Order $wc_order The order object for the carrier data.
 		 */
@@ -676,7 +676,7 @@ XML;
 	 * @return array
 	 */
 	public static function wc_products_custom_query_args() {
-		return apply_filters( 'shopping_feed_products_custom_args', array() );
+		return apply_filters( 'shopping_feed_products_custom_args', [] );
 	}
 
 	/**
@@ -685,7 +685,7 @@ XML;
 	 */
 	public static function sf_order_statuses_to_import() {
 		$default_statuses = [ 'waiting_shipment' ];
-		$orders_options = self::get_sf_orders_options();
+		$orders_options   = self::get_sf_orders_options();
 
 		/**
 		 * Add shipped status if importing fulfilled by marketplace orders
@@ -693,7 +693,7 @@ XML;
 		 */
 		if ( isset( $orders_options['import_order_fulfilled_by_marketplace'] ) && true === (bool) $orders_options['import_order_fulfilled_by_marketplace'] ) {
 			$fullfilled_by_marketplace_statuses = [ 'shipped', 'refunded', 'cancelled' ];
-			$default_statuses = array_merge( $default_statuses, $fullfilled_by_marketplace_statuses );
+			$default_statuses                   = array_merge( $default_statuses, $fullfilled_by_marketplace_statuses );
 		}
 
 		return apply_filters( 'shopping_feed_orders_to_import', $default_statuses );
@@ -832,10 +832,10 @@ XML;
 		$action_scheduler = \ActionScheduler::store();
 
 		return $action_scheduler->query_actions(
-			array(
+			[
 				'group'  => $group,
 				'status' => [ \ActionScheduler_Store::STATUS_PENDING, \ActionScheduler_Store::STATUS_RUNNING ],
-			)
+			]
 		);
 	}
 
@@ -851,9 +851,9 @@ XML;
 					__( 'Cant remove running process', 'shopping-feed' ),
 					$exception->getMessage()
 				),
-				array(
+				[
 					'source' => 'shopping-feed',
-				)
+				]
 			);
 		}
 		wp_safe_redirect( self::get_setting_link(), 302 );
@@ -894,9 +894,9 @@ XML;
 	 */
 	public static function sf_new_customer() {
 		return empty( get_option( Options::SF_ACCOUNT_OPTIONS ) ) &&
-			   empty( get_option( Options::SF_FEED_OPTIONS ) ) &&
-			   empty( get_option( Options::SF_SHIPPING_OPTIONS ) ) &&
-			   empty( get_option( Options::SF_ORDERS_OPTIONS ) );
+		       empty( get_option( Options::SF_FEED_OPTIONS ) ) &&
+		       empty( get_option( Options::SF_SHIPPING_OPTIONS ) ) &&
+		       empty( get_option( Options::SF_ORDERS_OPTIONS ) );
 	}
 
 	/**
@@ -938,5 +938,389 @@ XML;
 	public static function end_upgrade() {
 		delete_option( SF_UPGRADE_RUNNING );
 		update_option( SF_DB_VERSION_SLUG, SF_DB_VERSION );
+	}
+
+	/**
+	 * Get GLS shipping methods if the GLS plugin is active
+	 *
+	 * @return array|false Array of GLS shipping methods or false if GLS plugin is not active
+	 */
+	public static function get_gls_shipping_methods() {
+		// Check if GLS plugin is active by looking for carrier definition
+		if ( ! class_exists( 'WC_Gls' ) ) {
+			return false;
+		}
+
+		$gls_methods = [];
+		$has_gls     = false;
+
+		// Try to get carrier definitions dynamically from WC_Gls class
+		$carrier_definition = [];
+
+		// Use reflection to safely check for and access WC_Gls::$carrier_definition
+		try {
+			$reflection = new \ReflectionClass( 'WC_Gls' );
+			if ( $reflection->hasProperty( 'carrier_definition' ) ) {
+				$property = $reflection->getProperty( 'carrier_definition' );
+				$property->setAccessible( true );
+
+				// Get the value from the static property
+				$carrier_definition = $property->getValue( null );
+			}
+		} catch ( \Exception $e ) {
+			// If reflection fails, continue with fallback approach
+		}
+
+		// Fallback to searching for shipping methods by ID pattern if carrier_definition isn't available
+		if ( empty( $carrier_definition ) ) {
+			$shipping_methods = WC()->shipping()->get_shipping_methods();
+			foreach ( $shipping_methods as $method_id => $method ) {
+				if ( strpos( $method_id, 'gls_' ) === 0 ) {
+					$carrier_definition[ $method_id ] = [
+						'name'        => $method->method_title,
+						'public_name' => $method->method_title,
+					];
+					$has_gls                          = true;
+				}
+			}
+		}
+
+		// Process the carrier definition
+		foreach ( $carrier_definition as $method_id => $method_data ) {
+			$method_settings = get_option( 'woocommerce_' . $method_id . '_settings' );
+			if ( $method_settings ) {
+				$has_gls = true;
+
+				// Get the method name from settings or definition
+				$method_name = isset( $method_settings['title'] ) ? $method_settings['title'] :
+					( isset( $method_data['name'] ) ? $method_data['name'] : $method_id );
+
+				// Get the public name from definition
+				$public_name = isset( $method_data['public_name'] ) ? $method_data['public_name'] : $method_name;
+
+				// Ensure the GLS prefix is in the name for clarity
+				if ( strpos( $method_name, 'GLS' ) === false && strpos( $method_name, 'gls' ) === false ) {
+					$method_name = 'GLS : ' . $method_name;
+				}
+
+				// Ensure the GLS prefix is in the public name as well
+				if ( strpos( $public_name, 'GLS' ) === false && strpos( $public_name, 'gls' ) === false ) {
+					$public_name = 'GLS : ' . $public_name;
+				}
+
+				// Get GLS custom zones using the native GLS shipping class
+				$custom_zones = self::get_gls_zones_from_class( $method_id );
+
+				// Store all the GLS method data
+				$gls_methods[ $method_id ] = [
+					'id'           => $method_id,
+					'name'         => $method_name,
+					'public_name'  => $public_name,
+					'enabled'      => isset( $method_settings['enabled'] ) && 'yes' === $method_settings['enabled'],
+					'custom_zones' => $custom_zones,
+				];
+			}
+		}
+
+		if ( ! $has_gls ) {
+			return false;
+		}
+
+		return $gls_methods;
+	}
+
+	/**
+	 * Get GLS zones directly from WC_Gls_Table_Rate_Shipping class
+	 *
+	 * @param string $method_id The GLS shipping method ID
+	 *
+	 * @return array Formatted zones data
+	 */
+	public static function get_gls_zones_from_class( $method_id ) {
+		$zones = [];
+
+		// Check if required class exists
+		if ( ! @class_exists( 'WC_Gls_Table_Rate_Shipping', false ) ) {
+			return $zones;
+		}
+
+		// Convert method_id to class name based on GLS naming convention
+		$method_parts = explode( '_', $method_id );
+		// Make sure there are at least 2 parts (gls_something)
+		if ( count( $method_parts ) < 2 ) {
+			return $zones;
+		}
+
+		// Remove 'gls' prefix
+		array_shift( $method_parts );
+
+		// Convert to CamelCase
+		$class_suffix = '';
+		foreach ( $method_parts as $part ) {
+			$class_suffix .= ucfirst( $part );
+		}
+
+		$class_name = 'WC_Gls_' . $class_suffix;
+
+		// Check if derived class name exists, otherwise try the standard class name format
+		if ( ! class_exists( $class_name ) ) {
+			// Try alternative formats, like direct method ID to class mapping
+			$direct_mapping = [
+				'gls_chezvous'     => 'WC_Gls_Chezvous',
+				'gls_chezvousplus' => 'WC_Gls_Chezvousplus',
+				'gls_relais'       => 'WC_Gls_Relais',
+				'gls_13h'          => 'WC_Gls_13h',
+			];
+
+			if ( isset( $direct_mapping[ $method_id ] ) ) {
+				$class_name = $direct_mapping[ $method_id ];
+			} else {
+				// Final fallback - try WC_Shipping_Method
+				$shipping_methods = WC()->shipping()->get_shipping_methods();
+				if ( isset( $shipping_methods[ $method_id ] ) ) {
+					$shipping_method = $shipping_methods[ $method_id ];
+					// If this is a GLS method that extends table rate shipping
+					if ( is_a( $shipping_method, 'WC_Gls_Table_Rate_Shipping' ) ) {
+						$shipping_method->get_zones();
+						$raw_zones = $shipping_method->zones;
+
+						if ( is_array( $raw_zones ) ) {
+							foreach ( $raw_zones as $zone ) {
+								$zones[] = [
+									'id'        => $zone['id'],
+									'name'      => $zone['name'] ?? $method_id,
+									'countries' => isset( $zone['country'] ) ? (array) $zone['country'] : [],
+									'type'      => $zone['type'] ?? 'country',
+									'enabled'   => isset( $zone['enabled'] ) && '1' === $zone['enabled'],
+								];
+							}
+						}
+
+						return $zones;
+					}
+				}
+
+				return $zones;
+			}
+		}
+
+		// Instantiate the class and get zones
+		try {
+			$shipping_method = new $class_name();
+			if ( method_exists( $shipping_method, 'get_zones' ) ) {
+				$shipping_method->get_zones();
+				$raw_zones = $shipping_method->zones;
+
+				if ( is_array( $raw_zones ) ) {
+					foreach ( $raw_zones as $zone ) {
+						$zones[] = [
+							'id'        => $zone['id'],
+							'name'      => $zone['name'] ?? $method_id,
+							'countries' => isset( $zone['country'] ) ? (array) $zone['country'] : [],
+							'type'      => $zone['type'] ?? 'country',
+							'enabled'   => isset( $zone['enabled'] ) && '1' === $zone['enabled'],
+						];
+					}
+				}
+			}
+		} catch ( \Exception $e ) {
+			// Fallback to option-based approach if any errors occur
+			$zones_option = get_option( $method_id . '_zones', [] );
+			if ( is_array( $zones_option ) ) {
+				foreach ( $zones_option as $zone ) {
+					$zones[] = [
+						'id'        => $zone['id'],
+						'name'      => $zone['name'] ?? $method_id,
+						'countries' => isset( $zone['country'] ) ? (array) $zone['country'] : [],
+						'type'      => $zone['type'] ?? 'country',
+						'enabled'   => isset( $zone['enabled'] ) && '1' === $zone['enabled'],
+					];
+				}
+			}
+		}
+
+		return $zones;
+	}
+
+	/**
+	 * Get GLS shipping zones organized by country
+	 *
+	 * @return array Shipping zones grouped by country code with GLS zones as values
+	 */
+	public static function get_gls_shipping_zones_by_country() {
+		$zones_by_country = [];
+
+		// Use function_exists instead of class_exists to check for required functions
+		if ( @class_exists( 'WC_Gls_Table_Rate_Shipping', false ) ) {
+			$gls_methods = self::get_gls_shipping_methods();
+
+			if ( ! empty( $gls_methods ) ) {
+				// First, let's collect all zones by country
+				foreach ( $gls_methods as $method_id => $method ) {
+					if ( ! empty( $method['custom_zones'] ) ) {
+						foreach ( $method['custom_zones'] as $zone ) {
+							if ( ! empty( $zone['countries'] ) ) {
+								foreach ( $zone['countries'] as $country_code ) {
+									if ( ! isset( $zones_by_country[ $country_code ] ) ) {
+										$zones_by_country[ $country_code ] = [];
+									}
+
+									// Add zone with ALL available methods for this country/zone combination
+									$zone_name = $zone['name'] ?? $method['public_name'];
+
+									// Check if we already have this zone for this country
+									$zone_key = - 1;
+									foreach ( $zones_by_country[ $country_code ] as $key => $existing_zone ) {
+										if ( $existing_zone['zone_name'] === $zone_name ) {
+											$zone_key = $key;
+											break;
+										}
+									}
+
+									// If zone doesn't exist yet, create it
+									if ( - 1 === $zone_key ) {
+										$zones_by_country[ $country_code ][] = [
+											'zone_name' => $zone_name,
+											'zone_id'   => $zone['id'],
+											'methods'   => [],
+										];
+										$zone_key                            = count( $zones_by_country[ $country_code ] ) - 1;
+									}
+
+									// Add this shipping method to the zone's methods
+									if ( $zone['enabled'] && $method['enabled'] ) {
+										$zones_by_country[ $country_code ][ $zone_key ]['methods'][] = [
+											'method_id'   => $method_id,
+											'method_name' => $method['public_name'],
+										];
+									}
+								}
+							}
+						}
+					}
+				}
+
+				// Now flatten the structure for compatibility with existing code
+				foreach ( $zones_by_country as $country_code => $zones ) {
+					$flat_zones = [];
+					foreach ( $zones as $zone ) {
+						foreach ( $zone['methods'] as $method ) {
+							$method_name = $method['method_name'] ?? '';
+
+							// Ensure GLS prefix for clarity
+							if ( strpos( $method_name, 'GLS' ) === false && strpos( $method_name, 'gls' ) === false ) {
+								// Check if this is a GLS method by ID
+								if ( strpos( $method['method_id'], 'gls_' ) === 0 ) {
+									$method_name = 'GLS : ' . $method_name;
+								}
+							}
+
+							$flat_zones[] = [
+								'zone_name'   => $zone['zone_name'],
+								'zone_id'     => $zone['zone_id'],
+								'method_id'   => $method['method_id'],
+								'method_name' => $method_name,
+								'enabled'     => true,
+							];
+						}
+					}
+					$zones_by_country[ $country_code ] = $flat_zones;
+				}
+			}
+		}
+
+		return $zones_by_country;
+	}
+
+	/**
+	 * Merge GLS shipping methods with regular WooCommerce shipping methods
+	 *
+	 * @return array Combined shipping zones with methods
+	 */
+	public static function get_merged_shipping_methods() {
+		// Get standard WooCommerce shipping zones
+		$wc_shipping_zones = self::get_zones_with_shipping_methods();
+
+		// Get GLS shipping methods
+		$gls_methods          = self::get_gls_shipping_methods();
+		$gls_zones_by_country = self::get_gls_shipping_zones_by_country();
+
+		if ( empty( $gls_methods ) || empty( $gls_zones_by_country ) ) {
+			return $wc_shipping_zones;
+		}
+
+		// Build a comprehensive list of all zones from both WC and GLS
+		$all_zones = [];
+
+		// First, add all WooCommerce zones
+		foreach ( $wc_shipping_zones as $wc_zone ) {
+			$zone_name = $wc_zone['zone_name'];
+
+			if ( ! isset( $all_zones[ $zone_name ] ) ) {
+				$all_zones[ $zone_name ] = [
+					'zone_id'   => $wc_zone['zone_id'],
+					'zone_name' => $zone_name,
+					'methods'   => [],
+				];
+			}
+
+			// Add WC methods
+			if ( ! empty( $wc_zone['methods'] ) ) {
+				foreach ( $wc_zone['methods'] as $method ) {
+					$all_zones[ $zone_name ]['methods'][] = $method;
+				}
+			}
+		}
+
+		// Now collect all GLS methods by zone name
+		$gls_methods_by_zone = [];
+
+		// Flatten the country-based structure to get all methods by zone name
+		foreach ( $gls_zones_by_country as $country_code => $zones ) {
+			foreach ( $zones as $zone ) {
+				$zone_name = $zone['zone_name'];
+
+				if ( ! isset( $gls_methods_by_zone[ $zone_name ] ) ) {
+					$gls_methods_by_zone[ $zone_name ] = [];
+				}
+
+				// Add this method to the zone
+				$gls_methods_by_zone[ $zone_name ][] = [
+					'method_rate_id' => $zone['method_id'],
+					'method_id'      => $zone['zone_id'],
+					'method_title'   => $zone['method_name'],
+				];
+			}
+		}
+
+		// Add GLS methods to our comprehensive zones list
+		foreach ( $gls_methods_by_zone as $zone_name => $methods ) {
+			if ( ! isset( $all_zones[ $zone_name ] ) ) {
+				// Create new zone if it doesn't exist in WC zones
+				$all_zones[ $zone_name ] = [
+					'zone_id'   => count( $all_zones ) + 1, // Generate a unique ID
+					'zone_name' => $zone_name,
+					'methods'   => [],
+				];
+			}
+
+			// Add all GLS methods for this zone
+			foreach ( $methods as $method ) {
+				// Ensure GLS prefix in method titles for clarity
+				$method_title = $method['method_title'];
+				if ( strpos( $method_title, 'GLS' ) === false && strpos( $method_title, 'gls' ) === false ) {
+					if ( isset( $method['method_rate_id'] ) && strpos( $method['method_rate_id'], 'gls_' ) === 0 ) {
+						$method['method_title'] = 'GLS : ' . $method_title;
+					}
+				}
+
+				$all_zones[ $zone_name ]['methods'][] = $method;
+			}
+		}
+
+		// Convert back to numerically indexed array for compatibility
+		$result = array_values( $all_zones );
+
+		return $result;
 	}
 }

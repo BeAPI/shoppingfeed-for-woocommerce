@@ -719,13 +719,13 @@ class Options {
 									<script>
 										(function ($) {
 											$('.delete_link').on('click', function (e){
-												var $btn = $(this);
-												var confirm_message = $btn.data('confirm');
+												var $btn = $(this)
+												var confirm_message = $btn.data('confirm')
 												if(!confirm(confirm_message)) {
-													e.preventDefault();
+													e.preventDefault()
 												}
-											});
-										})(jQuery);
+											})
+										})(jQuery)
 									</script>
 									</tbody>
 								</table>
@@ -1222,7 +1222,8 @@ class Options {
 		//load assets
 		$this->load_assets();
 
-		$zone_with_methods                            = ShoppingFeedHelper::get_zones_with_shipping_methods();
+		// Get merged shipping methods that include both WooCommerce and GLS shipping methods
+		$zone_with_methods                            = ShoppingFeedHelper::get_merged_shipping_methods();
 		$default_shipping_method                      = ShoppingFeedHelper::get_default_shipping_method();
 		$sf_orders_options_default_shipping_method_id = ! empty( $default_shipping_method['method_id'] ) ? $default_shipping_method['method_id'] : false;
 
@@ -1320,7 +1321,7 @@ class Options {
 		);
 
 		$sf_carriers       = ShoppingFeedHelper::get_sf_carriers();
-		$zone_with_methods = ShoppingFeedHelper::get_zones_with_shipping_methods();
+		$zone_with_methods = ShoppingFeedHelper::get_merged_shipping_methods();
 
 		if ( ! empty( $sf_carriers ) ) {
 			$matching_shipping_method = ! empty( $this->sf_shipping_options['matching_shipping_method'] ) ? $this->sf_shipping_options['matching_shipping_method'] : [];
