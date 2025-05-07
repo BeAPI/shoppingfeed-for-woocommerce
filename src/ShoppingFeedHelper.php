@@ -473,6 +473,8 @@ XML;
 			);
 		}
 
+		$all_shipping_methods = apply_filters('sf_all_shipping_methods', $all_shipping_methods);
+
 		return $all_shipping_methods;
 	}
 

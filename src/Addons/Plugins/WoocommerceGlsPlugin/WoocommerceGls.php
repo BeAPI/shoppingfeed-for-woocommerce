@@ -17,10 +17,6 @@ class WoocommerceGls {
 	}
 
 	public function add_woocommerce_gls_shipping_methods( $shipping_methods ): array {
-
-		// récupérer les méthodes actives et les pays
-
-
 		$gls_shipping_methods_slugs = array_keys( \WC_Gls::$carrier_definition );
 
 
@@ -46,7 +42,7 @@ class WoocommerceGls {
 				}
 
 				// TODO find a solution for the duplicates
-				foreach( $gls_shipping_methods_index[ $zone_location->code ] as $shipping_method_slug ) {
+				foreach ( $gls_shipping_methods_index[ $zone_location->code ] as $shipping_method_slug ) {
 
 					$instance = $gls_shipping_methods[ $shipping_method_slug ];
 
