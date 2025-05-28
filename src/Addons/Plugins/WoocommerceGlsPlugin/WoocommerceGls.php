@@ -41,7 +41,6 @@ class WoocommerceGls {
 					continue;
 				}
 
-				// TODO find a solution for the duplicates
 				foreach ( $gls_shipping_methods_index[ $zone_location->code ] as $shipping_method_slug ) {
 
 					$instance = $gls_shipping_methods[ $shipping_method_slug ];
@@ -77,7 +76,7 @@ class WoocommerceGls {
 					if ( ! isset( $index[ $country ] ) ) {
 						$index[ $country ] = [];
 					}
-					$index[ $country ][] = $shipping_method_slug;
+					$index[ $country ][$shipping_method_slug] = $shipping_method_slug;
 				}
 
 			}
