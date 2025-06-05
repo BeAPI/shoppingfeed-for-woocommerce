@@ -479,11 +479,12 @@ XML;
 	/**
 	 * Get WC Shipping from SF carrier
 	 *
-	 * @param $name
+	 * @param string $sf_carrier
 	 *
 	 * @return array
 	 */
 	public static function get_wc_shipping_from_sf_carrier( $sf_carrier ) {
+		$sf_carrier    = trim( $sf_carrier );
 		$sf_carrier_id = self::get_sf_carrier_id( $sf_carrier );
 		if ( empty( $sf_carrier_id ) && ! empty( $sf_carrier ) ) {
 			$sf_carrier_id = self::add_sf_carrier( $sf_carrier );
@@ -506,7 +507,7 @@ XML;
 	/**
 	 * Get SF carrier id
 	 *
-	 * @param $name
+	 * @param string $name
 	 *
 	 * @return int
 	 */
@@ -541,7 +542,9 @@ XML;
 	/**
 	 * Add SF carrier
 	 *
-	 * @param $sf_carrier
+	 * @param string $sf_carrier
+	 *
+	 * @return int
 	 */
 	public static function add_sf_carrier( $sf_carrier ) {
 		$sf_carriers = self::get_sf_carriers();
