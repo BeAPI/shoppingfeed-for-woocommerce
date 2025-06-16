@@ -6,6 +6,7 @@ namespace ShoppingFeed\ShoppingFeedWC\Products;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
+use WP_Term;
 
 /**
  * @psalm-consistent-constructor
@@ -60,14 +61,19 @@ class Products {
 		/**
 		 * Export only the categories selected in BO
 		 */
-		$export_categories = ShoppingFeedHelper::get_sf_feed_export_categories();
+		$current_language  = ShoppingFeedHelper::current_language();
+		$export_categories = ShoppingFeedHelper::get_sf_feed_export_categories( $current_language );
 		if ( ! empty( $export_categories ) ) {
-			$default_args['category'] = array_map(
-				function ( $category_id ) {
-					return get_term( $category_id, ShoppingFeedHelper::wc_category_taxonomy() )->slug;
-				},
-				$export_categories
-			);
+			$categories = [];
+			foreach ( $export_categories as $category ) {
+				$term = get_term( $category, ShoppingFeedHelper::wc_category_taxonomy() );
+				if ( ! $term instanceof WP_Term ) {
+					continue;
+				}
+
+				$categories[] = $term->slug;
+			}
+			$default_args['category'] = $categories;
 		}
 
 		return wp_parse_args( ShoppingFeedHelper::wc_products_custom_query_args(), $default_args );

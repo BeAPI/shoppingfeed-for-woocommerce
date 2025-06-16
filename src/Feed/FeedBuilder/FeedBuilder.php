@@ -108,6 +108,27 @@ abstract class FeedBuilder {
 	abstract public function get_feed_urls(): array;
 
 	/**
+	 * Does the builder support multilingual.
+	 *
+	 * @return bool
+	 */
+	abstract public function support_multilingual(): bool;
+
+	/**
+	 * List all available languages.
+	 *
+	 * @return array
+	 */
+	abstract public function get_languages(): array;
+
+	/**
+	 * List current languages.
+	 *
+	 * @return array
+	 */
+	abstract public function current_languages(): string;
+
+	/**
 	 * Render a feed.
 	 *
 	 * @return void

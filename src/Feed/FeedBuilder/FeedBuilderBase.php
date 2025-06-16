@@ -7,8 +7,32 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
 class FeedBuilderBase extends FeedBuilder {
 
+	/**
+	 * @inerhitDoc
+	 */
 	public function is_available(): bool {
 		return true;
+	}
+
+	/**
+	 * @inerhitDoc
+	 */
+	public function support_multilingual(): bool {
+		return false;
+	}
+
+	/**
+	 * @inerhitDoc
+	 */
+	public function get_languages(): array {
+		return [];
+	}
+
+	/**
+	 * @inerhitDoc
+	 */
+	public function current_languages(): string {
+		return '';
 	}
 
 	/**
@@ -25,6 +49,9 @@ class FeedBuilderBase extends FeedBuilder {
 		);
 	}
 
+	/**
+	 * @inerhitDoc
+	 */
 	public function launch_feed_generation( int $page_size ): void {
 		$this->clean_feed_parts_directory();
 		self::schedule_generation_part( 1, $page_size );

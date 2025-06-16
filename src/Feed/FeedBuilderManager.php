@@ -65,7 +65,7 @@ class FeedBuilderManager {
 	/**
 	 * @return FeedBuilder
 	 */
-	protected function get_builder(): FeedBuilder {
+	public function get_builder(): FeedBuilder {
 		foreach ( $this->custom_builders as $builder ) {
 			if ( $builder->is_available() ) {
 				return $builder;

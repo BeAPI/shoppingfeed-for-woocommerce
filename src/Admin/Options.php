@@ -1016,10 +1016,22 @@ class Options {
 			'categories',
 			__( 'Categories to export', 'shopping-feed' ),
 			function () use ( $product_categories ) {
-				$selected_product_categories = array_map( 'absint', ( $this->sf_feed_options['categories'] ?? [] ) );
+                if ( ShoppingFeedHelper::support_multilingual_feed() ) {
+                    $current_language = ShoppingFeedHelper::current_language();
+                    foreach ( ShoppingFeedHelper::get_available_languages_for_feed() as $language ) {
+                        $option_name = sprintf( 'categories-%s', $language );
+                        $selected_product_categories = array_map( 'absint', ( $this->sf_feed_options[ $option_name ] ?? [] ) );
+                        if ( $language !== $current_language ) {
+                            foreach ( $selected_product_categories as $category ) :
+							?>
+                            <input type="hidden" name="<?php echo esc_attr( sprintf( '%s[%s][]', self::SF_FEED_OPTIONS, $option_name ) ); ?>" value="<?php echo esc_attr( $category ); ?>">
+							<?php
+							endforeach;
+							continue;
+                        }
 				?>
 				<select class="categories" multiple
-						name='<?php echo esc_attr( sprintf( '%s[categories][]', self::SF_FEED_OPTIONS ) ); ?>'>
+						name='<?php echo esc_attr( sprintf( '%s[%s][]', self::SF_FEED_OPTIONS, $option_name ) ); ?>'>
 					<?php
 					foreach ( $product_categories as $category ) {
 						?>
@@ -1031,10 +1043,30 @@ class Options {
 					}
 					?>
 				</select>
+				<?php
+                    }
+                } else {
+				$selected_product_categories = array_map( 'absint', ( $this->sf_feed_options['categories'] ?? [] ) );
+				?>
+				<select class="categories" multiple
+						name='<?php echo esc_attr( sprintf( '%s[%s][]', self::SF_FEED_OPTIONS, 'categories' ) ); ?>'>
+					<?php
+					foreach ( $product_categories as $category ) {
+						?>
+						<option value="<?php echo esc_attr( $category->term_id ); ?>"
+							<?php selected( in_array( $category->term_id, $selected_product_categories, true ) ); ?>
+						>
+							<?php echo esc_html( $category->name ); ?></option>
+						<?php
+					}
+					?>
+				</select>
+				<?php
+                }
+                ?>
 				<p class="description"
 				   id="tagline-description"><?php esc_html_e( 'Product categories to export to Shoppingfeed. Default : all', 'shopping-feed' ); ?></p>
 				<?php
-
 			},
 			self::SF_FEED_SETTINGS_PAGE,
 			'sf_feed_settings_categories'

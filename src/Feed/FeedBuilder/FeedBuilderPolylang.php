@@ -7,14 +7,15 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
 class FeedBuilderPolylang extends FeedBuilder {
 
+	/**
+	 * @inerhitDoc
+	 */
 	public function is_available(): bool {
 		return function_exists( '\pll_languages_list' ) && ! empty( $this->get_languages() );
 	}
 
 	/**
-	 * Launch products' feed generation.
-	 *
-	 * @return bool|\WP_Error
+	 * @inerhitDoc
 	 */
 	public function generate_feed( $lang = null ) {
 		$available_languages = $this->get_languages();
@@ -41,6 +42,9 @@ class FeedBuilderPolylang extends FeedBuilder {
 		return true;
 	}
 
+	/**
+	 * @inerhitDoc
+	 */
 	public function launch_feed_generation( int $page_size ): void {
 		foreach ( $this->get_languages() as $language ) {
 			$this->clean_feed_parts_directory( $language );
@@ -48,6 +52,9 @@ class FeedBuilderPolylang extends FeedBuilder {
 		}
 	}
 
+	/**
+	 * @inerhitDoc
+	 */
 	public function get_feed_urls(): array {
 		$endpoint      = ShoppingFeedHelper::get_public_feed_endpoint();
 		$use_permalink = ! empty( get_option( 'permalink_structure' ) );
@@ -62,7 +69,14 @@ class FeedBuilderPolylang extends FeedBuilder {
 	}
 
 	/**
-	 * @return string[]
+	 * @inerhitDoc
+	 */
+	public function support_multilingual(): bool {
+		return true;
+	}
+
+	/**
+	 * @inerhitDoc
 	 */
 	public function get_languages(): array {
 		return pll_languages_list(
@@ -70,6 +84,13 @@ class FeedBuilderPolylang extends FeedBuilder {
 				'hide_empty' => false,
 			]
 		);
+	}
+
+	/**
+	 * @inerhitDoc
+	 */
+	public function current_languages(): string {
+		return pll_current_language();
 	}
 
 	/**

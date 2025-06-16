@@ -160,8 +160,13 @@ class ShoppingFeedHelper {
 	 * Return SF categories to export
 	 * @return array
 	 */
-	public static function get_sf_feed_export_categories() {
-		$categories = self::get_sf_feed_options( 'categories' );
+	public static function get_sf_feed_export_categories( string $language = '' ) {
+		$param = 'categories';
+		if ( ! empty( $language ) ) {
+			$param .= '-' . $language;
+		}
+
+		$categories = self::get_sf_feed_options( $param );
 		if ( empty( $categories ) ) {
 			return array();
 		}
@@ -935,5 +940,20 @@ class ShoppingFeedHelper {
 		}
 
 		return $manager;
+	}
+
+	public static function support_multilingual_feed():  bool {
+		$feed_manager = self::get_feedbuilder_manager();
+		return $feed_manager->get_builder()->support_multilingual();
+	}
+
+	public static function get_available_languages_for_feed():  array {
+		$feed_manager = self::get_feedbuilder_manager();
+		return $feed_manager->get_builder()->get_languages();
+	}
+
+	public static function current_language() {
+		$feed_manager = self::get_feedbuilder_manager();
+		return $feed_manager->get_builder()->current_languages();
 	}
 }

@@ -7,6 +7,9 @@ use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
 class FeedBuilderWpml extends FeedBuilder {
 
+	/**
+	 * @inerhitDoc
+	 */
 	public function is_available(): bool {
 		return defined( 'ICL_SITEPRESS_VERSION' ) && ! empty( $this->get_languages() );
 	}
@@ -29,18 +32,22 @@ class FeedBuilderWpml extends FeedBuilder {
 
 			$original_language = apply_filters( 'wpml_current_language', null );
 			do_action( 'wpml_switch_language', $language );
-			$products = Products::get_instance()->get_products();
-			do_action( 'wpml_switch_language', $original_language );
 
+			$products = Products::get_instance()->get_products();
 			$this->write_products_feed(
 				self::get_feed_file_path( $language ),
 				$products
 			);
+
+			do_action( 'wpml_switch_language', $original_language );
 		}
 
 		return true;
 	}
 
+	/**
+	 * @inerhitDoc
+	 */
 	public function launch_feed_generation( int $page_size ): void {
 		foreach ( $this->get_languages() as $language ) {
 			$this->clean_feed_parts_directory( $language );
@@ -48,6 +55,9 @@ class FeedBuilderWpml extends FeedBuilder {
 		}
 	}
 
+	/**
+	 * @inerhitDoc
+	 */
 	public function get_feed_urls(): array {
 		$endpoint      = ShoppingFeedHelper::get_public_feed_endpoint();
 		$use_permalink = ! empty( get_option( 'permalink_structure' ) );
@@ -62,7 +72,14 @@ class FeedBuilderWpml extends FeedBuilder {
 	}
 
 	/**
-	 * @return string[]
+	 * @inerhitDoc
+	 */
+	public function support_multilingual(): bool {
+		return true;
+	}
+
+	/**
+	 * @inerhitDoc
 	 */
 	public function get_languages(): array {
 		$languages = [];
@@ -72,6 +89,13 @@ class FeedBuilderWpml extends FeedBuilder {
 		}
 
 		return $languages;
+	}
+
+	/**
+	 * @inerhitDoc
+	 */
+	public function current_languages(): string {
+		return wpml_get_current_language();
 	}
 
 	/**
@@ -144,10 +168,10 @@ class FeedBuilderWpml extends FeedBuilder {
 		$original_language = apply_filters( 'wpml_current_language', null );
 		do_action( 'wpml_switch_language', $lang );
 		$products = Products::get_instance()->get_products( $args );
-		do_action( 'wpml_switch_language', $original_language );
 
 		// If the query doesn't return any products, schedule the combine action and stop the current action.
 		if ( empty( $products ) ) {
+			do_action( 'wpml_switch_language', $original_language );
 			self::schedule_combine_parts( $lang );
 
 			return true;
@@ -158,6 +182,9 @@ class FeedBuilderWpml extends FeedBuilder {
 			self::get_feed_parts_file_path( $lang, $page ),
 			$products
 		);
+
+		do_action( 'wpml_switch_language', $original_language );
+
 		if ( is_wp_error( $result ) ) {
 			return $result;
 		}
