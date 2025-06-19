@@ -33,7 +33,7 @@ class FeedBuilderWpml extends FeedBuilder {
 			$original_language = apply_filters( 'wpml_current_language', null );
 			do_action( 'wpml_switch_language', $language );
 
-			$products = Products::get_instance()->get_products();
+			$products = Products::get_instance()->get_products( [], $lang );
 			$this->write_products_feed(
 				self::get_feed_file_path( $language ),
 				$products

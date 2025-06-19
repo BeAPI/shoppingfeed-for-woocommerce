@@ -124,7 +124,7 @@ abstract class FeedBuilder {
 	/**
 	 * List current languages.
 	 *
-	 * @return array
+	 * @return string
 	 */
 	abstract public function current_languages(): string;
 

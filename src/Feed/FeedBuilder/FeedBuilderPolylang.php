@@ -31,7 +31,7 @@ class FeedBuilderPolylang extends FeedBuilder {
 			$args     = [
 				'lang' => $language,
 			];
-			$products = Products::get_instance()->get_products( $args );
+			$products = Products::get_instance()->get_products( $args, $lang );
 
 			$this->write_products_feed(
 				self::get_feed_file_path( $language ),
@@ -160,7 +160,8 @@ class FeedBuilderPolylang extends FeedBuilder {
 			'return' => 'ids',
 			'lang'   => $lang,
 		);
-		$products = Products::get_instance()->get_products( $args );
+
+		$products = Products::get_instance()->get_products( $args, $lang );
 
 		// If the query doesn't return any products, schedule the combine action and stop the current action.
 		if ( empty( $products ) ) {

@@ -632,10 +632,21 @@ class ShoppingFeedHelper {
 
 	/**
 	 * Add filter for products list query
+	 *
+	 * @param string $lang The current language associated with the feed. Language slug or empty string if
+	 *                     site isn't multilingual.
+	 *
 	 * @return array
 	 */
-	public static function wc_products_custom_query_args() {
-		return apply_filters( 'shopping_feed_products_custom_args', array() );
+	public static function wc_products_custom_query_args( $lang = '' ) {
+		/**
+		 * Filter args used to retrieve products for the feed.
+		 *
+		 * @param array  $args Custom query args for the `WC_Product_Query`.
+		 * @param string $lang The current language associated with the feed. Language slug or empty string if
+		 *                     site isn't multilingual.
+		 */
+		return apply_filters( 'shopping_feed_products_custom_args', array(), $lang );
 	}
 
 	/**

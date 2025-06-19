@@ -45,7 +45,15 @@ class Products {
 		throw new \Exception( 'Cannot serialize singleton' );
 	}
 
-	public function get_list_args() {
+	/**
+	 * Get default query args to retrieve products for the feed.
+	 *
+	 * @param string $lang The current language associated with the feed. Language slug or empty string if
+	 *                     site isn't multilingual.
+	 *
+	 * @return array
+	 */
+	public function get_list_args( $lang = '' ) {
 		$default_args = array(
 			'limit'        => - 1,
 			'orderby'      => 'date',
@@ -61,7 +69,7 @@ class Products {
 		/**
 		 * Export only the categories selected in BO
 		 */
-		$current_language  = ShoppingFeedHelper::current_language();
+		$current_language  = ! empty( $lang ) ? $lang : ShoppingFeedHelper::current_language();
 		$export_categories = ShoppingFeedHelper::get_sf_feed_export_categories( $current_language );
 		if ( ! empty( $export_categories ) ) {
 			$categories = [];
@@ -76,7 +84,7 @@ class Products {
 			$default_args['category'] = $categories;
 		}
 
-		return wp_parse_args( ShoppingFeedHelper::wc_products_custom_query_args(), $default_args );
+		return wp_parse_args( ShoppingFeedHelper::wc_products_custom_query_args( $lang ), $default_args );
 	}
 
 	/**
@@ -92,8 +100,17 @@ class Products {
 		}
 	}
 
-	public function get_products( $args = array() ) {
-		$query = new \WC_Product_Query( wp_parse_args( $args, $this->get_list_args() ) );
+	/**
+	 * Get a list of product to include in the feed.
+	 *
+	 * @param array  $args Query args for the `WC_Product_Query`.
+	 * @param string $lang The current language associated with the feed. Language slug or empty string if
+	 *                     site isn't multilingual.
+	 *
+	 * @return array
+	 */
+	public function get_products( $args = array(), $lang = '' ) {
+		$query = new \WC_Product_Query( wp_parse_args( $args, $this->get_list_args( $lang ) ) );
 
 		return $query->get_products();
 	}
