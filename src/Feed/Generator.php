@@ -291,6 +291,19 @@ class Generator {
 	public function generate() {
 		$products_list = Products::get_instance()->get_list();
 
+		/**
+		 * Filter the products list before writing to the feed
+		 * 
+		 * This filter allows clients to modify the products list before it's passed to ProductGenerator::write()
+		 * For example, to duplicate products based on custom attributes like 'backmarketid'
+		 * 
+		 * @param \Generator $products_list The generator yielding product arrays
+		 * @param int $page Current page number (0 for synchronous generation)
+		 * @param int $post_per_page Number of products per page (-1 for synchronous generation)
+		 * @param array $products Original WC_Product objects (empty array for synchronous generation)
+		 */
+		$products_list = apply_filters( 'shopping_feed_products_list_before_write', $products_list, 0, -1, array() );
+
 		try {
 			$this->generator->write( $products_list );
 			$uri = Uri::get_full_path();

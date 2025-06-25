@@ -63,6 +63,20 @@ class AsyncGenerator extends Generator {
 		// Process products returned by the query and reschedule the action for the next page.
 		$path          = sprintf( '%s/%s', ShoppingFeedHelper::get_feed_parts_directory(), 'part_' . $page );
 		$products_list = Products::get_instance()->format_products( $products );
+		
+		/**
+		 * Filter the products list before writing to the feed
+		 * 
+		 * This filter allows clients to modify the products list before it's passed to ProductGenerator::write()
+		 * For example, to duplicate products based on custom attributes like 'backmarketid'
+		 * 
+		 * @param \Generator $products_list The generator yielding product arrays
+		 * @param int $page Current page number
+		 * @param int $post_per_page Number of products per page
+		 * @param array $products Original WC_Product objects
+		 */
+		$products_list = apply_filters( 'shopping_feed_products_list_before_write', $products_list, $page, $post_per_page, $products );
+		
 		try {
 			$this->generator = new ProductGenerator();
 			$this->generator->setPlatform( (string) $page, (string) $page );
