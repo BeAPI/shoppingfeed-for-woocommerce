@@ -79,22 +79,22 @@ class Products {
 		if ( 'sku' === $product_identifier ) {
 			/**
 			 * Filter to allow custom SKU mapping for order processing
-			 * 
+			 *
 			 * This filter allows clients to map modified SKUs back to their original form
 			 * For example, to handle SKUs like "ORIGINAL_SKU_1_BACKMARKET_ID" and extract "ORIGINAL_SKU"
-			 * 
+			 *
 			 * @param int|false $wc_product_id The WooCommerce product ID (false if not found)
 			 * @param string $sf_reference The original reference from ShoppingFeed
 			 * @param OrderItem $sf_product The ShoppingFeed product object
 			 * @param string $product_identifier The product identifier type ('id' or 'sku')
 			 */
 			$wc_product_id = apply_filters( 'shopping_feed_order_product_id_mapping', $wc_product_id, $sf_product->getReference(), $sf_product, $product_identifier );
-			
+
 			// If the filter didn't return a valid product ID, try the default mapping
 			if ( ! $wc_product_id ) {
 				$wc_product_id = wc_get_product_id_by_sku( $sf_product->getReference() );
 			}
-			
+
 			if ( ! $wc_product_id ) {
 				return array();
 			}

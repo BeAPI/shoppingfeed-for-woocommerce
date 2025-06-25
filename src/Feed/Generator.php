@@ -293,10 +293,10 @@ class Generator {
 
 		/**
 		 * Filter the products list before writing to the feed
-		 * 
+		 *
 		 * This filter allows clients to modify the products list before it's passed to ProductGenerator::write()
 		 * For example, to duplicate products based on custom attributes like 'backmarketid'
-		 * 
+		 *
 		 * @param \Generator $products_list The generator yielding product arrays
 		 * @param int $page Current page number (0 for synchronous generation)
 		 * @param int $post_per_page Number of products per page (-1 for synchronous generation)
