@@ -9,6 +9,7 @@ use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Order\{OrderDo
 	OrderOperation,
 	OrderOperationResult,
 	OrderResource};
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Order\Document\Invoice;
 use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Store\StoreResource;
 use ShoppingFeed\ShoppingFeedWC\Sdk\Sdk;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
@@ -142,11 +143,33 @@ class Operations {
 				ShoppingFeedHelper::wc_tracking_number( $this->wc_order ),
 				ShoppingFeedHelper::wc_tracking_link( $this->wc_order )
 			);
+
+			// Upload invoice associated with the order if the option is enabled and document is available.
+			$upload_document = (bool) ( ShoppingFeedHelper::get_sf_orders_options()['upload_invoice_order'] ?? false );
+			if ( $upload_document ) {
+				/**
+				 * Filters the file path to the order invoice.
+				 *
+				 * @param string|null $order_invoice_filepath File path to the order invoice. Null if the order has no invoice.
+				 * @param \WC_Order $order Current order
+				 */
+				$order_invoice_filepath = apply_filters( 'sf_order_invoice_filepath', null, $this->wc_order );
+				if ( null !== $order_invoice_filepath && is_readable( $order_invoice_filepath ) ) {
+					error_log( $order_invoice_filepath );
+					$order_invoice = new Invoice( $order_invoice_filepath );
+					$this->order_operation->uploadDocument(
+						$this->sf_reference,
+						$this->sf_channel_name,
+						$order_invoice
+					);
+				}
+			}
+
 			$this->order_api->execute( $this->order_operation );
 		} catch ( Exception $exception ) {
 			ShoppingFeedHelper::get_logger()->error(
 				sprintf(
-				/* translators: %s: Error message. */
+					/* translators: %s: Error message. */
 					__( 'Failed to ship sf order %s', 'shopping-feed' ),
 					$exception->getMessage()
 				),
