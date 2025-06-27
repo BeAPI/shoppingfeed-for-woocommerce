@@ -1557,6 +1557,30 @@ class Options {
 			'sf_orders_settings_import_options'
 		);
 
+		add_settings_field(
+			'upload_invoice_order',
+			__( 'Documents', 'shopping-feed' ),
+			function () {
+				?>
+				<label for="upload_invoice_order">
+					<input
+						type="checkbox"
+						id="upload_invoice_order"
+						name="<?php echo esc_attr( sprintf( '%s[upload_invoice_order]', self::SF_ORDERS_OPTIONS ) ); ?>"
+						value="1"
+						<?php checked( '1', isset( $this->sf_orders_options['upload_invoice_order'] ) ? $this->sf_orders_options['upload_invoice_order'] : '0' ); ?>
+					>
+					<?php esc_html_e( "Upload order's invoice", 'shopping-feed' ); ?>
+				</label>
+				<p class="description" id="tagline-description">
+					<?php esc_html_e( 'Send invoice to ShoppingFeed for compatible marketplaces when order is shipped.', 'shopping-feed' ); ?>
+				</p>
+				<?php
+			},
+			self::SF_ORDERS_SETTINGS_PAGE,
+			'sf_orders_settings_import_options'
+		);
+
 		//mapping
 		$sf_actions = Operations::get_available_operations();
 
