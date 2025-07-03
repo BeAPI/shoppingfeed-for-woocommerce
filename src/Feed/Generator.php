@@ -172,7 +172,6 @@ class Generator {
 				if ( ! empty( $images ) ) {
 					$product->setAdditionalImages( $sf_product->get_images() );
 				}
-
 				$extra_fields = $sf_product->get_extra_fields();
 				if ( ! empty( $extra_fields ) ) {
 					foreach ( $extra_fields as $field ) {
@@ -233,32 +232,15 @@ class Generator {
 					if ( ! empty( $sf_product_variation['height'] ) ) {
 						$variation->setAttribute( 'height', (string) $sf_product_variation['height'] );
 					}
-
-					/**
-					 * Filter to add custom fields to product variations in the shopping feed.
-					 *
-					 * This filter allows developers to add custom meta fields or attributes
-					 * to product variations before they are exported to the shopping feed XML.
-					 *
-					 * @param \ShoppingFeed\Feed\Product\ProductVariation $variation The variation object where custom attributes can be added using setAttribute()
-					 *
-					 * @param array $sf_product_variation The variation data from the shopping feed
-					 *
-					 * @param Product $sf_product The parent product object for additional context
-					 *
-					 * @return \ShoppingFeed\Feed\Product\ProductVariation The modified variation object
-					 *
-					 * @example
-					 * // Add a custom text field to all variations
-					 * add_filter( 'shopping_feed_variation_custom_fields', function( $variation, $sf_product_variation, $sf_product ) {
-					 *     $custom_field = get_post_meta( $sf_product_variation['id'], 'custom_field_meta_key', true );
-					 *     if ( !empty( $custom_field ) ) {
-					 *         $variation->setAttribute( 'custom_field_name', $custom_field );
-					 *     }
-					 *     return $variation;
-					 * }, 10, 3);
-					 */
-					$variation = apply_filters( 'shopping_feed_variation_custom_fields', $variation, $sf_product_variation, $sf_product );
+					$variation_extra_fields = $sf_product->get_variation_extra_fields( $variation );
+					if ( ! empty( $variation_extra_fields ) ) {
+						foreach ( $variation_extra_fields as $variation_extra_field ) {
+							if ( empty( $variation_extra_field['name'] ) ) {
+								continue;
+							}
+							$product->setAttribute( $variation_extra_field['name'], $variation_extra_field['value'] );
+						}
+					}
 				}
 			}
 		);

@@ -545,6 +545,14 @@ class Product {
 	}
 
 	/**
+	 * Get Variation Extra fields
+	 * Field : ['name'=>'', 'value'=>'']
+	 */
+	public function get_variation_extra_fields( $variation ) {
+		return apply_filters( 'shopping_feed_variation_extra_fields', [], $variation );
+	}
+
+	/**
 	 * Get product's stock quantity.
 	 *
 	 * @param \WC_Product $product
