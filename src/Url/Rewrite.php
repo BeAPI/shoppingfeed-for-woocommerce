@@ -73,7 +73,7 @@ class Rewrite {
 	public function sf_parse_request() {
 		global $wp;
 		if ( isset( $wp->query_vars[ self::FEED_QUERY_VAR ] ) ) {
-			$lang = $wp->query_vars[ self::FEED_LANG_QUERY_VAR ] ?? null;
+			$lang = ! empty( $wp->query_vars[ self::FEED_LANG_QUERY_VAR ] ) ? $wp->query_vars[ self::FEED_LANG_QUERY_VAR ] : null;
 			ShoppingFeedHelper::get_feedbuilder_manager()->render_feed( $lang );
 		}
 	}
