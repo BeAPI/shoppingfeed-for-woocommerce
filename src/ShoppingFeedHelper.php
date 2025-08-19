@@ -969,10 +969,11 @@ class ShoppingFeedHelper {
 	}
 
 	/**
-	 * Return SF disable order import
+	 * Check if order import is disable.
+	 *
 	 * @return bool
 	 */
-	public static function is_disable_order_import() {
+	public static function is_order_import_disable() {
 		$orders_options = self::get_sf_orders_options();
 
 		if ( false === $orders_options ) {

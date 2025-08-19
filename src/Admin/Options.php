@@ -1513,7 +1513,7 @@ class Options {
 
 				add_settings_field(
 					'disable_orders_import_option',
-					__( 'Disable order import', 'shopping-feed' ),
+					__( 'Order import', 'shopping-feed' ),
 					function () {
 						?>
 				<label for="disable_order_import">
@@ -1524,10 +1524,10 @@ class Options {
 						value="yes"
 								<?php checked( 1, isset( $this->sf_orders_options['disable_order_import'] ) ? $this->sf_orders_options['disable_order_import'] : 0 ); ?>
 					>
-							<?php esc_html_e( 'Would you like to deactivate order import ?', 'shopping-feed' ); ?>
+							<?php esc_html_e( 'Disable orders synchronisation', 'shopping-feed' ); ?>
 				</label>
 				<p class="description" id="tagline-description">
-							<?php esc_html_e( 'If the box is checked, item import will be disabled.', 'shopping-feed' ); ?>
+							<?php esc_html_e( 'Disable the import of new orders to WooCommerce and stops the synchronization of existing ones with ShoppingFeed.', 'shopping-feed' ); ?>
 				</p>
 						<?php
 					},

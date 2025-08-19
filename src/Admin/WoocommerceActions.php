@@ -151,10 +151,16 @@ class WoocommerceActions {
 				add_action(
 					$action,
 					function ( $order_id ) use ( $sf_action ) {
-						//if its not a sf order
+						//if it's not a sf order
 						if ( ! Order::is_sf_order( $order_id ) ) {
 							return;
 						}
+
+						// Don't update order is synchronisation is disabled.
+						if ( ShoppingFeedHelper::is_order_import_disable() ) {
+							return;
+						}
+
 						try {
 							$operations = new Operations( $order_id );
 							if ( ! method_exists( $operations, $sf_action ) ) {

@@ -41,9 +41,10 @@ class Actions {
 	 * Register new action to get orders
 	 */
 	public static function register_get_orders() {
-		if ( ShoppingFeedHelper::is_disable_order_import() ) {
+		if ( ShoppingFeedHelper::is_order_import_disable() ) {
 			return;
 		}
+
 		$sf_accounts = ShoppingFeedHelper::get_sf_account_options();
 		if ( empty( $sf_accounts ) ) {
 			ShoppingFeedHelper::get_logger()->error(

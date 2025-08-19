@@ -60,8 +60,8 @@ class Orders {
 			'shopping-feed-orders'
 		);
 
-		// Check if import is enable
-		if ( ShoppingFeedHelper::is_disable_order_import() ) {
+		// Check if order import is enable
+		if ( ShoppingFeedHelper::is_order_import_disable() ) {
 			return false;
 		}
 

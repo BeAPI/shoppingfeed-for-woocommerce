@@ -53,10 +53,6 @@ class Operations {
 	 * @throws Exception
 	 */
 	public function __construct( $order_id ) {
-		// Check if import is enable
-		if ( ShoppingFeedHelper::is_disable_order_import() ) {
-			return;
-		}
 		//Check if the order from SF and return it with metas data
 		$order_sf_metas = Order::get_order_sf_metas( $order_id );
 		if (
@@ -196,6 +192,11 @@ class Operations {
 	 * @param string $message
 	 */
 	public static function acknowledge_order( $order_id, $message = '' ) {
+		// Don't acknowledge order is synchronisation is disabled.
+		if ( ShoppingFeedHelper::is_order_import_disable() ) {
+			return;
+		}
+
 		$ok = true;
 		try {
 			$operations = new self( $order_id );
@@ -251,6 +252,11 @@ class Operations {
 	 * @author Stéphane Gillot
 	 */
 	public static function acknowledge_error( OrderResource $sf_order, $error ) {
+		// Don't acknowledge order is synchronisation is disabled.
+		if ( ShoppingFeedHelper::is_order_import_disable() ) {
+			return;
+		}
+
 		$shop = Sdk::get_sf_account_shop( $sf_order->toArray()['storeId'] );
 		if ( ! $shop ) {
 			ShoppingFeedHelper::get_logger()->notice(
