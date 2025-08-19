@@ -38,7 +38,7 @@ class Rewrite {
 	public function sf_add_custom_rewrite_rule() {
 		// regex match either the base endpoint or the localized endpoints.
 		$regex = sprintf(
-			'^%s(?:-([a-z]{2,3}))?/?$',
+			'^%s((?:-[a-z]{2,3}){1,2})?/?$',
 			ShoppingFeedHelper::get_public_feed_endpoint()
 		);
 		$query = sprintf(
@@ -72,9 +72,16 @@ class Rewrite {
 	 */
 	public function sf_parse_request() {
 		global $wp;
-		if ( isset( $wp->query_vars[ self::FEED_QUERY_VAR ] ) ) {
-			$lang = ! empty( $wp->query_vars[ self::FEED_LANG_QUERY_VAR ] ) ? $wp->query_vars[ self::FEED_LANG_QUERY_VAR ] : null;
-			ShoppingFeedHelper::get_feedbuilder_manager()->render_feed( $lang );
+		if ( ! isset( $wp->query_vars[ self::FEED_QUERY_VAR ] ) ) {
+			return;
 		}
+
+		$lang = ! empty( $wp->query_vars[ self::FEED_LANG_QUERY_VAR ] ) ? $wp->query_vars[ self::FEED_LANG_QUERY_VAR ] : null;
+
+		// Remove first hyphen (-) if needed
+		if ( ! empty( $lang ) && str_starts_with( $lang, '-' ) ) {
+			$lang = ltrim( $lang, '-' );
+		}
+		ShoppingFeedHelper::get_feedbuilder_manager()->render_feed( $lang );
 	}
 }
