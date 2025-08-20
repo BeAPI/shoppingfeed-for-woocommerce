@@ -273,6 +273,10 @@ class Generator {
 		}
 
 		if ( is_file( $file_path ) ) {
+			while ( ob_get_level() ) {
+				ob_end_clean();
+			}
+
 			header( 'Content-Type: application/xml; charset=utf-8' );
 			header( 'Content-Length: ' . filesize( $file_path ) );
 			nocache_headers();

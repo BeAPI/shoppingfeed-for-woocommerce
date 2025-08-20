@@ -7,10 +7,10 @@ defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Addons\Inventory\Inventory;
 use ShoppingFeed\ShoppingFeedWC\Addons\Marketplaces\Marketplaces;
-use ShoppingFeed\ShoppingFeedWC\Addons\Plugins\ASTPlugin\ASTPlugin;
 use ShoppingFeed\ShoppingFeedWC\Addons\Plugins\ChainedProductsPlugin\ChainedProducts;
-use ShoppingFeed\ShoppingFeedWC\Addons\Plugins\PhWoocommerceShipmentTrackingProPlugin\PhWoocommerceShipmentTrackingProPlugin;
+use ShoppingFeed\ShoppingFeedWC\Addons\Plugins\MondialRelayWordpressPlugin\MondialRelayWordpress;
 use ShoppingFeed\ShoppingFeedWC\Addons\Shipping\Shipping;
+use ShoppingFeed\ShoppingFeedWC\Addons\Plugins\WoocommerceGlsPlugin\WoocommerceGls;
 
 class Addons {
 
@@ -36,10 +36,22 @@ class Addons {
 	 */
 	private $chained_products_plugin;
 
+	/**
+	 * @var MondialRelayWordpress
+	 */
+	private $mondial_relay_plugin;
+
+	/**
+	 * @var WoocommerceGls
+	 */
+	private $woocommerce_gls;
+
 	public function __construct() {
-		$this->shipping                          = new Shipping();
-		$this->inventory                         = new Inventory();
-		$this->marketplaces                      = new Marketplaces();
-		$this->chained_products_plugin           = new ChainedProducts();
+		$this->shipping                = new Shipping();
+		$this->inventory               = new Inventory();
+		$this->marketplaces            = new Marketplaces();
+		$this->chained_products_plugin = new ChainedProducts();
+		$this->mondial_relay_plugin    = new MondialRelayWordpress();
+		$this->woocommerce_gls         = new WoocommerceGLS();
 	}
 }

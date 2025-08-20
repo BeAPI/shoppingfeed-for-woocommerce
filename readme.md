@@ -1,22 +1,31 @@
 # ShoppingFeed
 
 * Contributors: ShoppingFeed, BeAPI
-* Tags: shoppingfeed, marketplace, woocommerce, woocommerce shoppingfeed, create woocommerce products shoppingfeed, products feed, generate shoppingfeed, amazon, Jet, Walmart, many marketplace, import orders
-* Stable tag: 6.11.0
-* Version: 6.11.0
+* Tags: shoppingfeed, marketplace, woocommerce, products feed, import orders
+* Description: WordPress connection Controller Plugin for ShoppingFeed – Sell on Amazon, Ebay, Google, and 1000’s of international marketplaces
+* Stable tag: 6.12.0
+* Version: 6.12.0
 * Requires PHP: 7.3
 * Requires at least: 5.7
 * Tested up to: 6.7
-* WC requires at least: 5.1.0
+* WC requires at least: 7.0
 * WC tested up to: 9.6.0
+* License: GPL v2 or later
+* License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 ## Upgrade Notice
 
 > Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
 
 ## Changelog
+* 6.12.0
+  * Shipping (mondialrelay-wordpress) : Support the MondialRelay plugin for orders imported from the API if the carrier is matched with one of the plugin's shipping methods.
+  * Shipping (woocommerce-gls) : Show GLS shipping methods in the shipping matching selector.
+  * Feed : Fix case where the feed could appear empty or broken due to plugins using PHP output buffering.
+  * Order : Improve logs during order import.
+  * Misc : Update plugin requirements.
 * 6.11.0
-  * Variations : add new filter to modify variation's main image
+  * Variations : add new filter to modify variation's main image.
 * 6.10.0
   * Orders : Redesigned the shipment tracking system.
   * Orders (beta) : Add option to include VAT when importing orders.
@@ -174,12 +183,12 @@ WordPress connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, 
 ## Requirements
 
 ### Server :
-- PHP version 7.1 or above
+- PHP version 7.3 or above
 - PHP cURL extension is activated
 
 ### WordPress :
 - Core version 5.7 or above
-- WooCommerce version 5.1 or above
+- WooCommerce version 7.0 or above
 
 ## Installation
 Sign up for free on ShoppingFeed : https://shopping-feed.com/
