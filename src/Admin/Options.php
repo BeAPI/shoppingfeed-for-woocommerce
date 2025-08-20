@@ -1224,7 +1224,10 @@ class Options {
 
 		$zone_with_methods                            = ShoppingFeedHelper::get_zones_with_shipping_methods();
 		$default_shipping_method                      = ShoppingFeedHelper::get_default_shipping_method();
-		$sf_orders_options_default_shipping_method_id = ! empty( $default_shipping_method['method_id'] ) ? $default_shipping_method['method_id'] : false;
+		$sf_orders_options_default_shipping_method_id = false;
+		if ( ! empty( $default_shipping_method ) ) {
+			$sf_orders_options_default_shipping_method_id = sprintf('%s:%s', $default_shipping_method['method_rate_id'],$default_shipping_method['method_id'] );
+		}
 
 		add_settings_section(
 			'sf_orders_settings_shippings_methods',
@@ -1294,9 +1297,10 @@ class Options {
 								<?php
 								if ( ! empty( $zone_with_method['methods'] ) ) {
 									foreach ( $zone_with_method['methods'] as $shipping_method ) {
+										$option_select = sprintf('%s:%s', $shipping_method['method_rate_id'],$shipping_method['method_id']) ;
 										?>
 										<option value="<?php echo wc_esc_json( wp_json_encode( $shipping_method ) ); ?>"
-											<?php selected( $shipping_method['method_id'], $sf_orders_options_default_shipping_method_id ); ?>>
+											<?php selected( $option_select, $sf_orders_options_default_shipping_method_id ); ?>>
 											<?php echo sprintf( '%s', esc_html( $shipping_method['method_title'] ) ); ?>
 										</option>
 										<?php
