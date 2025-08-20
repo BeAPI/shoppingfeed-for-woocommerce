@@ -3,8 +3,8 @@
 * Contributors: ShoppingFeed, BeAPI
 * Tags: shoppingfeed, marketplace, woocommerce, products feed, import orders
 * Description: WordPress connection Controller Plugin for ShoppingFeed – Sell on Amazon, Ebay, Google, and 1000’s of international marketplaces
-* Stable tag: 6.11.0
-* Version: 6.11.0
+* Stable tag: 6.12.0
+* Version: 6.12.0
 * Requires PHP: 7.3
 * Requires at least: 5.7
 * Tested up to: 6.7
@@ -18,8 +18,14 @@
 > Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
 
 ## Changelog
+* 6.12.0
+  * Shipping (mondialrelay-wordpress) : Support the MondialRelay plugin for orders imported from the API if the carrier is matched with one of the plugin's shipping methods.
+  * Shipping (woocommerce-gls) : Show GLS shipping methods in the shipping matching selector.
+  * Feed : Fix case where the feed could appear empty or broken due to plugins using PHP output buffering.
+  * Order : Improve logs during order import.
+  * Misc : Update plugin requirements.
 * 6.11.0
-  * Variations : add new filter to modify variation's main image
+  * Variations : add new filter to modify variation's main image.
 * 6.10.0
   * Orders : Redesigned the shipment tracking system.
   * Orders (beta) : Add option to include VAT when importing orders.
