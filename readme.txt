@@ -7,7 +7,7 @@ Version: 6.11.0
 Requires PHP: 7.3
 Requires at least: 5.7
 Tested up to: 6.7
-WC requires at least: 5.1.0
+WC requires at least: 7.0
 WC tested up to: 9.6.0
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -181,7 +181,7 @@ WordPress connection Controller Plugin for ShoppingFeed - Sell on Amazon, Ebay, 
 ### WordPress :
 
 - Core version 5.7 or above
-- WooCommerce version 5.1 or above
+- WooCommerce version 7.0 or above
 
 ## Installation
 
