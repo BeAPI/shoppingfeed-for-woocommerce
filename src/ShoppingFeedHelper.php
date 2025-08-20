@@ -873,6 +873,34 @@ XML;
 	}
 
 	/**
+	 * Log a message.
+	 *
+	 * @param string $level a valid {@see \WC_Log_Levels `WC_Log_Levels`} level to use for the entry.
+	 * @param string $message the message to use for the entry.
+	 * @param string $channel the channel where to add the entry.
+	 * @param array $context additional data to include in the entry.
+	 *
+	 * @return void
+	 */
+	public static function log( string $level, string $message, string $channel = 'shopping-feed', array $context = [] ) {
+		$logger = self::get_logger();
+		if ( ! $logger ) {
+			return;
+		}
+
+		// Set channel in context if missing
+		if ( ! isset( $context['source'] ) ) {
+			$context['source'] = $channel;
+		}
+
+		$logger->log(
+			$level,
+			$message,
+			$context
+		);
+	}
+
+	/**
 	 * Return the settings link for plugin
 	 * @return string
 	 */
