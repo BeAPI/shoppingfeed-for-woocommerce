@@ -473,17 +473,20 @@ XML;
 			);
 		}
 
+		$all_shipping_methods = apply_filters('sf_all_shipping_methods', $all_shipping_methods);
+
 		return $all_shipping_methods;
 	}
 
 	/**
 	 * Get WC Shipping from SF carrier
 	 *
-	 * @param $name
+	 * @param string $sf_carrier
 	 *
 	 * @return array
 	 */
 	public static function get_wc_shipping_from_sf_carrier( $sf_carrier ) {
+		$sf_carrier    = trim( $sf_carrier );
 		$sf_carrier_id = self::get_sf_carrier_id( $sf_carrier );
 		if ( empty( $sf_carrier_id ) && ! empty( $sf_carrier ) ) {
 			$sf_carrier_id = self::add_sf_carrier( $sf_carrier );
@@ -506,7 +509,7 @@ XML;
 	/**
 	 * Get SF carrier id
 	 *
-	 * @param $name
+	 * @param string $name
 	 *
 	 * @return int
 	 */
@@ -541,7 +544,9 @@ XML;
 	/**
 	 * Add SF carrier
 	 *
-	 * @param $sf_carrier
+	 * @param string $sf_carrier
+	 *
+	 * @return int
 	 */
 	public static function add_sf_carrier( $sf_carrier ) {
 		$sf_carriers = self::get_sf_carriers();
@@ -865,6 +870,34 @@ XML;
 	 */
 	public static function get_logger() {
 		return wc_get_logger();
+	}
+
+	/**
+	 * Log a message.
+	 *
+	 * @param string $level a valid {@see \WC_Log_Levels `WC_Log_Levels`} level to use for the entry.
+	 * @param string $message the message to use for the entry.
+	 * @param string $channel the channel where to add the entry.
+	 * @param array $context additional data to include in the entry.
+	 *
+	 * @return void
+	 */
+	public static function log( string $level, string $message, string $channel = 'shopping-feed', array $context = [] ) {
+		$logger = self::get_logger();
+		if ( ! $logger ) {
+			return;
+		}
+
+		// Set channel in context if missing
+		if ( ! isset( $context['source'] ) ) {
+			$context['source'] = $channel;
+		}
+
+		$logger->log(
+			$level,
+			$message,
+			$context
+		);
 	}
 
 	/**

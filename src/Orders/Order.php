@@ -89,16 +89,24 @@ class Order {
 	 * Add new order
 	 */
 	public function add() {
+		ShoppingFeedHelper::log(
+			\WC_Log_Levels::INFO,
+			sprintf( '[Order %s] Start import process', $this->sf_order->getReference() ),
+			'shopping-feed-orders'
+		);
 
 		// Only run order validation if the order is fulfilled by the merchant.
 		if ( ! $this->is_fulfilled_by_channel( $this->sf_order ) ) {
 			$error = $this->validate_order();
 			if ( is_wp_error( $error ) ) {
-				ShoppingFeedHelper::get_logger()->error(
-					$error->get_error_message(),
-					[
-						'source' => 'shopping-feed',
-					]
+				ShoppingFeedHelper::log(
+					\WC_Log_Levels::ERROR,
+					sprintf(
+						"[Order %s] Order is not valid : %s. It won't be imported.",
+						$this->sf_order->getReference(),
+						$error->get_error_message()
+					),
+					'shopping-feed-orders'
 				);
 
 				Operations::acknowledge_error( $this->sf_order, $error->get_error_message() );
@@ -122,18 +130,24 @@ class Order {
 			$wc_order->set_prices_include_tax( true );
 			$wc_order->set_payment_method( $this->payment->get_method() );
 		} catch ( \Exception $exception ) {
+			ShoppingFeedHelper::log(
+				\WC_Log_Levels::CRITICAL,
+				sprintf(
+					'[Order %s] Failed to set payment method : %s',
+					$this->sf_order->getReference(),
+					$exception->getMessage()
+				),
+				'shopping-feed-orders',
+				[
+					'payment_method' => $this->payment->get_method(),
+				]
+			);
+
 			$message = sprintf(
-			/* translators: %1$1s: Order id. %2$2s: Error message. */
+				/* translators: %1$1s: Order id. %2$2s: Error message. */
 				__( 'Cant set payment to order  %1$1s => %2$2s', 'shopping-feed' ),
 				$wc_order->get_id(),
 				$exception->getMessage()
-			);
-
-			ShoppingFeedHelper::get_logger()->error(
-				$message,
-				[
-					'source' => 'shopping-feed',
-				]
 			);
 
 			Operations::acknowledge_error( $this->sf_order, $message );
@@ -167,18 +181,24 @@ class Order {
 				$wc_order->add_item( $item );
 				do_action( 'sf_after_order_add_shipping', $item, $wc_order );
 			} catch ( \Exception $exception ) {
+				ShoppingFeedHelper::log(
+					\WC_Log_Levels::CRITICAL,
+					sprintf(
+						'[Order %s] Failed to set shipping method : %s',
+						$this->sf_order->getReference(),
+						$exception->getMessage()
+					),
+					'shopping-feed-orders',
+					[
+						'shipping_method' => $this->shipping->get_method(),
+					]
+				);
+
 				$message = sprintf(
-				/* translators: %s: Order id. */
+					/* translators: %s: Order id. */
 					__( 'Cant set shipping for the order with the reference %s', 'shopping-feed' ),
 					$this->sf_order->getReference(),
 					$exception->getMessage()
-				);
-
-				ShoppingFeedHelper::get_logger()->error(
-					$message,
-					[
-						'source' => 'shopping-feed',
-					]
 				);
 
 				Operations::acknowledge_error( $this->sf_order, $message );
@@ -253,6 +273,19 @@ class Order {
 		$wc_order->calculate_totals( false );
 		$wc_order->save();
 
+		ShoppingFeedHelper::log(
+			\WC_Log_Levels::INFO,
+			sprintf(
+				'[Order %s] Order has been imported',
+				$this->sf_order->getReference(),
+			),
+			'shopping-feed-orders',
+			[
+				'wc_order_id' => $wc_order->get_id(),
+				'wc_order_status' => $wc_order->get_status(),
+			]
+		);
+
 		do_action( 'sf_before_add_order', $wc_order );
 
 		//Acknowledge the order so we will not get it next time
@@ -302,6 +335,38 @@ class Order {
 	}
 
 	/**
+	 * Get order by ShoppingFeed reference
+	 *
+	 * @param string $reference
+	 *
+	 * @return \WC_Order|null
+	 */
+	public static function find_by_sf_reference( $reference ) {
+		$args = [
+			Query::WC_META_SF_REFERENCE => $reference,
+			'limit'                     => 1,
+		];
+		if ( class_exists( OrderUtil::class ) && OrderUtil::custom_orders_table_usage_is_enabled() ) {
+			$args = [
+				'meta_query' => [
+					[
+						'key'   => Query::WC_META_SF_REFERENCE,
+						'value' => $reference,
+					],
+				],
+				'limit'      => 1,
+			];
+		}
+
+		$orders = wc_get_orders( $args );
+		if ( is_array( $orders ) && ! empty( $orders ) ) {
+			return reset( $orders );
+		}
+
+		return null;
+	}
+
+	/**
 	 * Check if the order already exists in WP
 	 *
 	 * @param $sf_order OrderResource
@@ -323,7 +388,6 @@ class Order {
 
 		return ! empty( wc_get_orders( $args ) );
 	}
-
 
 	/**
 	 * Set shipping from SF shipping
