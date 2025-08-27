@@ -427,7 +427,7 @@ class ShoppingFeedHelper {
 			);
 		}
 
-		$all_shipping_methods = apply_filters('sf_all_shipping_methods', $all_shipping_methods);
+		$all_shipping_methods = apply_filters( 'sf_all_shipping_methods', $all_shipping_methods );
 
 		return $all_shipping_methods;
 	}
@@ -980,24 +980,8 @@ class ShoppingFeedHelper {
 			return false;
 		}
 
-		return (bool) ( $orders_options['disable_order_import'] ?? 0 ); // True if the value does not exist. For existing customers
-	}
+		$disable_order_import = (int) ( $orders_options['disable_order_import'] ?? 0 );
 
-	/**
-	 * Set default orders options
-	 * @return void
-	 */
-	public static function set_default_orders_option() {
-		// Skip if option has already set
-		if ( false !== get_option( options::SF_ORDERS_OPTIONS ) ) {
-			return;
-		}
-
-		update_option(
-			options::SF_ORDERS_OPTIONS,
-			[
-				'disable_order_import' => 1,
-			]
-		);
+		return 1 === $disable_order_import;
 	}
 }

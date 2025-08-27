@@ -62,6 +62,12 @@ class Orders {
 
 		// Check if order import is enable
 		if ( ShoppingFeedHelper::is_order_import_disable() ) {
+			ShoppingFeedHelper::log(
+				\WC_Log_Levels::INFO,
+				'Order import is disabled',
+				'shopping-feed-orders'
+			);
+
 			return false;
 		}
 

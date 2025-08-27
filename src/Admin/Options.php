@@ -1520,9 +1520,9 @@ class Options {
 					<input
 						type="checkbox"
 						id="disable_order_import"
-								name="<?php echo esc_attr( sprintf( '%s[disable_order_import]', self::SF_ORDERS_OPTIONS ) ); ?>"
-						value="yes"
-								<?php checked( 1, isset( $this->sf_orders_options['disable_order_import'] ) ? $this->sf_orders_options['disable_order_import'] : 0 ); ?>
+						name="<?php echo esc_attr( sprintf( '%s[disable_order_import]', self::SF_ORDERS_OPTIONS ) ); ?>"
+						value="1"
+						<?php checked( '1', isset( $this->sf_orders_options['disable_order_import'] ) ? $this->sf_orders_options['disable_order_import'] : '' ); ?>
 					>
 							<?php esc_html_e( 'Disable orders synchronisation', 'shopping-feed' ); ?>
 				</label>
