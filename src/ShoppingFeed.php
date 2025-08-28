@@ -134,6 +134,9 @@ class ShoppingFeed {
 		$this->metabox = new Metabox();
 		$this->rewrite = new Rewrite();
 
+		// Instantiate FeedBuilderManager
+		ShoppingFeedHelper::get_feedbuilder_manager();
+
 		//Run upgrades
 		Upgrade::do_upgrades();
 

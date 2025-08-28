@@ -192,6 +192,11 @@ class Operations {
 	 * @param string $message
 	 */
 	public static function acknowledge_order( $order_id, $message = '' ) {
+		// Don't acknowledge order is synchronisation is disabled.
+		if ( ShoppingFeedHelper::is_order_import_disable() ) {
+			return;
+		}
+
 		$ok = true;
 		try {
 			$operations = new self( $order_id );
@@ -247,6 +252,11 @@ class Operations {
 	 * @author Stéphane Gillot
 	 */
 	public static function acknowledge_error( OrderResource $sf_order, $error ) {
+		// Don't acknowledge order is synchronisation is disabled.
+		if ( ShoppingFeedHelper::is_order_import_disable() ) {
+			return;
+		}
+
 		$shop = Sdk::get_sf_account_shop( $sf_order->toArray()['storeId'] );
 		if ( ! $shop ) {
 			ShoppingFeedHelper::get_logger()->notice(

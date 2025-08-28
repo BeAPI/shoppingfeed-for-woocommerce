@@ -6,8 +6,8 @@ namespace ShoppingFeed\ShoppingFeedWC;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Admin\Options;
+use ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilderManager;
 use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\ShipmentTrackingManager;
-use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\ShipmentTrackingProvider;
 use ShoppingFeed\ShoppingFeedWC\Url\Rewrite;
 use WC_Logger;
 
@@ -72,43 +72,11 @@ class ShoppingFeedHelper {
 	}
 
 	/**
-	 * @return string
-	 */
-	public static function get_feed_skeleton() {
-		return <<<XML
-<?xml version="1.0" encoding="UTF-8"?>
-<catalog>
-    <metadata>
-        <platform>WooCommerce:5.1.0</platform>
-        <agent>shopping-feed-generator:1.0.0</agent>
-        <startedAt/>
-        <finishedAt/>
-        <invalid/>
-        <ignored/>
-        <written/>
-    </metadata>
-</catalog>
-XML;
-	}
-
-	/**
 	 * Return the feed's file name
 	 * @return string
 	 */
 	public static function get_feed_filename() {
 		return 'products';
-	}
-
-	/**
-	 * Return the feed's public url
-	 * @return string
-	 */
-	public static function get_public_feed_url() {
-		if ( ! empty( get_option( 'permalink_structure' ) ) ) {
-			return sprintf( '%s/%s/', get_home_url(), self::get_public_feed_endpoint() );
-		}
-
-		return sprintf( '%s?%s', get_home_url(), self::get_public_feed_endpoint() );
 	}
 
 	/**
@@ -119,25 +87,6 @@ XML;
 		global $wp_rewrite;
 
 		return $wp_rewrite->root . Rewrite::FEED_PARAM;
-	}
-
-	/**
-	 * Return the feed's public url with new generation
-	 * @return string
-	 */
-	public static function get_public_feed_url_with_generation() {
-		if ( ! empty( get_option( 'permalink_structure' ) ) ) {
-			return sprintf( '%1$s/%2$s/?version=%3$s', get_home_url(), self::get_public_feed_endpoint(), time() );
-		}
-
-		return sprintf( '%1$s?%2$s&version=%3$s', get_home_url(), self::get_public_feed_endpoint(), time() );
-	}
-
-	/**
-	 * @param $uri
-	 */
-	public static function get_tmp_uri( $uri ) {
-		return str_replace( '.xml', '_tmp.xml', $uri );
 	}
 
 	/**
@@ -211,8 +160,13 @@ XML;
 	 * Return SF categories to export
 	 * @return array
 	 */
-	public static function get_sf_feed_export_categories() {
-		$categories = self::get_sf_feed_options( 'categories' );
+	public static function get_sf_feed_export_categories( string $language = '' ) {
+		$param = 'categories';
+		if ( ! empty( $language ) ) {
+			$param .= '-' . $language;
+		}
+
+		$categories = self::get_sf_feed_options( $param );
 		if ( empty( $categories ) ) {
 			return array();
 		}
@@ -473,7 +427,7 @@ XML;
 			);
 		}
 
-		$all_shipping_methods = apply_filters('sf_all_shipping_methods', $all_shipping_methods);
+		$all_shipping_methods = apply_filters( 'sf_all_shipping_methods', $all_shipping_methods );
 
 		return $all_shipping_methods;
 	}
@@ -616,7 +570,7 @@ XML;
 		/**
 		 * Filter the value of the carrier for the order before it is retrieve.
 		 *
-		 * @param bool|string $pre    The value to return instead of the value computed from
+		 * @param bool|string $pre The value to return instead of the value computed from
 		 *                            the `sf_shipping` metadata.
 		 * @param \WC_Order $wc_order The order object for the carrier data.
 		 */
@@ -678,10 +632,21 @@ XML;
 
 	/**
 	 * Add filter for products list query
+	 *
+	 * @param string $lang The current language associated with the feed. Language slug or empty string if
+	 *                     site isn't multilingual.
+	 *
 	 * @return array
 	 */
-	public static function wc_products_custom_query_args() {
-		return apply_filters( 'shopping_feed_products_custom_args', array() );
+	public static function wc_products_custom_query_args( $lang = '' ) {
+		/**
+		 * Filter args used to retrieve products for the feed.
+		 *
+		 * @param array  $args Custom query args for the `WC_Product_Query`.
+		 * @param string $lang The current language associated with the feed. Language slug or empty string if
+		 *                     site isn't multilingual.
+		 */
+		return apply_filters( 'shopping_feed_products_custom_args', array(), $lang );
 	}
 
 	/**
@@ -690,7 +655,7 @@ XML;
 	 */
 	public static function sf_order_statuses_to_import() {
 		$default_statuses = [ 'waiting_shipment' ];
-		$orders_options = self::get_sf_orders_options();
+		$orders_options   = self::get_sf_orders_options();
 
 		/**
 		 * Add shipped status if importing fulfilled by marketplace orders
@@ -698,7 +663,7 @@ XML;
 		 */
 		if ( isset( $orders_options['import_order_fulfilled_by_marketplace'] ) && true === (bool) $orders_options['import_order_fulfilled_by_marketplace'] ) {
 			$fullfilled_by_marketplace_statuses = [ 'shipped', 'refunded', 'cancelled' ];
-			$default_statuses = array_merge( $default_statuses, $fullfilled_by_marketplace_statuses );
+			$default_statuses                   = array_merge( $default_statuses, $fullfilled_by_marketplace_statuses );
 		}
 
 		return apply_filters( 'shopping_feed_orders_to_import', $default_statuses );
@@ -971,5 +936,52 @@ XML;
 	public static function end_upgrade() {
 		delete_option( SF_UPGRADE_RUNNING );
 		update_option( SF_DB_VERSION_SLUG, SF_DB_VERSION );
+	}
+
+	/**
+	 * Get FeedBuilderManager instance.
+	 *
+	 * @return FeedBuilderManager
+	 */
+	public static function get_feedbuilder_manager(): FeedBuilderManager {
+		static $manager;
+		if ( ! $manager ) {
+			$manager = new FeedBuilderManager();
+			$manager->register();
+		}
+
+		return $manager;
+	}
+
+	public static function support_multilingual_feed():  bool {
+		$feed_manager = self::get_feedbuilder_manager();
+		return $feed_manager->get_builder()->support_multilingual();
+	}
+
+	public static function get_available_languages_for_feed():  array {
+		$feed_manager = self::get_feedbuilder_manager();
+		return $feed_manager->get_builder()->get_languages();
+	}
+
+	public static function current_language() {
+		$feed_manager = self::get_feedbuilder_manager();
+		return $feed_manager->get_builder()->current_languages();
+	}
+
+	/**
+	 * Check if order import is disable.
+	 *
+	 * @return bool
+	 */
+	public static function is_order_import_disable() {
+		$orders_options = self::get_sf_orders_options();
+
+		if ( false === $orders_options ) {
+			return false;
+		}
+
+		$disable_order_import = (int) ( $orders_options['disable_order_import'] ?? 0 );
+
+		return 1 === $disable_order_import;
 	}
 }
