@@ -145,6 +145,11 @@ abstract class FeedBuilder {
 			wp_die( 'Feed generation launched' );
 		}
 
+		// Close existing buffer before streaming feed content
+		while ( ob_get_level() ) {
+			ob_end_clean();
+		}
+
 		header( 'Content-Type: application/xml; charset=utf-8' );
 		header( 'Content-Length: ' . filesize( $file_path ) );
 		nocache_headers();
