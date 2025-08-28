@@ -7,7 +7,7 @@
  * Author URI:           https://www.shopping-feed.com/
  * Text Domain:          shopping-feed
  * Domain Path:          /languages
- * Version:              6.12.0
+ * Version:              7.0.0
  * Requires at least:    5.7
  * Requires PHP:         7.3
  * WC requires at least: 5.1.0
@@ -26,7 +26,7 @@ if ( file_exists( plugin_dir_path( __FILE__ ) . '/vendor/autoload.php' ) ) {
 	require_once plugin_dir_path( __FILE__ ) . '/vendor/autoload.php';
 }
 
-define( 'SF_VERSION', '6.12.0' );
+define( 'SF_VERSION', '7.0.0' );
 define( 'SF_DB_VERSION_SLUG', 'SF_DB_VERSION' );
 define( 'SF_DB_VERSION', '1.0.0' );
 define( 'SF_UPGRADE_RUNNING', 'SF_UPGRADE_RUNNING' );
@@ -44,8 +44,6 @@ register_deactivation_hook( __FILE__, array( '\\ShoppingFeed\ShoppingFeedWC\Shop
  * Plugin bootstrap function.shopping-feed/src/ShoppingFeed.php
  */
 function init() {
-	load_plugin_textdomain( 'shopping-feed', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
-
 	ShoppingFeed::get_instance();
 
 	if ( ! defined( 'WP_CLI' ) ) {
@@ -57,6 +55,16 @@ function init() {
 }
 
 \add_action( 'plugins_loaded', __NAMESPACE__ . '\\init', 100 );
+
+/**
+ * Load plugin translations.
+ *
+ * @return void
+ */
+function load_translations(): void {
+	load_plugin_textdomain( 'shopping-feed', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
+}
+\add_action( 'init', __NAMESPACE__ . '\\load_translations' );
 
 // Declare the plugin compatibility with High Performance Order Storage
 \add_action(
