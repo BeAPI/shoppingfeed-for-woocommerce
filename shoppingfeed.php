@@ -44,8 +44,6 @@ register_deactivation_hook( __FILE__, array( '\\ShoppingFeed\ShoppingFeedWC\Shop
  * Plugin bootstrap function.shopping-feed/src/ShoppingFeed.php
  */
 function init() {
-	load_plugin_textdomain( 'shopping-feed', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
-
 	ShoppingFeed::get_instance();
 
 	if ( ! defined( 'WP_CLI' ) ) {
@@ -57,6 +55,16 @@ function init() {
 }
 
 \add_action( 'plugins_loaded', __NAMESPACE__ . '\\init', 100 );
+
+/**
+ * Load plugin translations.
+ *
+ * @return void
+ */
+function load_translations(): void {
+	load_plugin_textdomain( 'shopping-feed', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
+}
+\add_action( 'init', __NAMESPACE__ . '\\load_translations' );
 
 // Declare the plugin compatibility with High Performance Order Storage
 \add_action(
