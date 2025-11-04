@@ -98,7 +98,7 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_ean
 	 */
-	public function test_get_ean_return_emty_string_for_empty_wc_product_ean() {
+	public function test_get_ean_return_empty_string_for_empty_wc_product_ean() {
 		$wc_product = wc_get_product( 13 );
 		$sf_product = new Product( $wc_product );
 		$this->assertEquals( '', $sf_product->get_ean() );
