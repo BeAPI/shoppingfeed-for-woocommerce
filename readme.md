@@ -3,11 +3,11 @@
 * Contributors: ShoppingFeed, BeAPI
 * Tags: shoppingfeed, marketplace, woocommerce, products feed, import orders
 * Description: WordPress connection Controller Plugin for ShoppingFeed – Sell on Amazon, Ebay, Google, and 1000’s of international marketplaces
-* Stable tag: 7.0.0
-* Version: 7.0.0
+* Stable tag: 7.1.0
+* Version: 7.1.0
 * Requires PHP: 7.3
 * Requires at least: 5.7
-* Tested up to: 6.7
+* Tested up to: 6.8
 * WC requires at least: 7.0
 * WC tested up to: 9.6.0
 * License: GPL v2 or later
@@ -18,6 +18,16 @@
 > Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
 
 ## Changelog
+
+### 7.1.0
+
+#### Enhancements
+
+* **Feed** : Allow extra attributes to be added to the feed for variations.
+
+#### Fixes
+
+* **Order** : Check for reference alias in itemsReferencesAliases when importing order.
 
 ### 7.0.0
 
@@ -330,16 +340,55 @@ function your_custom_tracking_url_function() {
     return ‘your_custom_order_meta_key’
 }
 ```
-
 ### Extra Fields
-If you want to add an extra fields to your XML Feed, you can use the following snippet
-```php
-add_filter( 'shopping_feed_extra_fields', 'your_custom_fields_function', 10, 2 );
 
-/** @return array */
-function your_custom_fields_function($fields, $wc_product) {
-    $fields[] = array('name'=>'my_field', 'value'=>'my_value');
-    return $fields;
+#### Add extra fields for products in product feed
+
+If you want to add an extra fields to products in your XML Feed, you can use the following snippet :
+
+```php
+add_filter( 'shopping_feed_extra_fields', 'sf_product_extra_fields', 10, 2 );
+
+/**
+ * Include additional fields for products in product feed.
+ *
+ * @param array $fields
+ * @param \WC_Product $product
+ *
+ * @return array
+ */
+function sf_product_extra_fields( $fields, $product ) {
+	$fields[] = array(
+		'name'  => 'my_custom_product_field',
+		'value'  => 'my_custom_value',
+	);
+
+	return $fields;
+}
+```
+
+#### Add extra fields for variations in product feed
+
+If you want to add an extra fields to variations in your XML Feed, you can use the following snippet :
+
+```php
+add_filter( 'shopping_feed_variation_extra_fields', 'sf_product_variation_extra_fields', 10, 2 );
+
+/**
+ * Include additional fields for variation in product feed.
+ *
+ * @param array $fields
+ * @param \WC_Product $variation
+ *
+ * @return array
+ */
+function sf_product_variation_extra_fields( $fields, $variation ) {
+	$fields[] = array(
+		'name'  => 'my_custom_variation_field',
+		'value'  => 'my_custom_value',
+	);
+
+	return $fields;
 }
 ```
 
