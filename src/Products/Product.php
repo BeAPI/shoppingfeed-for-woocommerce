@@ -493,6 +493,7 @@ class Product {
 			$variation_data['image_main'] = apply_filters( 'shopping_feed_variation_main_image', $main_image, $variation, $product );
 
 			$variation_data['attributes'] = $this->get_variation_attributes( $variation );
+			$variation_data['extra'] = $this->get_variation_extra_fields( $variation );
 			$variations[]                 = $variation_data;
 		}
 
@@ -542,6 +543,23 @@ class Product {
 	 */
 	public function get_extra_fields() {
 		return apply_filters( 'shopping_feed_extra_fields', [], $this->product );
+	}
+
+	/**
+	 * Get variation extra fields
+	 *
+	 * @param \WC_Product_Variation $variation
+	 *
+	 * @return array
+	 */
+	public function get_variation_extra_fields( $variation ) {
+		/**
+		 * Filter extra fields written in the feed for the variation.
+		 *
+		 * @param array $extra_fields
+		 * @param \WC_Product_Variation $variation
+		 */
+		return apply_filters( 'shopping_feed_variation_extra_fields', [], $variation );
 	}
 
 	/**

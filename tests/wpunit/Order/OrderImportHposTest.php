@@ -107,6 +107,102 @@ class OrderImportHposTest extends OrderImportTestCase {
 		$this->assertEmpty( $wc_order->get_meta( 'sf_nif' ) );
 	}
 
+	/**
+	 * Test that products references are correctly mapped using itemsReferencesAliases when importing an order.
+	 *
+	 * This test case is for when the feed is configured to use the ID as the product identifier.
+	 *
+	 * @covers ShoppingFeed\ShoppingFeedWC\Orders\Order\Products::set_products
+	 * @covers ShoppingFeed\ShoppingFeedWC\Orders\Order\Products::mapping_product
+	 */
+	public function test_order_with_id_reference_alias() {
+		$order_resource = $this->get_order_resource( 'simple-order-id-reference-alias' );
+		$sf_order       = new ShoppingFeed\ShoppingFeedWC\Orders\Order( $order_resource );
+		$sf_order->add();
+
+		$results  = wc_get_orders( [ Query::WC_META_SF_REFERENCE => $order_resource->getReference() ] );
+		$wc_order = reset( $results );
+		$items    = $wc_order->get_items();
+
+		$this->assertEquals( 1, $wc_order->get_item_count(), 'Assert the order contain the same number of product from ShoppingFeed' );
+		$this->assertEquals( 'Hoodie with Logo', reset( $items )->get_name(), 'Assert the order contain the same name of product from ShoppingFeed' );
+	}
+
+	/**
+	 * Test that products references are correctly mapped using itemsReferencesAliases when importing an order.
+	 *
+	 * This test case is for when the feed is configured to use the ID as the product identifier.
+	 *
+	 * @covers ShoppingFeed\ShoppingFeedWC\Orders\Order\Products::set_products
+	 * @covers ShoppingFeed\ShoppingFeedWC\Orders\Order\Products::mapping_product
+	 */
+	public function test_order_with_unknown_id_reference_alias() {
+		$order_resource = $this->get_order_resource( 'simple-order-id-reference-alias-invalid' );
+		$sf_order       = new ShoppingFeed\ShoppingFeedWC\Orders\Order( $order_resource );
+		$sf_order->add();
+
+		$results  = wc_get_orders( [ Query::WC_META_SF_REFERENCE => $order_resource->getReference() ] );
+
+		$this->assertEmpty( $results );
+	}
+
+	/**
+	 * Test that products references are correctly mapped using itemsReferencesAliases when importing an order.
+	 *
+	 * This test case is for when the feed is configured to use the SKU as the product identifier.
+	 *
+	 * @covers ShoppingFeed\ShoppingFeedWC\Orders\Order\Products::set_products
+	 * @covers ShoppingFeed\ShoppingFeedWC\Orders\Order\Products::mapping_product
+	 */
+	public function test_order_with_sku_reference_alias() {
+		add_filter(
+			'pre_option_sf_feed_options',
+			function ( $value ) {
+				return [
+					'product_identifier' => 'sku',
+				];
+			}
+		);
+
+		$order_resource = $this->get_order_resource( 'simple-order-sku-reference-alias' );
+		$sf_order       = new ShoppingFeed\ShoppingFeedWC\Orders\Order( $order_resource );
+		$sf_order->add();
+
+		$results  = wc_get_orders( [ Query::WC_META_SF_REFERENCE => $order_resource->getReference() ] );
+		$wc_order = reset( $results );
+		$items    = $wc_order->get_items();
+
+		$this->assertEquals( 1, $wc_order->get_item_count(), 'Assert the order contain the same number of product from ShoppingFeed' );
+		$this->assertEquals( 'Hoodie with Logo', reset( $items )->get_name(), 'Assert the order contain the same name of product from ShoppingFeed' );
+	}
+
+	/**
+	 * Test that products references are correctly mapped using itemsReferencesAliases when importing an order.
+	 *
+	 * This test case is for when the feed is configured to use the SKU as the product identifier.
+	 *
+	 * @covers ShoppingFeed\ShoppingFeedWC\Orders\Order\Products::set_products
+	 * @covers ShoppingFeed\ShoppingFeedWC\Orders\Order\Products::mapping_product
+	 */
+	public function test_order_with_unknown_sku_reference_alias() {
+		add_filter(
+			'pre_option_sf_feed_options',
+			function ( $value ) {
+				return [
+					'product_identifier' => 'sku',
+				];
+			}
+		);
+
+		$order_resource = $this->get_order_resource( 'simple-order-sku-reference-alias-invalid' );
+		$sf_order       = new ShoppingFeed\ShoppingFeedWC\Orders\Order( $order_resource );
+		$sf_order->add();
+
+		$results  = wc_get_orders( [ Query::WC_META_SF_REFERENCE => $order_resource->getReference() ] );
+
+		$this->assertEmpty( $results );
+	}
+
 	public function custom_orders_table( $value ) {
 		return 'yes';
 	}
