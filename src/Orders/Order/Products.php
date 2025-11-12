@@ -45,14 +45,16 @@ class Products {
 	 * Set Products
 	 */
 	private function set_products() {
-		$this->products = array();
+		$this->products     = array();
+		$references_aliases = $this->sf_order->getItemsReferencesAliases();
 		foreach ( $this->sf_order->getItems() as $sf_product ) {
-			$product = $this->mapping_product( $sf_product );
+			$product = $this->mapping_product( $sf_product, $references_aliases );
 			if ( empty( $product ) ) {
 				ShoppingFeedHelper::get_logger()->error(
 					sprintf(
-					/* translators: %1$1s: Product reference. %2$2s: Order id. */
-						__( 'cant match product  %1$1s => in order %2$2s', 'shopping-feed' ),
+						/* translators: %1$s: product reference or alias, %2$s: original product reference, %3$s: order id. */
+						__( 'Can\'t match product "%1$s" (original ref: %2$s) in order %3$s', 'shopping-feed' ),
+						( $references_aliases[ $sf_product->getReference() ] ?? $sf_product->getReference() ),
 						$sf_product->getReference(),
 						$this->sf_order->getId()
 					),
@@ -62,19 +64,22 @@ class Products {
 				);
 				continue;
 			}
-			$this->products[] = $this->mapping_product( $sf_product );
+
+			$this->products[] = $product;
 		}
 	}
 
 	/**
-	 * @param $sf_product OrderItem
+	 * Map products in SF order to Woocommerce products.
+	 *
+	 * @param OrderItem $sf_product
+	 * @param array $references_aliases
 	 *
 	 * @return array
 	 */
-	private function mapping_product( $sf_product ) {
-
+	private function mapping_product( $sf_product, $references_aliases = [] ) {
 		$product_identifier = ShoppingFeedHelper::get_sf_feed_product_identifier();
-		$wc_product_id      = $sf_product->getReference();
+		$wc_product_id      = $references_aliases[ $sf_product->getReference() ] ?? $sf_product->getReference();
 
 		if ( 'sku' === $product_identifier ) {
 			$wc_product_id = wc_get_product_id_by_sku( $wc_product_id );
@@ -116,6 +121,7 @@ class Products {
 			'args'         => $args,
 			'is_available' => $wc_product->is_in_stock() && $wc_product->has_enough_stock( $sf_product_quantity ),
 			'sf_ref'       => $sf_product->getReference(),
+			'wc_ref'       => $references_aliases[ $sf_product->getReference() ] ?? $sf_product->getReference(),
 		);
 	}
 

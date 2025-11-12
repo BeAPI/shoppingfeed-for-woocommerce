@@ -98,7 +98,7 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	/**
 	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_ean
 	 */
-	public function test_get_ean_return_emty_string_for_empty_wc_product_ean() {
+	public function test_get_ean_return_empty_string_for_empty_wc_product_ean() {
 		$wc_product = wc_get_product( 13 );
 		$sf_product = new Product( $wc_product );
 		$this->assertEquals( '', $sf_product->get_ean() );
@@ -308,7 +308,7 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	 *
 	 * @author Stéphane Gillot
 	 */
-	public function test_get_simple_product_dimensions_when_defined(){
+	public function test_get_simple_product_dimensions_when_defined() {
 		$wc_product = WC_Helper_Product::create_simple_product();
 		$wc_product->set_length( 5 );
 		$wc_product->set_height( 10 );
@@ -329,9 +329,9 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	 *
 	 * @author Stéphane Gillot
 	 */
-	public function test_get_simple_product_dimensions_when_not_defined(){
+	public function test_get_simple_product_dimensions_when_not_defined() {
 		$wc_product = WC_Helper_Product::create_simple_product();
-		$wc_product->set_length('' );
+		$wc_product->set_length( '' );
 		$wc_product->set_height( '' );
 		$wc_product->set_width( '' );
 		$wc_product->save();
@@ -363,7 +363,7 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertEquals( '', $sf_product->get_width(), 'Product width should be null.' );
 	}
 
-	public function test_get_variation_dimensions_when_it_overrides_parent_dimensions(){
+	public function test_get_variation_dimensions_when_it_overrides_parent_dimensions() {
 
 		// Prepare the variable product object
 		$wc_variable_product = new \WC_Product_Variable();
@@ -374,9 +374,9 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 
 		$variation = WC_Helper_Product::create_variation_product();
 		$variation->set_parent_id( $wc_variable_product->get_id() );
-		$variation->set_length(20);
-		$variation->set_height(30);
-		$variation->set_width(40);
+		$variation->set_length( 20 );
+		$variation->set_height( 30 );
+		$variation->set_width( 40 );
 		$variation->save();
 
 
@@ -390,7 +390,7 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	public function test_variation_set_custom_main_image() {
 		add_filter(
 			'shopping_feed_variation_main_image',
-			function( $image, $variation, $product ) {
+			function ( $image, $variation, $product ) {
 				return 'https://example.com/image.jpg';
 			},
 			10,
@@ -399,15 +399,15 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 
 		$image_id = $this->factory()->attachment->create_object(
 			[
-				'file' => codecept_data_dir( 'images/image1.png' ),
+				'file'           => codecept_data_dir( 'images/image1.png' ),
 				'post_mime_type' => 'image/png',
-				'post_title' => 'Test Image',
-				'post_content' => '',
-				'post_status' => 'inherit',
+				'post_title'     => 'Test Image',
+				'post_content'   => '',
+				'post_status'    => 'inherit',
 			]
 		);
-		
-		$variable_product = new \WC_Product_Variable();
+
+		$variable_product    = new \WC_Product_Variable();
 		$variable_product_id = $variable_product->save();
 
 		WC_Helper_Product::create_product_variation_object( $variable_product_id, 'variation-1', 10, [], true );
@@ -419,18 +419,18 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 	public function test_variation_use_thumbnail_as_main_image() {
-		$image_id = $this->factory()->attachment->create_object(
+		$image_id  = $this->factory()->attachment->create_object(
 			[
-				'file' => codecept_data_dir( 'images/image1.png' ),
+				'file'           => codecept_data_dir( 'images/image1.png' ),
 				'post_mime_type' => 'image/png',
-				'post_title' => 'Test Image',
-				'post_content' => '',
-				'post_status' => 'inherit',
+				'post_title'     => 'Test Image',
+				'post_content'   => '',
+				'post_status'    => 'inherit',
 			]
 		);
 		$image_url = wp_get_attachment_image_url( $image_id, 'full' );
-		
-		$variable_product = new \WC_Product_Variable();
+
+		$variable_product    = new \WC_Product_Variable();
 		$variable_product_id = $variable_product->save();
 
 		$variation_product = WC_Helper_Product::create_product_variation_object( $variable_product_id, 'variation-1', 10, [], true );
@@ -446,14 +446,14 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	public function test_variation_empty_main_image_if_no_image_set() {
 		$image_id = $this->factory()->attachment->create_object(
 			[
-				'file' => codecept_data_dir( 'images/image1.png' ),
+				'file'           => codecept_data_dir( 'images/image1.png' ),
 				'post_mime_type' => 'image/png',
-				'post_title' => 'Test Image',
-				'post_content' => '',
-				'post_status' => 'inherit',
+				'post_title'     => 'Test Image',
+				'post_content'   => '',
+				'post_status'    => 'inherit',
 			]
 		);
-		
+
 		$variable_product = new \WC_Product_Variable();
 		$variable_product->set_image_id( $image_id );
 		$variable_product_id = $variable_product->save();
@@ -464,5 +464,41 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 		$this->assertCount( 1, $sf_product->get_variations(), 'Variable product should have 1 variation.' );
 		$this->assertArrayHasKey( 'image_main', $sf_product->get_variations()[0], 'Variation should have an image_main key.' );
 		$this->assertEquals( '', $sf_product->get_variations()[0]['image_main'], 'Product main image should be empty.' );
+	}
+
+	/**
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_variation_extra_fields
+	 */
+	public function test_variation_extra_fields() {
+		$extra_fields = [
+			[
+				'name' => 'field1',
+				'value' => 'value1',
+			],
+			[
+				'name' => 'field2',
+				'value' => 'value2',
+			],
+		];
+
+		add_filter(
+			'shopping_feed_variation_extra_fields',
+			function ( $fields, $variation ) use ( $extra_fields ) {
+				return $extra_fields;
+			},
+			10,
+			2
+		);
+
+		$variable_product    = new \WC_Product_Variable();
+		$variable_product_id = $variable_product->save();
+
+		WC_Helper_Product::create_product_variation_object( $variable_product_id, 'variation-1', 10, [], true );
+
+		$sf_product = new Product( $variable_product_id );
+		$variations = $sf_product->get_variations();
+		$this->assertCount( 1, $variations, 'Variable product should have 1 variation.' );
+		$this->assertIsArray( reset( $variations )['extra'], 'Variation data should have a key "extra" containing an array.' );
+		$this->assertEqualSets( $extra_fields, reset( $variations )['extra'] );
 	}
 }

@@ -155,7 +155,6 @@ class Generator {
 						$product->setAttribute( $field['name'], $field['value'] );
 					}
 				}
-
 			}
 		);
 
@@ -205,6 +204,14 @@ class Generator {
 					}
 					if ( ! empty( $sf_product_variation['height'] ) ) {
 						$variation->setAttribute( 'height', (string) $sf_product_variation['height'] );
+					}
+					if ( ! empty( $sf_product_variation['extra'] ) ) {
+						foreach ( $sf_product_variation['extra'] as $field ) {
+							if ( empty( $field['name'] ) ) {
+								continue;
+							}
+							$variation->setAttribute( $field['name'], $field['value'] );
+						}
 					}
 				}
 			}
