@@ -164,6 +164,14 @@ abstract class FeedBuilder {
 	 * @return bool|\WP_Error
 	 */
 	protected function write_products_feed( string $file_path, array $products ) {
+
+		/**
+		 * Filter the list of products to be written to the feed.
+		 *
+		 * @param \WC_Product[] $products
+		 */
+		$products = apply_filters( 'shopping_feed_products_for_feed', $products );
+
 		$products_list = Products::get_instance()->format_products( $products );
 		try {
 			$generator = Generator::make( $file_path );

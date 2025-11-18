@@ -56,27 +56,49 @@ class ShoppingFeedHelper {
 	}
 
 	/**
-	 * Return the feed's directory
+	 * Return the feed's directory.
+	 *
 	 * @return string
 	 */
 	public static function get_feed_directory() {
-		return SF_FEED_DIR;
+		/**
+		 * Filter the path to the directory where product feeds are stored.
+		 *
+		 * @param string $path Path to the directory.
+		 */
+		return (string) apply_filters( 'shopping_feed_feed_directory_path', SF_FEED_DIR );
 	}
 
 	/**
-	 * Return the feed's parts directory
+	 * Return the feed's parts directory.
+	 *
 	 * @return string
 	 */
 	public static function get_feed_parts_directory() {
-		return SF_FEED_PARTS_DIR;
+		/**
+		 * Filter the path to the directory where product feeds parts are stored.
+		 *
+		 * @param string $path Path to the directory.
+		 */
+		return (string) apply_filters( 'shopping_feed_feed_parts_directory_path', SF_FEED_PARTS_DIR );
 	}
 
 	/**
-	 * Return the feed's file name
+	 * Return the feed's file name.
+	 *
+	 * The filename doesn't contain the file extension.
+	 *
 	 * @return string
 	 */
 	public static function get_feed_filename() {
-		return 'products';
+		/**
+		 * Filter the product feed's filename.
+		 *
+		 * The filename must not contain the file extension.
+		 *
+		 * @param string $path Feed's filename.
+		 */
+		return (string) apply_filters( 'shopping_feed_feed_filename', 'products' );
 	}
 
 	/**
