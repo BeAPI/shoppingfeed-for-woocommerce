@@ -256,4 +256,16 @@ abstract class FeedBuilder {
 			}
 		}
 	}
+
+	protected function log( $level, $message, array $context = [] ) {
+		$level                   = \WC_Log_Levels::is_valid_level( $level ) ? $level : \WC_Log_Levels::ERROR;
+		$context['feed_builder'] = static::class;
+
+		ShoppingFeedHelper::log(
+			$level,
+			$message,
+			'shopping-feed-feed-generator',
+			$context
+		);
+	}
 }
