@@ -50,7 +50,7 @@ function debug_resource($value = null)
  *
  * The returned handler is not wrapped by any default middlewares.
  *
- * @return callable(\ShoppingFeed\ShoppingFeedWC\Dependencies\Psr\Http\Message\RequestInterface, array): \ShoppingFeed\ShoppingFeedWC\Dependencies\GuzzleHttp\Promise\PromiseInterface Returns the best handler for the given system.
+ * @return callable(\ShoppingFeed\ShoppingFeedWC\Dependencies\Psr\Http\Message\RequestInterface, array): Promise\PromiseInterface Returns the best handler for the given system.
  *
  * @throws \RuntimeException if no viable Handler is available.
  *
