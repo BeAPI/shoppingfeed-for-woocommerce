@@ -76,6 +76,11 @@ class Rewrite {
 			return;
 		}
 
+		// Instruct plugins to never cached the product feed.
+		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+			define( 'DONOTCACHEPAGE', true );
+		}
+
 		$lang = ! empty( $wp->query_vars[ self::FEED_LANG_QUERY_VAR ] ) ? $wp->query_vars[ self::FEED_LANG_QUERY_VAR ] : null;
 
 		// Remove first hyphen (-) if needed
