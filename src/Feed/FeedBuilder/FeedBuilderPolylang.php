@@ -151,15 +151,31 @@ class FeedBuilderPolylang extends FeedBuilder {
 	}
 
 	/**
-	 * @param string $lang
-	 * @param int $page
-	 * @param int $post_per_page
+	 * Generate a feed's part.
+	 *
+	 * @param string $lang The current language of the feed.
+	 * @param int $page Deprecated. The current page of products to generate.
+	 *                  Replaced by the `$last_processed_id`. Kept for back-compatibility.
+	 * @param int $post_per_page The number of products to include in the part.
+	 * @param int $last_processed_id The last product id processed in the previous batch.
+	 *                               The new batch will start processing products from this last ID.
 	 *
 	 * @return bool|\WP_Error true for success otherwise \WP_Error.
 	 */
 	public function generate_part( string $lang, int $page = 1, int $post_per_page = 20, int $last_processed_id = 0 ) {
 		if ( ! is_dir( self::get_feed_parts_folder_path( $lang ) ) ) {
 			wp_mkdir_p( self::get_feed_parts_folder_path( $lang ) );
+		}
+
+		// Detect old feed generation params and reschedule the process.
+		if ( $page > 1 && 0 === $last_processed_id ) {
+			$this->clean_feed_parts_directory( $lang );
+			self::schedule_generation_part( $lang, 1, $post_per_page );
+
+			return new \WP_Error(
+				'shopping_feed_generation_deprecated_page',
+				'Deprecated parameter page use. Rescheduling new feed generation.'
+			);
 		}
 
 		$args = array(

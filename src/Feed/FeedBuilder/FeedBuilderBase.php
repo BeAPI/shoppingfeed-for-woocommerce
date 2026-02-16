@@ -121,12 +121,28 @@ class FeedBuilderBase extends FeedBuilder {
 	}
 
 	/**
-	 * @param int $page
-	 * @param int $post_per_page
+	 * Generate a feed's part.
+	 *
+	 * @param int $page Deprecated. The current page of products to generate.
+	 *                  Replaced by the `$last_processed_id`. Kept for back-compatibility.
+	 * @param int $post_per_page The number of products to include in the part.
+	 * @param int $last_processed_id The last product id processed in the previous batch.
+	 *                               The new batch will start processing products from this last ID.
 	 *
 	 * @return bool|\WP_Error true for success otherwise \WP_Error.
 	 */
 	public function generate_part( int $page = 1, int $post_per_page = 20, int $last_processed_id = 0 ) {
+		// Detect old feed generation params and reschedule the process.
+		if ( $page > 1 && 0 === $last_processed_id ) {
+			$this->clean_feed_parts_directory();
+			self::schedule_generation_part( 1, $post_per_page );
+
+			return new \WP_Error(
+				'shopping_feed_generation_deprecated_page',
+				'Deprecated parameter page use. Rescheduling new feed generation.'
+			);
+		}
+
 		$args = array(
 			'limit'   => $post_per_page,
 			'orderby' => 'ID',
