@@ -972,7 +972,7 @@ class Options {
 		// Show out of stock products in feed
 		add_settings_field(
 			'out_of_stock_products_in_feed',
-			__( 'Include out of stock products in the feed', 'shopping-feed' ),
+			__( 'Out of stock products', 'shopping-feed' ),
 			function () {
 				?>
 				<label>
@@ -981,6 +981,28 @@ class Options {
 						name="<?php echo esc_attr( sprintf( '%s[out_of_stock_products_in_feed]', self::SF_FEED_OPTIONS ) ); ?>"
 						<?php checked( $this->sf_feed_options['out_of_stock_products_in_feed'] ?? '', 'on' ); ?>
 					/>
+					<?php esc_html_e( 'Include out of stock products in the feed', 'shopping-feed' ); ?>
+				</label>
+
+				<?php
+			},
+			self::SF_FEED_SETTINGS_PAGE,
+			'sf_feed_settings_categories'
+		);
+
+		// Show out of stock products in feed
+		add_settings_field(
+			'on_backorder_products_in_feed',
+			__( 'On backorder products', 'shopping-feed' ),
+			function () {
+				?>
+				<label>
+					<input
+						type="checkbox"
+						name="<?php echo esc_attr( sprintf( '%s[on_backorder_products_in_feed]', self::SF_FEED_OPTIONS ) ); ?>"
+						<?php checked( $this->sf_feed_options['on_backorder_products_in_feed'] ?? '', 'on' ); ?>
+					/>
+					<?php esc_html_e( 'Include on backorder products in the feed', 'shopping-feed' ); ?>
 				</label>
 
 				<?php
