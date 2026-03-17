@@ -99,8 +99,8 @@
     "test-acceptance": "./vendor/bin/codecept run acceptance --html",
     "mozart-compose": [
       "vendor/bin/mozart compose",
-      "find ./vendor_prefixed -type f -exec sed -i '' 's/use GuzzleHttp;/use ShoppingFeed\\\\ShoppingFeedWC\\\\Dependencies\\\\GuzzleHttp;/g' {} \\;",
-      "find ./vendor_prefixed -type f -exec sed -i '' 's/use Psr\\\\Http\\\\/use ShoppingFeed\\\\ShoppingFeedWC\\\\Dependencies\\\\Psr\\\\Http\\\\/g' {} \\;",
+      "find ./vendor_prefixed -type f -name '*.php' -exec sed -i '' 's/use GuzzleHttp;/use ShoppingFeed\\\\ShoppingFeedWC\\\\Dependencies\\\\GuzzleHttp;/g' {} \\;",
+      "find ./vendor_prefixed -type f -name '*.php' -exec sed -i '' 's/use Psr\\\\Http\\\\/use ShoppingFeed\\\\ShoppingFeedWC\\\\Dependencies\\\\Psr\\\\Http\\\\/g' {} \\;",
       "find ./vendor_prefixed -type f -name '*.php' -exec sed -i '' 's/\\\\GuzzleHttp\\\\ClientInterface::VERSION/\\\\ShoppingFeed\\\\ShoppingFeedWC\\\\Dependencies\\\\GuzzleHttp\\\\ClientInterface::VERSION/g' {} \\;",
       "@composer dump-autoload -o",
       "@composer dump-autoload -o"
