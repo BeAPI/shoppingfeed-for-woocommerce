@@ -26,7 +26,6 @@ Version 6.0.0 is a major version, there are several changes and improvements whi
 #### Fixes
 
 * **Order** : Check for reference alias in itemsReferencesAliases when importing order.
-* **Order (Zalando)** : Detect channels named zalando + merchant suffix so additional fields (e.g. customer_number) import correctly.
 
 = 7.0.0 =
 

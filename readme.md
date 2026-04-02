@@ -28,7 +28,6 @@
 #### Fixes
 
 * **Order** : Check for reference alias in itemsReferencesAliases when importing order.
-* **Order (Zalando)** : Detect channels named zalando + merchant suffix so additional fields (e.g. customer_number) import correctly.
 
 ### 7.0.0
 
