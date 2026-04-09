@@ -2,13 +2,13 @@
 Contributors: ShoppingFeed, BeAPI
 Tags: shoppingfeed, marketplace, woocommerce, products feed, import orders
 Description: WordPress connection Controller Plugin for ShoppingFeed – Sell on Amazon, Ebay, Google, and 1000’s of international marketplaces
-Stable tag: 7.1.0
-Version: 7.1.0
+Stable tag: 7.2.0
+Version: 7.2.0
 Requires PHP: 7.3
 Requires at least: 5.7
-Tested up to: 6.8
+Tested up to: 6.9
 WC requires at least: 7.0
-WC tested up to: 9.6.0
+WC tested up to: 9.9.3
 License: GPL v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,6 +16,13 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
 
 == Changelog ==
+
+= 7.2.0 =
+
+#### Enhancements
+
+* **Feed** : Add filters to customize feed directory and feed parts directory paths.
+* **Order** : Add filter to customize shipping rate when importing an order.
 
 = 7.1.0 =
 
