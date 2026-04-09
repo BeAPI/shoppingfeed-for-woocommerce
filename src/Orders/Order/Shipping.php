@@ -99,6 +99,15 @@ class Shipping {
 			return;
 		}
 		$shipping_rate = ShoppingFeedHelper::get_wc_shipping_from_sf_carrier( $this->method );
+
+		/**
+		 * Filter the shipping method data used when creating the shipping rates.
+		 *
+		 * @param array $shipping_rate the shipping method data.
+		 * @param OrderResource $sf_order the ShoppingFeed order.
+		 */
+		$shipping_rate = apply_filters( 'shopping_feed_order_shipping_rate', $shipping_rate, $this->sf_order );
+
 		if ( empty( $shipping_rate ) ) {
 			$shipping_rate = $default_shipping_method;
 		}
