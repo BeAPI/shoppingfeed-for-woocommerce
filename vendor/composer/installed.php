@@ -1,0 +1,41 @@
+<?php return array(
+    'root' => array(
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'type' => 'wordpress-plugin',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'reference' => '09f9da0153b0884ac99a156ae01e505af50ba0dc',
+        'name' => 'shoppingfeed/shoppingfeed-for-woocommerce',
+        'dev' => false,
+    ),
+    'versions' => array(
+        'composer/installers' => array(
+            'pretty_version' => 'v2.3.0',
+            'version' => '2.3.0.0',
+            'type' => 'composer-plugin',
+            'install_path' => __DIR__ . '/./installers',
+            'aliases' => array(),
+            'reference' => '12fb2dfe5e16183de69e784a7b84046c43d97e8e',
+            'dev_requirement' => false,
+        ),
+        'shoppingfeed/php-feed-generator' => array(
+            'pretty_version' => '1.4.1',
+            'version' => '1.4.1.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../shoppingfeed/php-feed-generator',
+            'aliases' => array(),
+            'reference' => 'd57bddd09792486a2efe589443e4b41d68372fcd',
+            'dev_requirement' => false,
+        ),
+        'shoppingfeed/shoppingfeed-for-woocommerce' => array(
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'type' => 'wordpress-plugin',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'reference' => '09f9da0153b0884ac99a156ae01e505af50ba0dc',
+            'dev_requirement' => false,
+        ),
+    ),
+);
