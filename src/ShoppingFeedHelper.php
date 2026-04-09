@@ -57,6 +57,13 @@ class ShoppingFeedHelper {
 
 	/**
 	 * Return the feed's directory.
+	 *
+	 * Filtering the value of the SF_FEED_DIR constant WILL NOT affect the value of the SF_FEED_PARTS_DIR constant nor the return value
+	 * of the {@see ShoppingFeedHelper::get_feed_parts_directory} method !
+	 *
+	 * If you want to change the root directory where feed files are stored (both for the feed files and the feed parts files), you should filter
+	 * both `shopping_feed_feed_directory_path` and the `shopping_feed_feed_parts_directory_path`.
+	 *
 	 * @return string
 	 */
 	public static function get_feed_directory() {
@@ -70,6 +77,13 @@ class ShoppingFeedHelper {
 
 	/**
 	 * Return the feed's parts directory.
+	 *
+	 * For backward compatibility, this method uses the SF_FEED_PARTS_DIR constant which is build from the SF_FEED_DIR constant.
+	 * Filtering the SF_FEED_DIR constant via the `shopping_feed_feed_directory_path` filter WILL NOT affect the SF_FEED_PARTS_DIR constant !
+	 *
+	 * If you want to change the root directory where feed files are stored (both for the feed files and the feed parts files), you should filter
+	 * both `shopping_feed_feed_directory_path` and the `shopping_feed_feed_parts_directory_path`.
+	 *
 	 * @return string
 	 */
 	public static function get_feed_parts_directory() {
