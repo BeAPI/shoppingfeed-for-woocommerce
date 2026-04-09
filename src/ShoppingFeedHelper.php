@@ -56,27 +56,61 @@ class ShoppingFeedHelper {
 	}
 
 	/**
-	 * Return the feed's directory
+	 * Return the feed's directory.
+	 *
+	 * Filtering the value of the SF_FEED_DIR constant WILL NOT affect the value of the SF_FEED_PARTS_DIR constant nor the return value
+	 * of the {@see ShoppingFeedHelper::get_feed_parts_directory} method !
+	 *
+	 * If you want to change the root directory where feed files are stored (both for the feed files and the feed parts files), you should filter
+	 * both `shopping_feed_feed_directory_path` and the `shopping_feed_feed_parts_directory_path`.
+	 *
 	 * @return string
 	 */
 	public static function get_feed_directory() {
-		return SF_FEED_DIR;
+		/**
+		 * Filter the path to the directory where product feeds are stored.
+		 *
+		 * @param string $path Path to the directory.
+		 */
+		return (string) apply_filters( 'shopping_feed_feed_directory_path', SF_FEED_DIR );
 	}
 
 	/**
-	 * Return the feed's parts directory
+	 * Return the feed's parts directory.
+	 *
+	 * For backward compatibility, this method uses the SF_FEED_PARTS_DIR constant which is build from the SF_FEED_DIR constant.
+	 * Filtering the SF_FEED_DIR constant via the `shopping_feed_feed_directory_path` filter WILL NOT affect the SF_FEED_PARTS_DIR constant !
+	 *
+	 * If you want to change the root directory where feed files are stored (both for the feed files and the feed parts files), you should filter
+	 * both `shopping_feed_feed_directory_path` and the `shopping_feed_feed_parts_directory_path`.
+	 *
 	 * @return string
 	 */
 	public static function get_feed_parts_directory() {
-		return SF_FEED_PARTS_DIR;
+		/**
+		 * Filter the path to the directory where product feeds parts are stored.
+		 *
+		 * @param string $path Path to the directory.
+		 */
+		return (string) apply_filters( 'shopping_feed_feed_parts_directory_path', SF_FEED_PARTS_DIR );
 	}
 
 	/**
-	 * Return the feed's file name
+	 * Return the feed's file name.
+	 *
+	 * The filename doesn't contain the file extension.
+	 *
 	 * @return string
 	 */
 	public static function get_feed_filename() {
-		return 'products';
+		/**
+		 * Filter the product feed's filename.
+		 *
+		 * The filename must not contain the file extension.
+		 *
+		 * @param string $path Feed's filename.
+		 */
+		return (string) apply_filters( 'shopping_feed_feed_filename', 'products' );
 	}
 
 	/**
