@@ -61,7 +61,10 @@ trait Marketplace {
 	}
 
 	/**
-	 * Check if the current SF order is from the Zalando marketplace
+	 * Check if the current SF order is from the Zalando marketplace.
+	 *
+	 * Channel names follow Shopping Feed taxonomy: "zalando" + merchant account suffix
+	 * (e.g. zalandomaisontoufet), not a single global "Zalando" channel id.
 	 *
 	 * @param OrderResource $sf_order
 	 *
@@ -76,10 +79,7 @@ trait Marketplace {
 			return false;
 		}
 
-		return (
-			( 'ZALANDO' === strtoupper( substr( $name, 0, 7 ) ) ) &&
-			( substr( $name, 0, 7 ) . $id === $name )
-		);
+		return 0 === stripos( $name, 'zalando' );
 	}
 
 	/**
