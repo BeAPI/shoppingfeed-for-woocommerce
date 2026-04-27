@@ -135,11 +135,16 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 				'orderby'      => 'date',
 				'order'        => 'DESC',
 				'status'       => 'publish',
-				'stock_status' => 'instock',
+				'stock_status' => [ 'instock' ],
 			],
 			$products_query_args
 		);
+	}
 
+	/**
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Products::get_list_args
+	 */
+	public function test_get_products_for_feed_query_args_include_out_of_stock_products_in_feed() {
 		add_filter(
 			'pre_option_sf_feed_options',
 			function ( $value ) {
@@ -163,8 +168,57 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	}
 
 	/**
-	 * @covers
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Products::get_list_args
 	 */
+	public function test_get_products_for_feed_query_args_include_on_backorder_products_in_feed() {
+		add_filter(
+			'pre_option_sf_feed_options',
+			function ( $value ) {
+				return [
+					'on_backorder_products_in_feed' => 'on',
+				];
+			}
+		);
+
+		$products_query_args = Products::get_instance()->get_list_args();
+		$this->assertEqualSets(
+			[
+				'limit'        => - 1,
+				'orderby'      => 'date',
+				'order'        => 'DESC',
+				'status'       => 'publish',
+				'stock_status' => [ 'instock', 'onbackorder' ],
+			],
+			$products_query_args
+		);
+	}
+
+	/**
+	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Products::get_list_args
+	 */
+	public function test_get_products_for_feed_query_args_include_out_of_stock_and_on_backorder_products_in_feed() {
+		add_filter(
+			'pre_option_sf_feed_options',
+			function ( $value ) {
+				return [
+					'out_of_stock_products_in_feed' => 'on',
+					'on_backorder_products_in_feed' => 'on',
+				];
+			}
+		);
+
+		$products_query_args = Products::get_instance()->get_list_args();
+		$this->assertEqualSets(
+			[
+				'limit'        => - 1,
+				'orderby'      => 'date',
+				'order'        => 'DESC',
+				'status'       => 'publish',
+				'stock_status' => [ 'instock', 'outofstock', 'onbackorder' ],
+			],
+			$products_query_args
+		);
+	}
 
 	/**
 	 * @covers \ShoppingFeed\ShoppingFeedWC\Products\Product::get_quantity
@@ -472,11 +526,11 @@ class ProductFeedTest extends \Codeception\TestCase\WPTestCase {
 	public function test_variation_extra_fields() {
 		$extra_fields = [
 			[
-				'name' => 'field1',
+				'name'  => 'field1',
 				'value' => 'value1',
 			],
 			[
-				'name' => 'field2',
+				'name'  => 'field2',
 				'value' => 'value2',
 			],
 		];
