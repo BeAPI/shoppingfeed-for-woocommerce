@@ -59,11 +59,15 @@ class Products {
 			'orderby'      => 'date',
 			'order'        => 'DESC',
 			'status'       => 'publish',
-			'stock_status' => 'instock',
+			'stock_status' => [ 'instock' ],
 		);
 
 		if ( true === ShoppingFeedHelper::show_out_of_stock_products_in_feed() ) {
-			$default_args['stock_status'] = [ 'instock', 'outofstock' ];
+			$default_args['stock_status'][] = 'outofstock';
+		}
+
+		if ( true === ShoppingFeedHelper::show_on_backorder_products_in_feed() ) {
+			$default_args['stock_status'][] = 'onbackorder';
 		}
 
 		/**
