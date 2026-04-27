@@ -68,13 +68,19 @@ class FeedBuilderBase extends FeedBuilder {
 	/**
 	 * @param int $page
 	 * @param int $post_per_page
+	 * @param int $last_processed_id
 	 *
 	 * @return void
 	 */
-	public static function schedule_generation_part( int $page = 1, int $post_per_page = 20 ): void {
+	public static function schedule_generation_part( int $page = 1, int $post_per_page = 20, int $last_processed_id = 0 ): void {
 		// $page can't be less than 1
 		if ( $page < 1 ) {
 			$page = 1;
+		}
+
+		// $last_processed_id can't be less than 0
+		if ( $last_processed_id < 0 ) {
+			$last_processed_id = 0;
 		}
 
 		// $post_per_page can't be less than 1
@@ -88,6 +94,7 @@ class FeedBuilderBase extends FeedBuilder {
 			array(
 				$page,
 				$post_per_page,
+				$last_processed_id,
 			),
 			'sf_feed_generation_process'
 		);
@@ -109,23 +116,54 @@ class FeedBuilderBase extends FeedBuilder {
 	 * @return void
 	 */
 	public function register(): void {
-		add_action( 'sf_feed_generation_part', [ $this, 'generate_part' ], 10, 2 );
+		add_action( 'sf_feed_generation_part', [ $this, 'generate_part' ], 10, 3 );
 		add_action( 'sf_feed_generation_combine_feed_parts', [ $this, 'combine_parts' ] );
 	}
 
 	/**
-	 * @param int $page
-	 * @param int $post_per_page
+	 * Generate a feed's part.
+	 *
+	 * @param int $page Deprecated. The current page of products to generate.
+	 *                  Replaced by the `$last_processed_id`. Kept for back-compatibility.
+	 * @param int $post_per_page The number of products to include in the part.
+	 * @param int $last_processed_id The last product id processed in the previous batch.
+	 *                               The new batch will start processing products from this last ID.
 	 *
 	 * @return bool|\WP_Error true for success otherwise \WP_Error.
 	 */
-	public function generate_part( int $page = 1, int $post_per_page = 20 ) {
-		$args     = array(
-			'page'   => $page,
-			'limit'  => $post_per_page,
-			'return' => 'ids',
+	public function generate_part( int $page = 1, int $post_per_page = 20, int $last_processed_id = 0 ) {
+		// Detect old feed generation params and reschedule the process.
+		if ( $page > 1 && 0 === $last_processed_id ) {
+			$this->clean_feed_parts_directory();
+			self::schedule_generation_part( 1, $post_per_page );
+
+			return new \WP_Error(
+				'shopping_feed_generation_deprecated_page',
+				'Deprecated parameter page use. Rescheduling new feed generation.'
+			);
+		}
+
+		$args = array(
+			'limit'   => $post_per_page,
+			'orderby' => 'ID',
+			'order'   => 'DESC',
+			'return'  => 'ids',
 		);
+
+		$where_clause = static function ( $posts_clauses ) use ( $last_processed_id ) {
+			global $wpdb;
+			$posts_clauses['where'] .= $wpdb->prepare( " AND $wpdb->posts.ID < %d", $last_processed_id );
+
+			return $posts_clauses;
+		};
+
+		if ( $last_processed_id > 0 ) {
+			add_filter( 'posts_clauses', $where_clause );
+		}
 		$products = Products::get_instance()->get_products( $args );
+		if ( $last_processed_id > 0 ) {
+			remove_filter( 'posts_clauses', $where_clause );
+		}
 
 		// If the query doesn't return any products, schedule the combine action and stop the current action.
 		if ( empty( $products ) ) {
@@ -144,7 +182,8 @@ class FeedBuilderBase extends FeedBuilder {
 		}
 
 		$page ++;
-		self::schedule_generation_part( $page, $post_per_page );
+		$last_product_id = end( $products );
+		self::schedule_generation_part( $page, $post_per_page, $last_product_id );
 
 		return true;
 	}

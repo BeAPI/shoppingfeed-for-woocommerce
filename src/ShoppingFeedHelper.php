@@ -251,6 +251,15 @@ class ShoppingFeedHelper {
 	}
 
 	/**
+	 * Should on backorder products be included in the feed ?
+	 *
+	 * @return bool true if the products on backorder should be in the feed, false otherwise.
+	 */
+	public static function show_on_backorder_products_in_feed() {
+		return 'on' === self::get_sf_feed_options( 'on_backorder_products_in_feed' );
+	}
+
+	/**
 	 * Return display mode for category
 	 * @return string
 	 */
