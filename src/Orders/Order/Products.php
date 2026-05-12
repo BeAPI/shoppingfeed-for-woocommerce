@@ -82,6 +82,16 @@ class Products {
 		$wc_product_id      = $references_aliases[ $sf_product->getReference() ] ?? $sf_product->getReference();
 
 		if ( 'sku' === $product_identifier ) {
+
+			/**
+			 * Filter the SKU from the ShoppingFeed order.
+			 *
+			 * @param string $wc_product_id
+			 * @param OrderItem $sf_product
+			 * @param array $references_aliases
+			 */
+			$wc_product_id = apply_filters( 'shopping_feed_order_products_product_sku', $wc_product_id, $sf_product, $references_aliases );
+
 			$wc_product_id = wc_get_product_id_by_sku( $wc_product_id );
 			if ( ! $wc_product_id ) {
 				return array();
