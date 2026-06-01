@@ -403,7 +403,7 @@ class Product {
 				}
 				$attributes[ wc_attribute_label( $taxonomy ) ] = implode( ',', $attribute_names );
 			}
-
+		}
 		return apply_filters( 'shopping_feed_extra_attributes', $attributes, $this->product );
 	}
 
