@@ -389,20 +389,20 @@ class Product {
 		$attributes = [];
 		if ( ! empty( $wc_attributes ) ) {
 			foreach ( $wc_attributes as $taxonomy => $attribute_obj ) {
-				$attribute = reset( $attribute_obj );
-
-				if ( empty( $attribute ) || empty( $attribute['options'] ) ) {
+				if ( $attribute_obj instanceof \WC_Product_Attribute ) {
+					$options = $attribute_obj->get_options();
+				} else {
 					continue;
 				}
-
-				$attribute_names = array();
-				foreach ( $attribute['options'] as $option ) {
+				if ( empty( $options ) ) {
+					continue;
+				}
+				$attribute_names = [];
+				foreach ( $options as $option ) {
 					$attribute_names[] = term_exists( $option ) ? get_term( $option )->name : $option;
 				}
-
-				$attributes [ wc_attribute_label( $taxonomy ) ] = implode( ',', $attribute_names );
+				$attributes[ wc_attribute_label( $taxonomy ) ] = implode( ',', $attribute_names );
 			}
-		}
 
 		return apply_filters( 'shopping_feed_extra_attributes', $attributes, $this->product );
 	}
