@@ -65,7 +65,25 @@ class Generator {
 				$sf_product = reset( $sf_product );
 
 				/** @var Product $sf_product */
-				return ! empty( $sf_product->get_price() );
+				if ( empty( $sf_product->get_price() ) ) {
+					$wc_product = $sf_product->get_wc_product();
+					ShoppingFeedHelper::log(
+						\WC_Log_Levels::NOTICE,
+						sprintf(
+							'[Product %s] Product skipped: empty price.',
+							$sf_product->get_sku()
+						),
+						'shopping-feed-feed',
+						[
+							'id'   => $wc_product ? $wc_product->get_id() : 0,
+							'type' => $wc_product ? $wc_product->get_type() : '',
+						]
+					);
+
+					return false;
+				}
+
+				return true;
 			}
 		);
 
@@ -155,6 +173,17 @@ class Generator {
 						$product->setAttribute( $field['name'], $field['value'] );
 					}
 				}
+
+				$wc_product = $sf_product->get_wc_product();
+				ShoppingFeedHelper::log(
+					\WC_Log_Levels::INFO,
+					sprintf( '[Product %s] Included in feed.', $sf_product->get_sku() ),
+					'shopping-feed-feed',
+					[
+						'id'   => $wc_product ? $wc_product->get_id() : 0,
+						'type' => $wc_product ? $wc_product->get_type() : '',
+					]
+				);
 			}
 		);
 
@@ -166,9 +195,25 @@ class Generator {
 				$sf_product = reset( $sf_product );
 				/** @var Product $sf_product */
 
+				$wc_product = $sf_product->get_wc_product();
 				$sf_product_variations = $sf_product->get_variations( true );
 
 				if ( empty( $sf_product_variations ) ) {
+					if ( $wc_product && 'variable' === $wc_product->get_type() ) {
+						ShoppingFeedHelper::log(
+							\WC_Log_Levels::NOTICE,
+							sprintf(
+								'[Product %s] Variable product included with no variations.',
+								$sf_product->get_sku()
+							),
+							'shopping-feed-feed',
+							[
+								'id'   => $wc_product->get_id(),
+								'type' => $wc_product->get_type(),
+							]
+						);
+					}
+
 					return;
 				}
 				foreach ( $sf_product_variations as $sf_product_variation ) {
@@ -213,6 +258,20 @@ class Generator {
 							$variation->setAttribute( $field['name'], $field['value'] );
 						}
 					}
+
+					ShoppingFeedHelper::log(
+						\WC_Log_Levels::INFO,
+						sprintf(
+							'[Product %s] Variation %s included in feed.',
+							$sf_product->get_sku(),
+							$sf_product_variation['sku']
+						),
+						'shopping-feed-feed',
+						[
+							'id'           => $wc_product ? $wc_product->get_id() : 0,
+							'variation_id' => $sf_product_variation['id'],
+						]
+					);
 				}
 			}
 		);

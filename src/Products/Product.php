@@ -457,13 +457,62 @@ class Product {
 		foreach ( $product->get_children() as $variation_id ) {
 			$variation = wc_get_product( $variation_id );
 
-			// Hide out of stock variations if '$show_out_of_stock_variations' is true.
-			if ( ! $variation || ! $variation->exists() || ( ! $show_out_of_stock_variations && ! $variation->is_in_stock() ) ) {
+			if ( ! $variation || ! $variation->exists() ) {
+				if ( $for_feed ) {
+					ShoppingFeedHelper::log(
+						\WC_Log_Levels::NOTICE,
+						sprintf(
+							'[Product %s] Variation %s skipped: variation does not exist.',
+							$this->get_sku(),
+							$variation_id
+						),
+						'shopping-feed-feed',
+						[
+							'id'           => $this->id,
+							'variation_id' => $variation_id,
+						]
+					);
+				}
+				continue;
+			}
+
+			// Hide out of stock variations when out-of-stock products are not allowed in the feed.
+			if ( ! $show_out_of_stock_variations && ! $variation->is_in_stock() ) {
+				if ( $for_feed ) {
+					ShoppingFeedHelper::log(
+						\WC_Log_Levels::NOTICE,
+						sprintf(
+							'[Product %s] Variation %s skipped: out of stock.',
+							$this->get_sku(),
+							$variation->get_id()
+						),
+						'shopping-feed-feed',
+						[
+							'id'           => $this->id,
+							'variation_id' => $variation->get_id(),
+						]
+					);
+				}
 				continue;
 			}
 
 			// Filter 'woocommerce_hide_invisible_variations' to optionally hide invisible variations (disabled variations and variations with empty price).
 			if ( apply_filters( 'woocommerce_hide_invisible_variations', true, $variation->get_id(), $variation ) && ! $variation->variation_is_visible() ) {
+				if ( $for_feed ) {
+					ShoppingFeedHelper::log(
+						\WC_Log_Levels::NOTICE,
+						sprintf(
+							'[Product %s] Variation %s skipped: invisible (disabled or empty price).',
+							$this->get_sku(),
+							$variation->get_id()
+						),
+						'shopping-feed-feed',
+						[
+							'id'           => $this->id,
+							'variation_id' => $variation->get_id(),
+						]
+					);
+				}
 				continue;
 			}
 

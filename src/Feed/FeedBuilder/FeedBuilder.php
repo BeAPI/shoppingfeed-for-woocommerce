@@ -164,13 +164,37 @@ abstract class FeedBuilder {
 	 * @return bool|\WP_Error
 	 */
 	protected function write_products_feed( string $file_path, array $products ) {
+		ShoppingFeedHelper::log(
+			\WC_Log_Levels::INFO,
+			sprintf( '>>> Writing products feed part >>> %s', $file_path ),
+			'shopping-feed-feed'
+		);
+
 		$products_list = Products::get_instance()->format_products( $products );
 		try {
 			$generator = Generator::make( $file_path );
 			$generator->write( $products_list );
 		} catch ( \Exception $exception ) {
+			ShoppingFeedHelper::log(
+				\WC_Log_Levels::CRITICAL,
+				sprintf(
+					'Products feed part write exception : %s',
+					$exception->getMessage()
+				),
+				'shopping-feed-feed',
+				[
+					'file_path' => $file_path,
+				]
+			);
+
 			return new \WP_Error( 'shopping_feed_generation_error', $exception->getMessage() );
 		}
+
+		ShoppingFeedHelper::log(
+			\WC_Log_Levels::INFO,
+			'<<< Products feed part written <<<',
+			'shopping-feed-feed'
+		);
 
 		return true;
 	}
