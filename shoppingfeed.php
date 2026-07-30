@@ -7,7 +7,7 @@
  * Author URI:           https://www.shopping-feed.com/
  * Text Domain:          shopping-feed
  * Domain Path:          /languages
- * Version:              7.3.0
+ * Version:              7.3.1
  * Requires at least:    5.7
  * Requires PHP:         7.3
  * WC requires at least: 7.0
@@ -26,7 +26,7 @@ if ( file_exists( plugin_dir_path( __FILE__ ) . '/vendor/autoload.php' ) ) {
 	require_once plugin_dir_path( __FILE__ ) . '/vendor/autoload.php';
 }
 
-define( 'SF_VERSION', '7.3.0' );
+define( 'SF_VERSION', '7.3.1' );
 define( 'SF_DB_VERSION_SLUG', 'SF_DB_VERSION' );
 define( 'SF_DB_VERSION', '1.0.0' );
 define( 'SF_UPGRADE_RUNNING', 'SF_UPGRADE_RUNNING' );
