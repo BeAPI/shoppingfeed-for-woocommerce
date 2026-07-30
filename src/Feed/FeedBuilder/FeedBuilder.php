@@ -2,6 +2,7 @@
 
 namespace ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilder;
 
+use ShoppingFeed\Feed\Product\Product;
 use ShoppingFeed\Feed\ProductFeedMetadata;
 use ShoppingFeed\ShoppingFeedWC\Feed\Generator;
 use ShoppingFeed\ShoppingFeedWC\Products\Products;
@@ -165,6 +166,14 @@ abstract class FeedBuilder {
 	 */
 	protected function write_products_feed( string $file_path, array $products ) {
 		$products_list = Products::get_instance()->format_products( $products );
+
+		/**
+		 * Filter the list of products to be written to the feed.
+		 *
+		 * @param Product[] $products_list
+		 */
+		$products_list = apply_filters( 'shopping_feed_products_for_feed', $products_list );
+
 		try {
 			$generator = Generator::make( $file_path );
 			$generator->write( $products_list );

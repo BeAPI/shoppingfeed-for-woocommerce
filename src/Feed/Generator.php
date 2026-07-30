@@ -5,12 +5,10 @@ namespace ShoppingFeed\ShoppingFeedWC\Feed;
 // Exit on direct access
 defined( 'ABSPATH' ) || exit;
 
-use Exception;
+use ShoppingFeed\Feed\Product\Product;
 use ShoppingFeed\Feed\ProductGenerator;
-use ShoppingFeed\ShoppingFeedWC\Products\Product;
-use ShoppingFeed\ShoppingFeedWC\Products\Products;
+use ShoppingFeed\ShoppingFeedWC\Products\Product as SFWCProduct;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
-use WP_Error;
 
 /**
  * @psalm-consistent-constructor
@@ -60,11 +58,8 @@ class Generator {
 		# Ignore all items with undefined price
 		$generator->addFilter(
 			function (
-				array $sf_product
+				SFWCProduct $sf_product
 			) {
-				$sf_product = reset( $sf_product );
-
-				/** @var Product $sf_product */
 				return ! empty( $sf_product->get_price() );
 			}
 		);
@@ -79,10 +74,8 @@ class Generator {
 		//Simple product mapping
 		$generator->addMapper(
 			function (
-				array $sf_product, \ShoppingFeed\Feed\Product\Product $product
+				SFWCProduct $sf_product, Product $product
 			) {
-				$sf_product = reset( $sf_product );
-				/** @var Product $sf_product */
 				$product->setReference( $sf_product->get_sku() );
 				$product->setName( $sf_product->get_name() );
 				$product->setPrice( $sf_product->get_price() );
@@ -161,11 +154,8 @@ class Generator {
 		//Product with variations mapping
 		$generator->addMapper(
 			function (
-				array $sf_product, \ShoppingFeed\Feed\Product\Product $product
+				SFWCProduct $sf_product, Product $product
 			) {
-				$sf_product = reset( $sf_product );
-				/** @var Product $sf_product */
-
 				$sf_product_variations = $sf_product->get_variations( true );
 
 				if ( empty( $sf_product_variations ) ) {
