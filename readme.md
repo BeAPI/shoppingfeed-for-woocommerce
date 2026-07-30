@@ -3,8 +3,8 @@
 * Contributors: ShoppingFeed, BeAPI
 * Tags: shoppingfeed, marketplace, woocommerce, products feed, import orders
 * Description: WordPress connection Controller Plugin for ShoppingFeed – Sell on Amazon, Ebay, Google, and 1000’s of international marketplaces
-* Stable tag: 7.3.0
-* Version: 7.3.0
+* Stable tag: 7.3.1
+* Version: 7.3.1
 * Requires PHP: 7.3
 * Requires at least: 5.7
 * Tested up to: 6.9
@@ -18,6 +18,12 @@
 > Version 6.0.0 is a major version, there are several changes and improvements which affect the architecture of the plugin. You will have to re-configure the plugin, all the previous settings will be lost
 
 ## Changelog
+
+### 7.3.1
+
+#### Fixes
+
+* **Miscellaneous** : Fix PHP warning "Calling reset() on an object is deprecated"
 
 ### 7.3.0
 

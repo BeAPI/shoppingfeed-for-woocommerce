@@ -1038,38 +1038,38 @@ class Options {
 			'categories',
 			__( 'Categories to export', 'shopping-feed' ),
 			function () use ( $product_categories ) {
-                if ( ShoppingFeedHelper::support_multilingual_feed() ) {
-                    $current_language = ShoppingFeedHelper::current_language();
-                    foreach ( ShoppingFeedHelper::get_available_languages_for_feed() as $language ) {
-                        $option_name = sprintf( 'categories-%s', $language );
-                        $selected_product_categories = array_map( 'absint', ( $this->sf_feed_options[ $option_name ] ?? [] ) );
-                        if ( $language !== $current_language ) {
-                            foreach ( $selected_product_categories as $category ) :
-							?>
-                            <input type="hidden" name="<?php echo esc_attr( sprintf( '%s[%s][]', self::SF_FEED_OPTIONS, $option_name ) ); ?>" value="<?php echo esc_attr( $category ); ?>">
-							<?php
+				if ( ShoppingFeedHelper::support_multilingual_feed() ) {
+					$current_language = ShoppingFeedHelper::current_language();
+					foreach ( ShoppingFeedHelper::get_available_languages_for_feed() as $language ) {
+						$option_name = sprintf( 'categories-%s', $language );
+						$selected_product_categories = array_map( 'absint', ( $this->sf_feed_options[ $option_name ] ?? [] ) );
+						if ( $language !== $current_language ) {
+							foreach ( $selected_product_categories as $category ) :
+								?>
+							<input type="hidden" name="<?php echo esc_attr( sprintf( '%s[%s][]', self::SF_FEED_OPTIONS, $option_name ) ); ?>" value="<?php echo esc_attr( $category ); ?>">
+								<?php
 							endforeach;
 							continue;
-                        }
-				?>
+						}
+						?>
 				<select class="categories" multiple
 						name='<?php echo esc_attr( sprintf( '%s[%s][]', self::SF_FEED_OPTIONS, $option_name ) ); ?>'>
-					<?php
-					foreach ( $product_categories as $category ) {
-						?>
+						<?php
+						foreach ( $product_categories as $category ) {
+							?>
 						<option value="<?php echo esc_attr( $category->term_id ); ?>"
 							<?php selected( in_array( $category->term_id, $selected_product_categories, true ) ); ?>
 						>
 							<?php echo esc_html( $category->name ); ?></option>
+							<?php
+						}
+						?>
+				</select>
 						<?php
 					}
+				} else {
+					$selected_product_categories = array_map( 'absint', ( $this->sf_feed_options['categories'] ?? [] ) );
 					?>
-				</select>
-				<?php
-                    }
-                } else {
-				$selected_product_categories = array_map( 'absint', ( $this->sf_feed_options['categories'] ?? [] ) );
-				?>
 				<select class="categories" multiple
 						name='<?php echo esc_attr( sprintf( '%s[%s][]', self::SF_FEED_OPTIONS, 'categories' ) ); ?>'>
 					<?php
@@ -1083,9 +1083,9 @@ class Options {
 					}
 					?>
 				</select>
-				<?php
-                }
-                ?>
+					<?php
+				}
+				?>
 				<p class="description"
 				   id="tagline-description"><?php esc_html_e( 'Product categories to export to Shoppingfeed. Default : all', 'shopping-feed' ); ?></p>
 				<?php
@@ -1332,7 +1332,7 @@ class Options {
 		$default_shipping_method                      = ShoppingFeedHelper::get_default_shipping_method();
 		$sf_orders_options_default_shipping_method_id = false;
 		if ( ! empty( $default_shipping_method ) ) {
-			$sf_orders_options_default_shipping_method_id = sprintf('%s:%s', $default_shipping_method['method_rate_id'],$default_shipping_method['method_id'] );
+			$sf_orders_options_default_shipping_method_id = sprintf( '%s:%s', $default_shipping_method['method_rate_id'], $default_shipping_method['method_id'] );
 		}
 
 		add_settings_section(
@@ -1403,7 +1403,7 @@ class Options {
 								<?php
 								if ( ! empty( $zone_with_method['methods'] ) ) {
 									foreach ( $zone_with_method['methods'] as $shipping_method ) {
-										$option_select = sprintf('%s:%s', $shipping_method['method_rate_id'],$shipping_method['method_id']) ;
+										$option_select = sprintf( '%s:%s', $shipping_method['method_rate_id'], $shipping_method['method_id'] );
 										?>
 										<option value="<?php echo wc_esc_json( wp_json_encode( $shipping_method ) ); ?>"
 											<?php selected( $option_select, $sf_orders_options_default_shipping_method_id ); ?>>

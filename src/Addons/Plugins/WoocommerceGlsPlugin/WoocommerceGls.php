@@ -19,12 +19,14 @@ class WoocommerceGls {
 	public function add_woocommerce_gls_shipping_methods( $shipping_methods ): array {
 		$gls_shipping_methods_slugs = array_keys( \WC_Gls::$carrier_definition );
 
-
 		/* @var \WC_Gls_Table_Rate_Shipping[] $gls_shipping_methods */
-		$gls_shipping_methods = array_filter( WC()->shipping()->get_shipping_methods(), function ( $item ) use ( $gls_shipping_methods_slugs ) {
+		$gls_shipping_methods = array_filter(
+			WC()->shipping()->get_shipping_methods(),
+			function ( $item ) use ( $gls_shipping_methods_slugs ) {
 
-			return in_array( $item->id, $gls_shipping_methods_slugs );
-		} );
+				return in_array( $item->id, $gls_shipping_methods_slugs );
+			}
+		);
 
 		$gls_shipping_methods_index = $this->build_gls_shipping_methods_index( $gls_shipping_methods );
 
@@ -33,7 +35,7 @@ class WoocommerceGls {
 
 			foreach ( $shipping_zone->get_zone_locations() as $zone_location ) {
 
-				if ( $zone_location->type !== 'country' ) {
+				if ( 'country' !== $zone_location->type ) {
 					continue;
 				}
 
@@ -51,7 +53,6 @@ class WoocommerceGls {
 						'method_title'   => $instance->title,
 					];
 				}
-
 			}
 		}
 
@@ -68,7 +69,7 @@ class WoocommerceGls {
 			}
 
 			foreach ( $shipping_method->zones as $zone ) {
-				if ( $zone['type'] !== 'country' ) {
+				if ( 'country' !== $zone['type'] ) {
 					continue;
 				}
 
@@ -76,12 +77,9 @@ class WoocommerceGls {
 					if ( ! isset( $index[ $country ] ) ) {
 						$index[ $country ] = [];
 					}
-					$index[ $country ][$shipping_method_slug] = $shipping_method_slug;
+					$index[ $country ][ $shipping_method_slug ] = $shipping_method_slug;
 				}
-
 			}
-
-
 		}
 
 		return $index;
