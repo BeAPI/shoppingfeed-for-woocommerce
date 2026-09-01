@@ -7,6 +7,7 @@ defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Actions\Actions;
 use ShoppingFeed\ShoppingFeedWC\Addons\Addons;
+use ShoppingFeed\ShoppingFeedWC\Admin\FeedDiagnosticPage;
 use ShoppingFeed\ShoppingFeedWC\Admin\Metabox;
 use ShoppingFeed\ShoppingFeedWC\Admin\Notices;
 use ShoppingFeed\ShoppingFeedWC\Admin\Options;
@@ -78,6 +79,12 @@ class ShoppingFeed {
 	private $metabox;
 
 	/**
+	 * Feed diagnostic Tools page
+	 * @var FeedDiagnosticPage
+	 */
+	private $feed_diagnostic_page;
+
+	/**
 	 * @var ShoppingFeed
 	 */
 	private static $instance;
@@ -133,6 +140,7 @@ class ShoppingFeed {
 		$this->addons  = new Addons();
 		$this->metabox = new Metabox();
 		$this->rewrite = new Rewrite();
+		$this->feed_diagnostic_page = new FeedDiagnosticPage();
 
 		// Instantiate FeedBuilderManager
 		ShoppingFeedHelper::get_feedbuilder_manager();
