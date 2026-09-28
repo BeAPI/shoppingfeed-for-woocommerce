@@ -33,6 +33,8 @@ tooling:
       - if [ -f /app/wordpress/wp-config.php ]; then echo "wp-config exists deleting it" && rm -f /app/wordpress/wp-config.php; else echo "No wp-config.php, no rm" ; fi
       - echo "➡️ Create WPCONTENT"
       - if [ ! -f /app/wordpress/wp-content ]; then echo "creating wp-content folder" && mkdir -p /app/wordpress/wp-content/plugins; else echo "wp-content folder already created" ; fi
+      - echo "➡️ Download WP"
+      - if [ -f /app/wordpress/wp-includes/version.php ]; then echo "wp-includes/version.php exists, skipping download" ; else wp core download --path=/app/wordpress ; fi
       - echo "➡️ Create config"
       - wp config create --dbname=wordpress --dbuser=wordpress --dbpass=wordpress --dbhost=database --path=/app/wordpress
       - echo "➡️ Install WP"

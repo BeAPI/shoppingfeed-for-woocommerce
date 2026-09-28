@@ -9,6 +9,8 @@ use ShoppingFeed\ShoppingFeedWC\Actions\Actions;
 use ShoppingFeed\ShoppingFeedWC\Addons\Addons;
 use ShoppingFeed\ShoppingFeedWC\Admin\Metabox;
 use ShoppingFeed\ShoppingFeedWC\Admin\Notices;
+use ShoppingFeed\ShoppingFeedWC\Admin\OrderListColumns;
+use ShoppingFeed\ShoppingFeedWC\Admin\OrderTrackingMetabox;
 use ShoppingFeed\ShoppingFeedWC\Admin\Options;
 use ShoppingFeed\ShoppingFeedWC\Admin\WoocommerceActions;
 use ShoppingFeed\ShoppingFeedWC\Admin\WoocommerceFilters;
@@ -78,6 +80,16 @@ class ShoppingFeed {
 	private $metabox;
 
 	/**
+	 * @var OrderListColumns
+	 */
+	private $order_list_columns;
+
+	/**
+	 * @var OrderTrackingMetabox
+	 */
+	private $order_tracking_metabox;
+
+	/**
 	 * @var ShoppingFeed
 	 */
 	private static $instance;
@@ -130,9 +142,11 @@ class ShoppingFeed {
 		$this->filters = new WoocommerceFilters();
 		$this->notices = new Notices();
 		$this->options = new Options();
-		$this->addons  = new Addons();
-		$this->metabox = new Metabox();
-		$this->rewrite = new Rewrite();
+		$this->addons                 = new Addons();
+		$this->metabox                = new Metabox();
+		$this->order_list_columns     = new OrderListColumns();
+		$this->order_tracking_metabox = new OrderTrackingMetabox();
+		$this->rewrite                = new Rewrite();
 
 		// Instantiate FeedBuilderManager
 		ShoppingFeedHelper::get_feedbuilder_manager();

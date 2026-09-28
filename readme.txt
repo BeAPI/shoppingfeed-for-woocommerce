@@ -262,8 +262,9 @@ They can be found in the "Orders" tab :
 
 ## Shipment tracking support
 
-For now, the only shipment tracking plugins supported are :
+Supported shipment tracking sources :
 
+* **ShoppingFeed (built-in)** : tracking number and link saved on ShoppingFeed orders (Shipping tab → Tracking provider → ShoppingFeed Advanced)
 * Advanced Shipment Tracking : https://wordpress.org/plugins/woo-advanced-shipment-tracking/
 * Advanced Shipment Tracking PRO : https://www.zorem.com/product/woocommerce-advanced-shipment-tracking/
 * Woocommerce Shipment Tracking Pro : https://www.pluginhive.com/product/woocommerce-shipment-tracking-pro/
@@ -289,7 +290,7 @@ function your_custom_category_function() {
 `
 
 ### Brands
-By default, we don’t support any custom plugin for product's brand, you can set custom taxonomy slug to identify it by using this snippet :
+By default, ShoppingFeed registers the `product_brand` taxonomy and uses it in the feed. You can override the taxonomy slug with this snippet :
 
 `
 add_filter( 'shopping_feed_custom_brand_taxonomy', 'your_custom_brand_function' );
@@ -301,14 +302,14 @@ function your_custom_brand_function() {
 `
 
 ### EAN
-By default, we don’t support any custom plugin for product EAN, you can set custom taxonomy slug to identify it by using this snippet :
+By default, ShoppingFeed reads the product meta key `sf_advanced_ean_field` (including variations). You can override the meta key with this snippet :
 
 `
 add_filter( 'shopping_feed_custom_ean', 'your_custom_ean_function' );
 
 /** @return string */
 function your_custom_ean_function() {
-    return 'your_custom_ean_slug';
+    return 'your_custom_ean_meta_key';
 }
 `
 
@@ -395,6 +396,10 @@ function sf_product_extra_fields( $fields, $product ) {
 	return $fields;
 }
 `
+
+When **Yoast SEO** is active, the feed also includes `meta-title` and `meta-description` from Yoast.
+
+When **Advanced Custom Fields (ACF)** is active, selected product fields are exported with the `acf_` prefix (configure them in **ShoppingFeed → Feed**; default export = all supported ACF product field types).
 
 #### Add extra fields for variations in product feed
 
