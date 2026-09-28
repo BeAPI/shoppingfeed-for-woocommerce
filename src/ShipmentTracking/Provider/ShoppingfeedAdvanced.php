@@ -28,7 +28,7 @@ class ShoppingfeedAdvanced implements ShipmentTrackingProvider {
 	 * @inheritDoc
 	 */
 	public function is_available(): bool {
-		return defined( 'SFA_PLUGIN_VERSION' );
+		return true;
 	}
 
 	/**
