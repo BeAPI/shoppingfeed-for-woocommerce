@@ -40,15 +40,20 @@ class YoastMetas {
 			return $fields;
 		}
 
+		$post = get_post( $product->get_id() );
+		if ( ! $post instanceof \WP_Post ) {
+			return $fields;
+		}
+
 		$replace_vars = new \WPSEO_Replace_Vars();
 
 		$fields[] = array(
 			'name'  => 'meta-title',
-			'value' => $replace_vars->replace( \WPSEO_Meta::get_value( 'title', $product->get_id() ), $product ),
+			'value' => $replace_vars->replace( \WPSEO_Meta::get_value( 'title', $post->ID ), $post ),
 		);
 		$fields[] = array(
 			'name'  => 'meta-description',
-			'value' => $replace_vars->replace( \WPSEO_Meta::get_value( 'metadesc', $product->get_id() ), $product ),
+			'value' => $replace_vars->replace( \WPSEO_Meta::get_value( 'metadesc', $post->ID ), $post ),
 		);
 
 		return $fields;
