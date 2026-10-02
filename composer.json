@@ -18,14 +18,8 @@
       "email": "technical@beapi.fr"
     }
   ],
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/WordPress/wordpress-develop"
-    }
-  ],
   "require": {
-    "php": "^7.3|^8.0",
+    "php": "^7.4|^8.0",
     "composer/installers": "~1.0|~2.0",
     "shoppingfeed/php-feed-generator": "^1.2.1"
   },
@@ -59,7 +53,7 @@
     "codeception/module-filesystem": "^1.0",
     "codeception/module-cli": "^1.0",
     "codeception/util-universalframework": "^1.0",
-    "roots/wordpress": "^6.9",
+    "roots/wordpress": "^7.0",
     "wp-cli/wp-cli-bundle": "^2.7",
     "coenjacobs/mozart": "^0.7.1",
     "shoppingfeed/php-sdk": "^0.7.0"
@@ -114,7 +108,7 @@
   },
   "config": {
     "platform": {
-      "php": "7.3.99"
+      "php": "7.4.99"
     },
     "allow-plugins": {
       "composer/installers": true,
