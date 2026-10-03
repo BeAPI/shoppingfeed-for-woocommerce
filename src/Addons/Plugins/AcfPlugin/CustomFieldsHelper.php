@@ -30,7 +30,7 @@ class CustomFieldsHelper {
 	 */
 	public static function get_acf_options() {
 		$feed_options = get_option( Options::SF_FEED_OPTIONS, [] );
-		if ( ! empty( $feed_options['acf'] ) && is_array( $feed_options['acf'] ) ) {
+		if ( is_array( $feed_options ) && array_key_exists( 'acf', $feed_options ) && is_array( $feed_options['acf'] ) ) {
 			return self::decode_acf_option_values( $feed_options['acf'] );
 		}
 

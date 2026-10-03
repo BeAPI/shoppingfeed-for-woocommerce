@@ -267,7 +267,7 @@ class Options {
 	}
 
 	/**
-	 * Preserve ACF selection when the field is omitted from the feed settings form.
+	 * Sanitize feed options; preserve ACF only when ACF is inactive (field not in the form).
 	 *
 	 * @param mixed $input Submitted feed options.
 	 *
@@ -282,8 +282,12 @@ class Options {
 			$input = array();
 		}
 
-		if ( ! array_key_exists( 'acf', $input ) && isset( $existing['acf'] ) ) {
-			$input['acf'] = $existing['acf'];
+		if ( ! array_key_exists( 'acf', $input ) ) {
+			if ( ! defined( 'ACF_VERSION' ) && isset( $existing['acf'] ) ) {
+				$input['acf'] = $existing['acf'];
+			} elseif ( defined( 'ACF_VERSION' ) ) {
+				$input['acf'] = array();
+			}
 		}
 
 		if ( isset( $input['acf'] ) && is_array( $input['acf'] ) ) {
