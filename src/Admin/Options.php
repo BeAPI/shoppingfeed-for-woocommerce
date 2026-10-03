@@ -6,6 +6,7 @@ namespace ShoppingFeed\ShoppingFeedWC\Admin;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Actions\Actions;
+use ShoppingFeed\ShoppingFeedWC\Addons\Plugins\AcfPlugin\CustomFieldsHelper;
 use ShoppingFeed\ShoppingFeedWC\Feed\Generator;
 use ShoppingFeed\ShoppingFeedWC\Orders\Operations;
 use ShoppingFeed\ShoppingFeedWC\Sdk\Sdk;
@@ -135,7 +136,10 @@ class Options {
 				//Feed page
 				register_setting(
 					'sf_feed_page_fields',
-					self::SF_FEED_OPTIONS
+					self::SF_FEED_OPTIONS,
+					array(
+						'sanitize_callback' => array( $this, 'sanitize_sf_feed_options' ),
+					)
 				);
 
 				//Shipping page
@@ -259,6 +263,37 @@ class Options {
 				'use_principal_categories' => '0',
 			]
 		);
+	}
+
+	/**
+	 * Sanitize feed options; preserve ACF only when ACF is inactive (field not in the form).
+	 *
+	 * @param mixed $input Submitted feed options.
+	 *
+	 * @return array
+	 */
+	public function sanitize_sf_feed_options( $input ) {
+		$existing = get_option( self::SF_FEED_OPTIONS, array() );
+		if ( ! is_array( $existing ) ) {
+			$existing = array();
+		}
+		if ( ! is_array( $input ) ) {
+			$input = array();
+		}
+
+		if ( ! array_key_exists( 'acf', $input ) ) {
+			if ( ! defined( 'ACF_VERSION' ) && isset( $existing['acf'] ) ) {
+				$input['acf'] = $existing['acf'];
+			} elseif ( defined( 'ACF_VERSION' ) ) {
+				$input['acf'] = array();
+			}
+		}
+
+		if ( isset( $input['acf'] ) && is_array( $input['acf'] ) ) {
+			$input['acf'] = array_map( 'sanitize_text_field', wp_unslash( $input['acf'] ) );
+		}
+
+		return $input;
 	}
 
 	public function schedule_feed_refresh() {
@@ -836,14 +871,14 @@ class Options {
 			'sf_app',
 			SF_PLUGIN_URL . 'assets/css/app.css',
 			[],
-			true
+			SF_VERSION
 		);
 
 		wp_enqueue_script(
 			'multi_js',
 			SF_PLUGIN_URL . 'assets/js/multi.min.js',
 			[ 'jquery' ],
-			true,
+			SF_VERSION,
 			true
 		);
 
@@ -851,18 +886,28 @@ class Options {
 			'accounts',
 			SF_PLUGIN_URL . 'assets/js/accounts.js',
 			[ 'jquery', 'underscore' ],
-			true,
+			SF_VERSION,
 			true
 		);
 
-		wp_enqueue_script( 'multi_js_init', SF_PLUGIN_URL . 'assets/js/init.js', [ 'multi_js' ], true );
+		wp_enqueue_script(
+			'multi_js_init',
+			SF_PLUGIN_URL . 'assets/js/init.js',
+			[ 'jquery', 'multi_js' ],
+			SF_VERSION,
+			true
+		);
 		wp_localize_script(
 			'multi_js_init',
 			'sf_options',
 			[
-				'selected_orders'   => __( 'Selected order status', 'shopping-feed' ),
-				'unselected_orders' => __( 'Unselected order status', 'shopping-feed' ),
-				'search'            => __( 'Search', 'shopping-feed' ),
+				'selected_orders'      => __( 'Selected order status', 'shopping-feed' ),
+				'unselected_orders'    => __( 'Unselected order status', 'shopping-feed' ),
+				'selected_categories'  => __( 'Selected categories', 'shopping-feed' ),
+				'unselected_categories'  => __( 'Unselected categories', 'shopping-feed' ),
+				'selected_acf'         => __( 'Selected ACF fields', 'shopping-feed' ),
+				'unselected_acf'       => __( 'Unselected ACF fields', 'shopping-feed' ),
+				'search'               => __( 'Search', 'shopping-feed' ),
 			]
 		);
 	}
@@ -1026,7 +1071,7 @@ class Options {
 					</option>
 				</select>
 				<p class="description"
-				   id="tagline-description"><?php echo esc_attr_e( 'Category Display Mode', 'shopping-feed' ); ?></p>
+				   id="tagline-description"><?php esc_html_e( 'Category Display Mode', 'shopping-feed' ); ?></p>
 				<?php
 			},
 			self::SF_FEED_SETTINGS_PAGE,
@@ -1093,6 +1138,45 @@ class Options {
 			self::SF_FEED_SETTINGS_PAGE,
 			'sf_feed_settings_categories'
 		);
+
+		if ( defined( 'ACF_VERSION' ) ) {
+			add_settings_section(
+				'sf_feed_settings_acf',
+				__( 'ACF fields', 'shopping-feed' ),
+				'__return_empty_string',
+				self::SF_FEED_SETTINGS_PAGE
+			);
+
+			$acf_product_fields = CustomFieldsHelper::get_acf_product_fields();
+			$selected_acf_fields  = CustomFieldsHelper::get_acf_options();
+
+			add_settings_field(
+				'acf',
+				__( 'Custom fields', 'shopping-feed' ),
+				function () use ( $acf_product_fields, $selected_acf_fields ) {
+					?>
+					<select class="sf-feed-acf-fields" multiple
+							name="<?php echo esc_attr( sprintf( '%s[acf][]', self::SF_FEED_OPTIONS ) ); ?>">
+						<?php
+						foreach ( $acf_product_fields as $acf_product_field ) {
+							?>
+							<option value="<?php echo wc_esc_json( wp_json_encode( $acf_product_field ) ); ?>"
+								<?php selected( CustomFieldsHelper::acf_is_selected( $acf_product_field['key'], $selected_acf_fields ), true ); ?>
+							>
+								<?php echo esc_html( $acf_product_field['label'] ); ?></option>
+							<?php
+						}
+						?>
+					</select>
+					<p class="description">
+						<?php esc_html_e( 'ACF product fields to export to Shoppingfeed. Default : all', 'shopping-feed' ); ?>
+					</p>
+					<?php
+				},
+				self::SF_FEED_SETTINGS_PAGE,
+				'sf_feed_settings_acf'
+			);
+		}
 
 		/**
 		 * Frequencies
