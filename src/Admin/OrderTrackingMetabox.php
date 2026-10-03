@@ -26,10 +26,10 @@ class OrderTrackingMetabox {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
 		}
-		if ( empty( $_POST['sfa_tracking_nounce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['sfa_tracking_nounce'] ) ), '_sfa_tracking_nounce' ) ) {
-			return;
-		}
-		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+
+		$nonce  = isset( $_POST['_sfa_tracking_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['_sfa_tracking_nonce'] ) ) : '';
+		$action = sprintf( 'save_sfa_tracking_%s', $post_id );
+		if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, $action ) || ! current_user_can( 'edit_shop_order', $post_id ) ) {
 			return;
 		}
 
@@ -92,7 +92,6 @@ class OrderTrackingMetabox {
 	 * @param \WP_Post|\WC_Order $order_or_post Order or post.
 	 */
 	public function render( $order_or_post ) {
-		wp_nonce_field( '_sfa_tracking_nounce', 'sfa_tracking_nounce' );
 		$order = ( $order_or_post instanceof \WP_Post ) ? wc_get_order( $order_or_post->ID ) : $order_or_post;
 		if ( false === $order ) {
 			return;
@@ -117,6 +116,10 @@ class OrderTrackingMetabox {
 					value="<?php echo esc_attr( $order->get_meta( TRACKING_LINK_FIELD_SLUG ) ); ?>">
 		</p>
 		<?php
+		wp_nonce_field(
+			sprintf( 'save_sfa_tracking_%d', $order->get_id() ),
+			'_sfa_tracking_nonce'
+		);
 		submit_button( '', 'primary', 'shoppingfeed_carrier_details_submit' );
 	}
 }
