@@ -36,6 +36,13 @@ define( 'SF_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 define( 'SF_FEED_DIR', wp_upload_dir()['basedir'] . '/shopping-feed' );
 define( 'SF_FEED_PARTS_DIR', SF_FEED_DIR . '/parts' );
 
+if ( ! defined( 'TRACKING_NUMBER_FIELD_SLUG' ) ) {
+	define( 'TRACKING_NUMBER_FIELD_SLUG', 'sf_advanced_tracking_number_field' );
+}
+if ( ! defined( 'TRACKING_LINK_FIELD_SLUG' ) ) {
+	define( 'TRACKING_LINK_FIELD_SLUG', 'sf_advanced_tracking_link_field' );
+}
+
 // Plugin activate/deactivate hooks
 register_activation_hook( __FILE__, array( '\\ShoppingFeed\ShoppingFeedWC\ShoppingFeed', 'activate' ) );
 register_deactivation_hook( __FILE__, array( '\\ShoppingFeed\ShoppingFeedWC\ShoppingFeed', 'deactivate' ) );
@@ -55,6 +62,9 @@ function init() {
 }
 
 \add_action( 'plugins_loaded', __NAMESPACE__ . '\\init', 100 );
+
+require_once SF_PLUGIN_DIR . 'src/Addons/StandaloneAddonsGuard.php';
+\add_action( 'plugins_loaded', array( '\\ShoppingFeed\\ShoppingFeedWC\\Addons\\StandaloneAddonsGuard', 'disable_legacy_addons' ), 1 );
 
 /**
  * Load plugin translations.

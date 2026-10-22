@@ -3,6 +3,7 @@
 namespace ShoppingFeed\ShoppingFeedWC\Tests\wpunit\ShimpentTracking;
 
 use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\Provider\NullShipmentTracking;
+use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\Provider\ShoppingfeedAdvanced;
 use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\ShipmentTrackingManager;
 use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 
@@ -34,11 +35,20 @@ class ShipmentTrackingTest extends \Codeception\TestCase\WPTestCase {
 
 	public function test_manager_return_fallback_if_selected_provider_is_not_available() {
 		$options = [
-			'tracking_provider' => 'sf_advanced'
+			'tracking_provider' => 'invalid_provider',
 		];
 		$manager = ShipmentTrackingManager::create( $options );
 
 		$this->assertInstanceOf( NullShipmentTracking::class, $manager->get_selected_provider() );
+	}
+
+	public function test_manager_uses_builtin_sf_advanced_provider() {
+		$options = [
+			'tracking_provider' => 'sf_advanced',
+		];
+		$manager = ShipmentTrackingManager::create( $options );
+
+		$this->assertInstanceOf( ShoppingfeedAdvanced::class, $manager->get_selected_provider() );
 	}
 
 	public function test_wc_tracking_number() {

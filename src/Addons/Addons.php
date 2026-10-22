@@ -5,12 +5,15 @@ namespace ShoppingFeed\ShoppingFeedWC\Addons;
 // Exit on direct access
 defined( 'ABSPATH' ) || exit;
 
+use ShoppingFeed\ShoppingFeedWC\Addons\Advanced\Advanced;
 use ShoppingFeed\ShoppingFeedWC\Addons\Inventory\Inventory;
 use ShoppingFeed\ShoppingFeedWC\Addons\Marketplaces\Marketplaces;
+use ShoppingFeed\ShoppingFeedWC\Addons\Plugins\AcfPlugin\CustomFields;
 use ShoppingFeed\ShoppingFeedWC\Addons\Plugins\ChainedProductsPlugin\ChainedProducts;
 use ShoppingFeed\ShoppingFeedWC\Addons\Plugins\MondialRelayWordpressPlugin\MondialRelayWordpress;
-use ShoppingFeed\ShoppingFeedWC\Addons\Shipping\Shipping;
 use ShoppingFeed\ShoppingFeedWC\Addons\Plugins\WoocommerceGlsPlugin\WoocommerceGls;
+use ShoppingFeed\ShoppingFeedWC\Addons\Plugins\YoastSeoPlugin\YoastMetas;
+use ShoppingFeed\ShoppingFeedWC\Addons\Shipping\Shipping;
 
 class Addons {
 
@@ -46,6 +49,21 @@ class Addons {
 	 */
 	private $woocommerce_gls;
 
+	/**
+	 * @var Advanced
+	 */
+	private $advanced;
+
+	/**
+	 * @var YoastMetas
+	 */
+	private $yoast_metas;
+
+	/**
+	 * @var CustomFields
+	 */
+	private $acf_custom_fields;
+
 	public function __construct() {
 		$this->shipping                = new Shipping();
 		$this->inventory               = new Inventory();
@@ -53,5 +71,8 @@ class Addons {
 		$this->chained_products_plugin = new ChainedProducts();
 		$this->mondial_relay_plugin    = new MondialRelayWordpress();
 		$this->woocommerce_gls         = new WoocommerceGLS();
+		$this->advanced                = new Advanced();
+		$this->yoast_metas             = new YoastMetas();
+		$this->acf_custom_fields       = new CustomFields();
 	}
 }
