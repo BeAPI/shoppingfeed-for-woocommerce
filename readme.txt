@@ -290,7 +290,7 @@ function your_custom_category_function() {
 `
 
 ### Brands
-By default, ShoppingFeed registers the `product_brand` taxonomy and uses it in the feed. You can override the taxonomy slug with this snippet :
+By default, ShoppingFeed uses the `product_brand` taxonomy in the feed (for example WooCommerce Brands when available). Assign brands on the product using the native Brands UI; when several brands are set, the feed exports the first one. If the taxonomy is not registered yet, ShoppingFeed registers `product_brand`. You can override the taxonomy slug with this snippet :
 
 `
 add_filter( 'shopping_feed_custom_brand_taxonomy', 'your_custom_brand_function' );
