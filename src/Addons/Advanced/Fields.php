@@ -6,7 +6,7 @@ namespace ShoppingFeed\ShoppingFeedWC\Addons\Advanced;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * EAN and Brand fields on product edit screen.
+ * EAN field on product edit screen.
  */
 class Fields {
 
@@ -61,16 +61,6 @@ class Fields {
 				'description'         => '',
 				'is_variation_option' => true,
 			),
-			array(
-				'type'                => 'select',
-				'id'                  => BRAND_FIELD_SLUG,
-				'label'               => 'Brand',
-				'placeholder'         => '',
-				'description'         => '',
-				'is_variation_option' => false,
-				'taxonomy'            => Taxonomies::BRAND_TAXONOMY_SLUG,
-				'options_callback'    => 'get_brand_options',
-			),
 		);
 	}
 
@@ -100,36 +90,11 @@ class Fields {
 			'wrapper_class' => isset( $field['wrapper_class'] ) ? $field['wrapper_class'] : '',
 		);
 
-		if ( 'text' === $field['type'] ) {
-			if ( isset( $field['value'] ) ) {
-				$input['value'] = $field['value'];
-			}
-			woocommerce_wp_text_input( $input );
-		} elseif ( 'select' === $field['type'] ) {
-			$input['options'] = call_user_func( array( $this, $field['options_callback'] ) );
-			$field['class']   = 'select short';
-			woocommerce_wp_select( $input );
-		}
-	}
-
-	public function get_brand_options() {
-		$brands = get_terms(
-			array(
-				'taxonomy'   => Taxonomies::BRAND_TAXONOMY_SLUG,
-				'hide_empty' => false,
-			)
-		);
-		if ( ! is_array( $brands ) || ! taxonomy_exists( Taxonomies::BRAND_TAXONOMY_SLUG ) ) {
-			return array();
+		if ( isset( $field['value'] ) ) {
+			$input['value'] = $field['value'];
 		}
 
-		$options     = array();
-		$options[''] = '';
-		foreach ( $brands as $brand ) {
-			$options[ $brand->term_id ] = $brand->name;
-		}
-
-		return $options;
+		woocommerce_wp_text_input( $input );
 	}
 
 	/**
@@ -146,24 +111,6 @@ class Fields {
 			}
 
 			$field_post_data = sanitize_text_field( wp_unslash( $_POST[ $field['id'] ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
-
-			if ( empty( $field_post_data ) ) {
-				if ( ! empty( $field['taxonomy'] ) && taxonomy_exists( $field['taxonomy'] ) ) {
-					wp_set_object_terms( $wc_product->get_id(), array(), $field['taxonomy'] );
-				}
-
-				$wc_product->update_meta_data( $field['id'], '' );
-				$wc_product->save_meta_data();
-				continue;
-			}
-
-			if ( ! empty( $field['taxonomy'] ) && taxonomy_exists( $field['taxonomy'] ) ) {
-				$term = get_term( $field_post_data, $field['taxonomy'] );
-				if ( is_wp_error( $term ) || is_null( $term ) ) {
-					continue;
-				}
-				wp_set_object_terms( $wc_product->get_id(), array( $term->term_id ), $field['taxonomy'] );
-			}
 
 			$wc_product->update_meta_data( $field['id'], wc_clean( wp_unslash( $field_post_data ) ) );
 			$wc_product->save_meta_data();

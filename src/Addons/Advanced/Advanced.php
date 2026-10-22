@@ -6,7 +6,7 @@ namespace ShoppingFeed\ShoppingFeedWC\Addons\Advanced;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Bootstrap for built-in Advanced features (EAN, Brand).
+ * Bootstrap for built-in Advanced features (EAN, brand taxonomy for feed).
  */
 class Advanced {
 
