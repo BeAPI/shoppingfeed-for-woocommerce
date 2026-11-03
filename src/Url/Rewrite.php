@@ -84,7 +84,7 @@ class Rewrite {
 		$lang = ! empty( $wp->query_vars[ self::FEED_LANG_QUERY_VAR ] ) ? $wp->query_vars[ self::FEED_LANG_QUERY_VAR ] : null;
 
 		// Remove first hyphen (-) if needed
-		if ( ! empty( $lang ) && str_starts_with( $lang, '-' ) ) {
+		if ( ! empty( $lang ) && 0 === strpos( $lang, '-' ) ) {
 			$lang = ltrim( $lang, '-' );
 		}
 		ShoppingFeedHelper::get_feedbuilder_manager()->render_feed( $lang );

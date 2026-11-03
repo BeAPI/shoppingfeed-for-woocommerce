@@ -163,7 +163,7 @@ abstract class FeedBuilder {
 	 * WC_Product_Query may return IDs or product objects depending on the environment
 	 * (for example when WPML alters the query). Always normalize to an integer ID.
 	 *
-	 * @param int|\WC_Product $product Product ID or product object.
+	 * @param mixed $product Product ID or product object.
 	 *
 	 * @return int
 	 */
@@ -172,7 +172,7 @@ abstract class FeedBuilder {
 			return $product->get_id();
 		}
 
-		return (int) $product;
+		return is_numeric( $product ) ? (int) $product : 0;
 	}
 
 	/**
@@ -223,7 +223,7 @@ abstract class FeedBuilder {
 				);
 			}
 
-			$xpath = new \DOMXpath( $doc );
+			$xpath = new \DOMXPath( $doc );
 			foreach ( $xpath->query( '//catalog/products/*' ) as $p ) {
 				$writer->writeRaw( $doc->saveXML( $p ) );
 			}
