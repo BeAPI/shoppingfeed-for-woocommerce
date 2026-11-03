@@ -182,7 +182,7 @@ class FeedBuilderBase extends FeedBuilder {
 		}
 
 		$page ++;
-		$last_product_id = end( $products );
+		$last_product_id = self::get_product_id_from_query_result( end( $products ) );
 		self::schedule_generation_part( $page, $post_per_page, $last_product_id );
 
 		return true;
