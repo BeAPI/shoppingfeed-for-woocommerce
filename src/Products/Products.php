@@ -119,11 +119,17 @@ class Products {
 		return $query->get_products();
 	}
 
-
+	/**
+	 * @param array $wc_products
+	 *
+	 * @return Product[]
+	 */
 	public function format_products( $wc_products ) {
-		foreach ( $wc_products as $wc_product ) {
-			yield array( new Product( $wc_product ) );
-		}
+		return array_map(
+			function ( $wc_product ) {
+				return new Product( $wc_product );
+			},
+			$wc_products
+		);
 	}
-
 }
