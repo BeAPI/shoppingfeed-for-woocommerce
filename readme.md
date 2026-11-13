@@ -24,6 +24,7 @@
 #### Fixes
 
 * **Feed** : Fix feed generation failure when the product query returns product objects instead of IDs
+* **Feed** : Fix feed rendering on PHP versions lower than 8.0
 
 ### 7.3.1
 
