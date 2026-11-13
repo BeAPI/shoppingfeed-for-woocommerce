@@ -14,6 +14,7 @@ echo "➡️ Create WPCONTENT"
 if [ ! -f /app/wordpress/wp-content ]; then echo "creating wp-content folder" && mkdir -p /app/wordpress/wp-content/plugins; else echo "wp-content folder already created"; fi
 ln -s /app/ /app/wordpress/wp-content/plugins/shoppingfeed-for-woocommerce
 echo "➡️ Install Woocommerce"
-wp plugin install woocommerce
+# Keep in sync with "WC tested up to" (latest WC can require a newer WP).
+wp plugin install woocommerce --version=10.0.0
 echo "➡️ Install Storefront"
 wp theme install storefront

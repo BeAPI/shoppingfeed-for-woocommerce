@@ -98,7 +98,7 @@ class Order {
 		// Only run order validation if the order is fulfilled by the merchant.
 		if ( ! $this->is_fulfilled_by_channel( $this->sf_order ) ) {
 			$error = $this->validate_order();
-			if ( is_wp_error( $error ) ) {
+			if ( $error instanceof \WP_Error ) {
 				ShoppingFeedHelper::log(
 					\WC_Log_Levels::ERROR,
 					sprintf(

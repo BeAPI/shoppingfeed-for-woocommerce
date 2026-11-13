@@ -39,7 +39,8 @@ tooling:
       - wp core install --url="https://shoppingfeed-for-woocommerce.lndo.site" --title="Test" --admin_user=admin --admin_password=password --admin_email=wordpress@example.com --skip-email
       - wp rewrite structure "/%postname%/"
       - echo "➡️ Install Woocommerce"
-      - wp plugin install --activate woocommerce
+      # Keep in sync with "WC tested up to" (latest WC can require a newer WP).
+      - wp plugin install --activate woocommerce --version=10.0.0
       - echo "➡️ Install Storefront"
       - wp theme install storefront --activate
       - echo "➡️ Install WordPress importer"

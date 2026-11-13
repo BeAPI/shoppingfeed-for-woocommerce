@@ -6,6 +6,7 @@ namespace ShoppingFeed\ShoppingFeedWC\Admin;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Actions\Actions;
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Store\StoreCollection;
 use ShoppingFeed\ShoppingFeedWC\Feed\Generator;
 use ShoppingFeed\ShoppingFeedWC\Orders\Operations;
 use ShoppingFeed\ShoppingFeedWC\Sdk\Sdk;
@@ -363,7 +364,7 @@ class Options {
 
 		// Try to get session with provided credentials.
 		$session = Sdk::get_session_by_credentials( $username, $password );
-		if ( is_wp_error( $session ) ) {
+		if ( $session instanceof \WP_Error ) {
 			set_transient(
 				sprintf( 'sf_account_notice_%d', get_current_user_id() ),
 				[
@@ -376,7 +377,8 @@ class Options {
 			exit();
 		}
 
-		$store = $session->getStores()->select( $username );
+		$stores = $session->getStores();
+		$store  = $stores instanceof StoreCollection ? $stores->select( $username ) : null;
 		if ( null === $store ) {
 			set_transient(
 				sprintf( 'sf_account_notice_%d', get_current_user_id() ),

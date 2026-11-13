@@ -7,6 +7,7 @@ defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Dependencies\GuzzleHttp\Exception\ClientException;
 use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Session\SessionResource;
+use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Store\StoreCollection;
 use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Api\Store\StoreResource;
 use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Client;
 use ShoppingFeed\ShoppingFeedWC\Dependencies\ShoppingFeed\Sdk\Credential;
@@ -133,8 +134,13 @@ class Sdk {
 			return [];
 		}
 
+		$store_collection = $session->getStores();
+		if ( ! $store_collection instanceof StoreCollection ) {
+			return [];
+		}
+
 		$stores = [];
-		foreach ( $session->getStores()->getIterator() as $store ) {
+		foreach ( $store_collection->getIterator() as $store ) {
 			$stores[] = $store->getId();
 		}
 
