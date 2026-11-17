@@ -42,11 +42,11 @@ class Address {
 	}
 
 	private function get_first_name() {
-		return ! empty( $this->sf_address['firstName'] ) ? $this->sf_address['firstName'] : '';
+		return ! empty( $this->sf_address['firstName'] ) ? $this->sf_address['firstName'] : '_';
 	}
 
 	private function get_last_name() {
-		return ! empty( $this->sf_address['lastName'] ) ? $this->sf_address['lastName'] : '';
+		return ! empty( $this->sf_address['lastName'] ) ? $this->sf_address['lastName'] : '_';
 	}
 
 	private function get_company() {
