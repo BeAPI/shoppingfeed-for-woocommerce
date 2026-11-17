@@ -213,8 +213,8 @@ class WoocommerceActions {
 	 */
 	public function schedule_product_update( $product_id ) {
 		$sf_feed_options = ShoppingFeedHelper::get_sf_feed_options();
-		$sync_stock      = $sf_feed_options['synchro_stock'] ?? 'yes';
-		$sync_price      = $sf_feed_options['synchro_price'] ?? 'yes';
+		$sync_stock      = is_array( $sf_feed_options ) ? ( $sf_feed_options['synchro_stock'] ?? 'yes' ) : 'yes';
+		$sync_price      = is_array( $sf_feed_options ) ? ( $sf_feed_options['synchro_price'] ?? 'yes' ) : 'yes';
 		if ( 'no' === $sync_stock && 'no' === $sync_price ) {
 			return;
 		}
@@ -236,7 +236,7 @@ class WoocommerceActions {
 	 * @return void
 	 */
 	public function update_product_data_callback( $product_id ) {
-		$this->update_product( (int) $product_id );
+		$this->update_product( $product_id );
 	}
 
 	/**
@@ -248,7 +248,7 @@ class WoocommerceActions {
 	 */
 	public function schedule_product_stock_update( $product_id ) {
 		$sf_feed_options = ShoppingFeedHelper::get_sf_feed_options();
-		$sync_stock      = $sf_feed_options['synchro_stock'] ?? 'yes';
+		$sync_stock      = is_array( $sf_feed_options ) ? ( $sf_feed_options['synchro_stock'] ?? 'yes' ) : 'yes';
 		if ( 'no' === $sync_stock ) {
 			return;
 		}
@@ -270,7 +270,7 @@ class WoocommerceActions {
 	 * @return void
 	 */
 	public function update_product_stock_callback( $product_id ) {
-		$this->update_product( (int) $product_id, true );
+		$this->update_product( $product_id, true );
 	}
 
 	/**
@@ -290,8 +290,8 @@ class WoocommerceActions {
 	 */
 	public function update_product( $product_id, $only_stock = false ) {
 		$sf_feed_options = ShoppingFeedHelper::get_sf_feed_options();
-		$sync_stock      = $sf_feed_options['synchro_stock'] ?? 'yes';
-		$sync_price      = $sf_feed_options['synchro_price'] ?? 'yes';
+		$sync_stock      = is_array( $sf_feed_options ) ? ( $sf_feed_options['synchro_stock'] ?? 'yes' ) : 'yes';
+		$sync_price      = is_array( $sf_feed_options ) ? ( $sf_feed_options['synchro_price'] ?? 'yes' ) : 'yes';
 
 		/**
 		 * If both stock and price synchronization are disable, bail out.

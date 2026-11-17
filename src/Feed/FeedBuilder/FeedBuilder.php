@@ -158,6 +158,24 @@ abstract class FeedBuilder {
 	}
 
 	/**
+	 * Resolve the product ID used as pagination cursor from a query result item.
+	 *
+	 * WC_Product_Query may return IDs or product objects depending on the environment
+	 * (for example when WPML alters the query). Always normalize to an integer ID.
+	 *
+	 * @param mixed $product Product ID or product object.
+	 *
+	 * @return int
+	 */
+	protected static function get_product_id_from_query_result( $product ): int {
+		if ( $product instanceof \WC_Product ) {
+			return $product->get_id();
+		}
+
+		return is_numeric( $product ) ? (int) $product : 0;
+	}
+
+	/**
 	 * @param string $file_path
 	 * @param array $products
 	 *
@@ -205,7 +223,7 @@ abstract class FeedBuilder {
 				);
 			}
 
-			$xpath = new \DOMXpath( $doc );
+			$xpath = new \DOMXPath( $doc );
 			foreach ( $xpath->query( '//catalog/products/*' ) as $p ) {
 				$writer->writeRaw( $doc->saveXML( $p ) );
 			}

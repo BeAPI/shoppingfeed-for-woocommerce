@@ -125,7 +125,7 @@ class Orders {
 					sprintf( '[Order %s] Order already imported.', $sf_order->getReference() ),
 					'shopping-feed-orders',
 					[
-						'wc_order' => $existing_order->get_id(),
+						'wc_order' => $existing_order instanceof \WC_Order ? $existing_order->get_id() : 0,
 					]
 				);
 
@@ -133,7 +133,7 @@ class Orders {
 			}
 
 			$import_order_check = $this->can_import_order( $sf_order, $include_fulfilled_by_channel );
-			if ( is_wp_error( $import_order_check ) ) {
+			if ( $import_order_check instanceof \WP_Error ) {
 				ShoppingFeedHelper::log(
 					\WC_Log_Levels::NOTICE,
 					sprintf(

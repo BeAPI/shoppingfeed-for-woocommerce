@@ -90,7 +90,7 @@ class MondialRelayWordpress {
 
 		// Get shipping method instance (use later to check the shipping code)
 		$shipping_methods = \WC()->shipping()->get_shipping_methods();
-		$method_name      = (string) $shipping_method_for_carrier['method_rate_id'];
+		$method_name      = $shipping_method_for_carrier['method_rate_id'];
 		$instance_id      = (int) $shipping_method_for_carrier['method_id'];
 
 		if ( ! isset( $shipping_methods[ $method_name ] ) ) {

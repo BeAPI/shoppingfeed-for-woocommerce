@@ -213,10 +213,14 @@ class ShoppingFeedHelper {
 	 *
 	 * @param string $param
 	 *
-	 * @return mixed|void
+	 * @return array|false|mixed
 	 */
 	public static function get_sf_feed_options( $param = '' ) {
-		$feed_options = get_option( Options::SF_FEED_OPTIONS );
+		$feed_options = get_option( Options::SF_FEED_OPTIONS, array() );
+		if ( ! is_array( $feed_options ) ) {
+			$feed_options = array();
+		}
+
 		if ( empty( $param ) ) {
 			return $feed_options;
 		}
@@ -234,7 +238,7 @@ class ShoppingFeedHelper {
 	 */
 	public static function get_sf_feed_product_identifier() {
 		$product_identifier = self::get_sf_feed_options( 'product_identifier' );
-		if ( empty( $product_identifier ) ) {
+		if ( empty( $product_identifier ) || ! is_string( $product_identifier ) ) {
 			return 'id';
 		}
 
@@ -265,7 +269,7 @@ class ShoppingFeedHelper {
 	 */
 	public static function get_sf_feed_category_display_mode() {
 		$display_mode = self::get_sf_feed_options( 'category_display_mode' );
-		if ( empty( $display_mode ) ) {
+		if ( empty( $display_mode ) || ! is_string( $display_mode ) ) {
 			return 'normal';
 		}
 
@@ -341,11 +345,11 @@ class ShoppingFeedHelper {
 	 */
 	public static function get_sf_feed_generation_frequency() {
 		$frequency = self::get_sf_feed_options( 'frequency' );
-		if ( empty( $frequency ) ) {
+		if ( empty( $frequency ) || ! is_numeric( $frequency ) ) {
 			return 6 * HOUR_IN_SECONDS;
 		}
 
-		return $frequency;
+		return (int) $frequency;
 	}
 
 	/**
@@ -355,7 +359,7 @@ class ShoppingFeedHelper {
 	 */
 	public static function get_sf_part_size() {
 		$part_size = self::get_sf_feed_options( 'part_size' );
-		if ( empty( $part_size ) ) {
+		if ( empty( $part_size ) || ! is_numeric( $part_size ) ) {
 			return 200;
 		}
 
@@ -380,10 +384,13 @@ class ShoppingFeedHelper {
 
 	/**
 	 * Return SF orders configuration
-	 * @return mixed|void
+	 *
+	 * @return array
 	 */
 	public static function get_sf_orders_options() {
-		return get_option( Options::SF_ORDERS_OPTIONS );
+		$orders_options = get_option( Options::SF_ORDERS_OPTIONS, array() );
+
+		return is_array( $orders_options ) ? $orders_options : array();
 	}
 
 	/**
@@ -1017,12 +1024,7 @@ class ShoppingFeedHelper {
 	 * @return bool
 	 */
 	public static function is_order_import_disable() {
-		$orders_options = self::get_sf_orders_options();
-
-		if ( false === $orders_options ) {
-			return false;
-		}
-
+		$orders_options       = self::get_sf_orders_options();
 		$disable_order_import = (int) ( $orders_options['disable_order_import'] ?? 0 );
 
 		return 1 === $disable_order_import;

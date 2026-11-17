@@ -32,7 +32,7 @@ class OrderImportTestCase extends \Codeception\TestCase\WPTestCase {
 
 	protected function get_default_order_status(): string {
 		$status = \ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper::get_sf_default_order_status();
-		if ( str_starts_with( $status, 'wc-' ) ) {
+		if ( 0 === strpos( $status, 'wc-' ) ) {
 			$status = substr( $status, 3 );
 		}
 

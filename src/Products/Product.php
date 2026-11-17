@@ -26,7 +26,7 @@ class Product {
 	private $id;
 
 	/**
-	 * @var bool|mixed|\WP_Term
+	 * @var false|\WP_Term
 	 */
 	private $brand;
 
@@ -51,7 +51,7 @@ class Product {
 	private $height;
 
 	/**
-	 * @var bool|mixed|\WP_Term
+	 * @var false|\WP_Term
 	 */
 	private $category;
 
@@ -81,7 +81,7 @@ class Product {
 	}
 
 	/**
-	 * @return bool|mixed|\WP_Term
+	 * @return false|\WP_Term
 	 */
 	private function set_brand() {
 		$brand_taxonomy = ShoppingFeedHelper::wc_brand_taxonomy();
@@ -92,19 +92,19 @@ class Product {
 
 		$terms = get_the_terms( $this->id, $brand_taxonomy );
 
-		if ( empty( $terms ) ) {
+		if ( empty( $terms ) || is_wp_error( $terms ) ) {
 			return false;
 		}
 
-		return reset( $terms );
+		$term = reset( $terms );
+
+		return $term instanceof \WP_Term ? $term : false;
 	}
 
 	/**
-	 * @return bool|mixed|\WP_Term
+	 * @return false|\WP_Term
 	 */
 	private function set_category() {
-
-		$return           = '';
 		$taxonomy_name    = ShoppingFeedHelper::wc_category_taxonomy();
 		$sf_yoast_options = ShoppingFeedHelper::get_sf_yoast_options();
 
@@ -112,19 +112,17 @@ class Product {
 			// Show Primary category by Yoast if it is enabled & set
 			$wpseo_primary_term = new \WPSEO_Primary_Term( $taxonomy_name, $this->id );
 			$primary_term       = get_term( $wpseo_primary_term->get_primary_term() );
-			if ( ! is_wp_error( $primary_term ) ) {
-				$return = $primary_term;
+			if ( $primary_term instanceof \WP_Term ) {
+				return $primary_term;
 			}
 		}
 
-		if ( empty( $return ) ) {
-			$categories_list = get_the_terms( $this->id, $taxonomy_name );
-			if ( ! empty( $categories_list ) && ! is_wp_error( $categories_list ) ) {
-				$return = $categories_list[0];
-			}
+		$categories_list = get_the_terms( $this->id, $taxonomy_name );
+		if ( ! empty( $categories_list ) && ! is_wp_error( $categories_list ) && $categories_list[0] instanceof \WP_Term ) {
+			return $categories_list[0];
 		}
 
-		return empty( $return ) ? false : $return;
+		return false;
 	}
 
 	/**
@@ -214,7 +212,7 @@ class Product {
 	 * @return string
 	 */
 	public function get_brand_name() {
-		if ( empty( $this->brand ) ) {
+		if ( ! $this->brand instanceof \WP_Term ) {
 			return '';
 		}
 
@@ -225,7 +223,7 @@ class Product {
 	 * @return string
 	 */
 	public function get_brand_link() {
-		if ( empty( $this->brand ) ) {
+		if ( ! $this->brand instanceof \WP_Term ) {
 			return '';
 		}
 
@@ -280,7 +278,7 @@ class Product {
 	 * @return string
 	 */
 	public function get_category_name() {
-		if ( empty( $this->category ) ) {
+		if ( ! $this->category instanceof \WP_Term ) {
 			return '';
 		}
 
@@ -296,6 +294,9 @@ class Product {
 	 * @return string
 	 */
 	public function get_category_hierarchy() {
+		if ( ! $this->category instanceof \WP_Term ) {
+			return '';
+		}
 
 		$taxonomy   = ShoppingFeedHelper::wc_category_taxonomy();
 		$parents    = get_ancestors( $this->category->term_id, $taxonomy, 'taxonomy' );
@@ -318,7 +319,7 @@ class Product {
 	 * @return string
 	 */
 	public function get_category_link() {
-		if ( empty( $this->category ) ) {
+		if ( ! $this->category instanceof \WP_Term ) {
 			return '';
 		}
 

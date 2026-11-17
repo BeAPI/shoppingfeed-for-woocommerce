@@ -116,15 +116,15 @@ class Generator {
 				}
 
 				if ( ! empty( $sf_product->get_length() ) ) {
-					$product->setAttribute( 'length', (string) $sf_product->get_length() );
+					$product->setAttribute( 'length', $sf_product->get_length() );
 				}
 
 				if ( ! empty( $sf_product->get_width() ) ) {
-					$product->setAttribute( 'width', (string) $sf_product->get_width() );
+					$product->setAttribute( 'width', $sf_product->get_width() );
 				}
 
 				if ( ! empty( $sf_product->get_height() ) ) {
-					$product->setAttribute( 'height', (string) $sf_product->get_height() );
+					$product->setAttribute( 'height', $sf_product->get_height() );
 				}
 
 				if ( ! empty( $sf_product->get_category_name() ) ) {
