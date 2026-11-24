@@ -118,12 +118,13 @@ class Fields {
 	}
 
 	/**
-	 * @param int   $index Index.
-	 * @param array $variation_data Variation data.
-	 * @param \WP_Post $variation Variation post.
+	 * @param int      $index          Index.
+	 * @param array    $variation_data Variation data (unused; kept for hook signature).
+	 * @param \WP_Post $variation      Variation post.
 	 */
 	public function fields_product_option_variation( $index, $variation_data, $variation ) {
-		if ( empty( $this->fields ) || empty( $variation_data ) ) {
+		// $variation_data can be empty for new/unattributed variations; rendering only needs $variation.
+		if ( empty( $this->fields ) ) {
 			return;
 		}
 

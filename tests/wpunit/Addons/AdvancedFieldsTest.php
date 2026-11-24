@@ -36,4 +36,51 @@ class AdvancedFieldsTest extends \Codeception\TestCase\WPTestCase {
 
 		WC_Helper_Product::delete_product( $product->get_id() );
 	}
+
+	/**
+	 * Variation EAN must render even when WooCommerce passes empty variation attributes.
+	 */
+	public function test_variation_ean_field_renders_with_empty_variation_data() {
+		$this->load_woocommerce_meta_box_functions();
+
+		$product   = WC_Helper_Product::create_variation_product();
+		$children  = $product->get_children();
+		$variation = get_post( $children[0] );
+
+		ob_start();
+		$this->fields->fields_product_option_variation( 0, array(), $variation );
+		$output = ob_get_clean();
+
+		$this->assertStringContainsString( EAN_FIELD_SLUG . '_0', $output );
+		$this->assertStringContainsString( 'name="' . EAN_FIELD_SLUG . '_0"', $output );
+
+		WC_Helper_Product::delete_product( $product->get_id() );
+	}
+
+	/**
+	 * Admin-only WooCommerce helpers are not loaded in wpunit by default.
+	 */
+	private function load_woocommerce_meta_box_functions() {
+		if ( function_exists( 'woocommerce_wp_text_input' ) ) {
+			return;
+		}
+
+		include_once WP_PLUGIN_DIR . '/woocommerce/includes/admin/wc-meta-box-functions.php';
+	}
+
+	public function test_save_variation_ean_from_post() {
+		$product      = WC_Helper_Product::create_variation_product();
+		$children     = $product->get_children();
+		$variation_id = $children[0];
+
+		$_POST[ EAN_FIELD_SLUG . '_0' ] = '9876543210987';
+
+		$this->fields->save_fields_product_option_variation( $variation_id, 0 );
+
+		$variation = wc_get_product( $variation_id );
+		$this->assertSame( '9876543210987', $variation->get_meta( EAN_FIELD_SLUG ) );
+
+		unset( $_POST[ EAN_FIELD_SLUG . '_0' ] );
+		WC_Helper_Product::delete_product( $product->get_id() );
+	}
 }
