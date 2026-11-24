@@ -51,7 +51,6 @@ class Taxonomies {
 			'show_admin_column' => true,
 			'show_in_nav_menus' => false,
 			'show_tagcloud'     => false,
-			'meta_box_cb'       => false,
 		);
 
 		register_taxonomy( self::BRAND_TAXONOMY_SLUG, array( 'product' ), $args );

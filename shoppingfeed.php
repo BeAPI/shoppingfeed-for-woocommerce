@@ -42,6 +42,12 @@ if ( ! defined( 'TRACKING_NUMBER_FIELD_SLUG' ) ) {
 if ( ! defined( 'TRACKING_LINK_FIELD_SLUG' ) ) {
 	define( 'TRACKING_LINK_FIELD_SLUG', 'sf_advanced_tracking_link_field' );
 }
+if ( ! defined( 'EAN_FIELD_SLUG' ) ) {
+	define( 'EAN_FIELD_SLUG', 'sf_advanced_ean_field' );
+}
+if ( ! defined( 'BRAND_FIELD_SLUG' ) ) {
+	define( 'BRAND_FIELD_SLUG', 'sf_advanced_brand_field' );
+}
 
 // Plugin activate/deactivate hooks
 register_activation_hook( __FILE__, array( '\\ShoppingFeed\ShoppingFeedWC\ShoppingFeed', 'activate' ) );

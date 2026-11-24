@@ -2,30 +2,57 @@
 
 namespace ShoppingFeed\ShoppingFeedWC\Tests\wpunit\Addons;
 
-use ShoppingFeed\ShoppingFeedWC\Addons\Advanced\Filters;
 use ShoppingFeed\ShoppingFeedWC\Addons\Advanced\Taxonomies;
 use ShoppingFeed\ShoppingFeedWC\Products\Product;
+use ShoppingFeed\ShoppingFeedWC\ShoppingFeedHelper;
 use ShoppingFeed\ShoppingFeedWC\Tests\wpunit\WC_Helper_Product;
 
 class AdvancedTest extends \Codeception\TestCase\WPTestCase {
 
-	public function setUp(): void {
-		parent::setUp();
-		new Filters();
-	}
-
-	public function test_default_ean_meta_key_filter() {
+	public function test_default_ean_meta_key() {
 		$this->assertSame(
-			'sf_advanced_ean_field',
-			apply_filters( 'shopping_feed_custom_ean', '', false )
+			EAN_FIELD_SLUG,
+			ShoppingFeedHelper::wc_product_ean( false )
 		);
 	}
 
-	public function test_default_brand_taxonomy_filter() {
+	public function test_ean_meta_key_filter_can_override_default() {
+		add_filter(
+			'shopping_feed_custom_ean',
+			static function () {
+				return 'my_custom_ean_meta_key';
+			}
+		);
+
+		$this->assertSame(
+			'my_custom_ean_meta_key',
+			ShoppingFeedHelper::wc_product_ean( false )
+		);
+
+		remove_all_filters( 'shopping_feed_custom_ean' );
+	}
+
+	public function test_default_brand_taxonomy() {
 		$this->assertSame(
 			Taxonomies::BRAND_TAXONOMY_SLUG,
-			apply_filters( 'shopping_feed_custom_brand_taxonomy', '' )
+			ShoppingFeedHelper::wc_brand_taxonomy()
 		);
+	}
+
+	public function test_brand_taxonomy_filter_can_override_default() {
+		add_filter(
+			'shopping_feed_custom_brand_taxonomy',
+			static function () {
+				return 'my_custom_brand';
+			}
+		);
+
+		$this->assertSame(
+			'my_custom_brand',
+			ShoppingFeedHelper::wc_brand_taxonomy()
+		);
+
+		remove_all_filters( 'shopping_feed_custom_brand_taxonomy' );
 	}
 
 	public function test_get_ean_uses_builtin_meta_key() {
@@ -39,6 +66,17 @@ class AdvancedTest extends \Codeception\TestCase\WPTestCase {
 
 	public function test_product_brand_taxonomy_is_registered() {
 		$this->assertTrue( taxonomy_exists( Taxonomies::BRAND_TAXONOMY_SLUG ) );
+	}
+
+	public function test_product_brand_taxonomy_exposes_meta_box_in_product_editor() {
+		$taxonomy = get_taxonomy( Taxonomies::BRAND_TAXONOMY_SLUG );
+
+		$this->assertInstanceOf( \WP_Taxonomy::class, $taxonomy );
+		$this->assertTrue( $taxonomy->show_ui );
+		$this->assertNotFalse(
+			$taxonomy->meta_box_cb,
+			'product_brand must keep a meta box callback so merchants can assign brands on the product screen'
+		);
 	}
 
 	public function test_get_brand_name_uses_first_product_brand_term() {

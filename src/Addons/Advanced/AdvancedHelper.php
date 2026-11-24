@@ -13,7 +13,7 @@ class AdvancedHelper {
 	/**
 	 * Handle back-compat with EAN meta saved with a key containing an index.
 	 *
-	 * @param \WC_Product $wc_product Product.
+	 * @param \WC_Product|\WC_Product_Variation $wc_product Product.
 	 *
 	 * @return string
 	 */
