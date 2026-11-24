@@ -139,7 +139,8 @@ class Fields {
 			}
 
 			$meta_key = $field['id'];
-			if ( EAN_FIELD_SLUG === $field['id'] && empty( $wc_product->get_meta( $meta_key ) ) ) {
+			// Fall back to indexed legacy keys only when the current key was never saved.
+			if ( EAN_FIELD_SLUG === $field['id'] && ! $wc_product->meta_exists( $meta_key ) ) {
 				$old_meta_key = AdvancedHelper::find_old_variation_ean_meta_key( $wc_product );
 				if ( ! empty( $old_meta_key ) ) {
 					$meta_key = $old_meta_key;
@@ -161,6 +162,9 @@ class Fields {
 	 */
 	public function save_fields_product_option_variation( $variation_id, $index ) {
 		$wc_product = wc_get_product( $variation_id );
+		if ( ! $wc_product ) {
+			return;
+		}
 
 		foreach ( $this->fields as $field ) {
 			if ( empty( $field['is_variation_option'] ) ) {
@@ -177,6 +181,11 @@ class Fields {
 			$field_post_data = wc_clean( wp_unslash( $_POST[ $post_data_key ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 
 			$wc_product->update_meta_data( $meta_key, $field_post_data );
+
+			if ( EAN_FIELD_SLUG === $meta_key ) {
+				AdvancedHelper::delete_old_variation_ean_meta_keys( $wc_product );
+			}
+
 			$wc_product->save_meta_data();
 		}
 	}

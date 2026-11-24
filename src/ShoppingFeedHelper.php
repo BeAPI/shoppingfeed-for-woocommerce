@@ -686,7 +686,9 @@ class ShoppingFeedHelper {
 	public static function wc_product_ean( $wc_product = false ) {
 		$meta_key = EAN_FIELD_SLUG;
 
-		if ( $wc_product instanceof \WC_Product_Variation && empty( $wc_product->get_meta( $meta_key ) ) ) {
+		// Only fall back to indexed legacy keys when the current key was never saved.
+		// An intentionally cleared (empty) current meta must not resurrect leftover indexed values.
+		if ( $wc_product instanceof \WC_Product_Variation && ! $wc_product->meta_exists( $meta_key ) ) {
 			$old_meta_key = AdvancedHelper::find_old_variation_ean_meta_key( $wc_product );
 			if ( ! empty( $old_meta_key ) ) {
 				$meta_key = $old_meta_key;
