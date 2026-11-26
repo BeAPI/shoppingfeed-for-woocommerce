@@ -52,8 +52,8 @@ class Upgrade {
 				self::upgrade_log( 'Upgrade 6.10.0 : shipment tracking set to "ADDONS" and "Woocommerce Shipments Tracking" plugin seem active, updating option accordingly.' );
 				$shipping_options['tracking_provider'] = 'woo_shipment_tracking';
 				update_option( Options::SF_SHIPPING_OPTIONS, $shipping_options );
-			} elseif ( 'META' === $legacy_option && defined( 'SFA_PLUGIN_VERSION' ) ) {
-				self::upgrade_log( 'Upgrade 6.10.0 : shipment tracking set to "META" and "ShoppingFeed Advanced" plugin seem active, updating option accordingly.' );
+			} elseif ( 'META' === $legacy_option ) {
+				self::upgrade_log( 'Upgrade 6.10.0 : shipment tracking set to "META", using built-in ShoppingFeed Advanced provider.' );
 				$shipping_options['tracking_provider'] = 'sf_advanced';
 				update_option( Options::SF_SHIPPING_OPTIONS, $shipping_options );
 			} else {

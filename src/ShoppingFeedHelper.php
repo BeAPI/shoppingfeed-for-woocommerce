@@ -6,9 +6,11 @@ namespace ShoppingFeed\ShoppingFeedWC;
 defined( 'ABSPATH' ) || exit;
 
 use ShoppingFeed\ShoppingFeedWC\Admin\Options;
+use ShoppingFeed\ShoppingFeedWC\Addons\Advanced\AdvancedHelper;
 use ShoppingFeed\ShoppingFeedWC\Feed\FeedBuilderManager;
 use ShoppingFeed\ShoppingFeedWC\ShipmentTracking\ShipmentTrackingManager;
 use ShoppingFeed\ShoppingFeedWC\Url\Rewrite;
+use ShoppingFeed\ShoppingFeedWC\Addons\Advanced\Taxonomies;
 use WC_Logger;
 
 
@@ -666,7 +668,12 @@ class ShoppingFeedHelper {
 	 * @return string
 	 */
 	public static function wc_brand_taxonomy() {
-		return apply_filters( 'shopping_feed_custom_brand_taxonomy', '' );
+		/**
+		 * Filter the brand taxonomy used to retrieve the product brand.
+		 *
+		 * @param string $taxonomy The brand taxonomy used to retrieve the product brand. Default: Taxonomies::BRAND_TAXONOMY_SLUG.
+		 */
+		return apply_filters( 'shopping_feed_custom_brand_taxonomy', Taxonomies::BRAND_TAXONOMY_SLUG );
 	}
 
 	/**
@@ -677,7 +684,24 @@ class ShoppingFeedHelper {
 	 * @return string
 	 */
 	public static function wc_product_ean( $wc_product = false ) {
-		return apply_filters( 'shopping_feed_custom_ean', '', $wc_product );
+		$meta_key = EAN_FIELD_SLUG;
+
+		// Only fall back to indexed legacy keys when the current key was never saved.
+		// An intentionally cleared (empty) current meta must not resurrect leftover indexed values.
+		if ( $wc_product instanceof \WC_Product_Variation && ! $wc_product->meta_exists( $meta_key ) ) {
+			$old_meta_key = AdvancedHelper::find_old_variation_ean_meta_key( $wc_product );
+			if ( ! empty( $old_meta_key ) ) {
+				$meta_key = $old_meta_key;
+			}
+		}
+
+		/**
+		 * Filter the meta key used to retrieve the product ean.
+		 *
+		 * @param string $meta_key The meta key used to retrieve the product ean.
+		 * @param \WC_Product|false $wc_product The product object.
+		 */
+		return apply_filters( 'shopping_feed_custom_ean', $meta_key, $wc_product );
 	}
 
 	/**
